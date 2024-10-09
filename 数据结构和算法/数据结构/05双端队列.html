@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 双端队列
+     */
+
+    class DeQueue {
+        #items = {};
+        #lowCount = 0;
+        #count = 0;
+
+        removeFront() {
+            if (this.isEmpty()) return undefined;
+            let res = this.#items[this.#lowCount];
+            delete this.#items[this.#lowCount++];
+            return res
+        }
+
+        removeBack() {
+            if (this.isEmpty()) return undefined;
+            let res = this.#items[--this.#count];
+            delete this.#items[this.#count];
+            return res
+        }
+
+        addFront(data) {
+            // 如果为空
+            if (this.isEmpty()) {
+                this.addBack(data)
+            } else {
+                // lowCount > 0
+                if (this.#lowCount > 0) {
+                    this.#items[--this.#lowCount] = data;
+                } else {
+                    for (let i = this.#count; i > 0; i--) {
+                        this.#items[i] = this.#items[i - 1]
+                    }
+                    this.#items[0] = data;
+                    this.#count++;
+                }
+            }
+        }
+
+        addBack(data) {
+            this.#items[this.#count++] = data;
+        }
+
+        peekFront() {
+            return this.#items[this.#lowCount];
+        }
+
+        peekBack() {
+            if (this.isEmpty()) return undefined;
+            return this.#items[this.#count - 1];
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        size() {
+            return this.#count - this.#lowCount;
+        }
+
+        clear() {
+            this.#items = {};
+            this.#lowCount = 0;
+            this.#count = 0;
+        }
+
+        toString() {
+            let str = '';
+            for (let i = this.#lowCount; i < this.#count; i++) {
+                str += `${ this.#items[i] }`
+            }
+            return str;
+        }
+    }
+
+    let dequeue = new DeQueue();
+    dequeue.addBack(100)
+    dequeue.addBack(200)
+    dequeue.addBack(300)
+    console.log(dequeue.peekBack());
+    console.log(dequeue.peekFront());
+    console.log(dequeue.toString());
+
+    // 回文对比 Dad  dad  da  d
+
+    function test(str) {
+        const lowstr = str.toLocaleLowerCase().split(' ').join('');
+        let dequeue = new DeQueue();
+        for (let i = 0; i < lowstr.length; i++) {
+            dequeue.addBack(lowstr[i]);
+        }
+        let isEqual = true;
+        while (dequeue.size() > 1) {
+            if (dequeue.removeFront() !== dequeue.removeBack()) {
+                isEqual = false;
+                break;
+            }
+        }
+        return isEqual;
+    }
+
+    console.log(test('D a d'));
+    console.log(test('D a '));
+
+    // 方式一
+    const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    function test1(arr) {
+        while (arr.length > 1) {
+            const front = arr.at(0);
+            const back = arr.at(-1);
+            front > back ? arr.pop() : arr.shift();
+        }
+        return arr
+    }
+
+    console.log(test1([...arr]))
+
+    // 方式二
+    let max = -Infinity;
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] > max) {
+            max = arr[i]
+        }
+    }
+    console.log(max)
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 散列表 (hash 表):
+     * HashMap 类, 它是 Dictionary 类的一种散列表实现方式. 散列算法的作用是尽可能快地
+     * 在数据结构中找到一个值.
+     */
+
+    class Dictionary {
+        table = {} // 设置私有 #table
+
+        // 对象的 key 会隐式类型转换为 字符串
+        toStrFn(item) {
+            if (item === null) {
+                return 'NULL';
+            } else if (item === undefined) {
+                return 'UNDEFINED';
+            } else if (typeof item === 'string' || item instanceof String) {
+                return item;
+            }
+            return JSON.stringify(item)
+        }
+
+        /**
+         * 1. 对象 => 字符串
+         * 2. charAtCode ASCII 值加在一起得到数值
+         * 3. 防止数据过大 可以取余 %
+         * 该 hash 算法会重复, 解决可以使用 分离链接法, 线性探查法
+         */
+        hashCode(key) {
+            if (typeof key === 'number') {
+                return key
+            }
+            const tableKey = this.toStrFn(key);
+            let hash = 0;
+            for (let i = 0; i < tableKey.length; i++) {
+                hash += tableKey.charCodeAt(i)
+            }
+            return hash % 37
+        }
+
+        goodHashCode(key) {
+            const tableKey = this.toStrFn(key);
+            let hash = 5381;
+            for (let i = 0; i < tableKey.length; i++) {
+                hash = (hash * 33) + tableKey.charCodeAt(i);
+                return hash % 1013;
+            }
+        }
+
+        // set 可以改成 put
+        set(key, value) {
+            if (key !== null && value !== null) {
+                const position = this.goodHashCode(key);
+                this.table[position] = new ValuePair(key, value);
+                return true;
+            }
+            return false;
+        }
+
+        get(key) {
+            const valuePari = this.table[this.hashCode(key)];
+            return valuePari === null ? undefined : valuePari.value;
+        }
+
+        remove(key) {
+            const hash = this.hashCode(key);
+            const valuePari = this.table[hash];
+            if (valuePari !== null) {
+                delete this.table[hash]
+                return true
+            }
+            return false;
+        }
+    }
+
+    class ValuePair {
+        constructor(key, value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    const myMap = new Dictionary();
+</script>
+</body>
+</html>

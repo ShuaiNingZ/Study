@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 命令模式:
+     * 由 发布者、接受者、命令对象 构成
+     * 1. 发布者 invoker (发出命令, 调用命令对象, 不知道如何执行与谁执行)
+     * 2. 接受者 receiver (提供对应接口处理请求, 不知道谁发起请求)
+     * 3. 命令对象 command (接收命令, 调用接收者对应接口处理发布者的请求)
+     * 请求以命令的形式包裹在对象中, 并传给调用对象. 调用对象寻找可以处理该命令
+     * 的合适对象, 并把该命令传给相应的对象, 该对象执行命令.
+     *
+     * 发布者 和 接受者 各自独立, 将请求封装成命令对象, 请求的具体执行, 由命令对象
+     * 调用接受者 对应接口执行
+     * 命令对象充当发布者 与 接受者 之间的连接桥梁 (中间对象介入). 实现发布者与接收
+     * 之间的解耦, 对比过程化请求调用, 命令对象 拥有更长的生命周期, 接受者 属性方法
+     * 被封装在命令对象 属性中, 是的程序执行时可任意时刻调用接收者对象. 因此 命令对象
+     * 可对请求进行进一步管理处理, 如实现延时、预定、排队、撤销等功能
+     *
+     * 应用场景:
+     * 有时候需要项某些对象发送请求, 但是并不知道请求的接受者是谁, 也不知道被请求的操作
+     * 是什么. 需要一种松耦合的方式来设计程序, 使得发送者和接受者能够消除彼此之间的耦合关系
+     * 1. 不关注执行者, 不关注执行过程
+     * 2. 只要结果, 支持撤销请求、延后处理、日志记录等.
+     *
+     * 优点:
+     * 解耦: 请求的发送者和接受者质检的解耦, 使代码更加灵活和可维护
+     * 灵活性: 可以很容易地添加新的命令或操作, 而不需要修改原有的代码
+     * 支持撤销和重做: 通过保存命令历史, 可以实现撤销和重做功能
+     *
+     * 缺点:
+     * 1. 额外增加命令对象, 非直接调用, 存在一定开销
+     *
+     * 宏命令: 一组命令集合 (命令模式与组合模式的产物)
+     * 发布者发布一个请求, 命令对象会遍历命令集合下的一系列子命令并执行, 完成多任务
+     */
+
+    /* 接受者类 */
+    class Receiver {
+        execute() {
+            console.log('接收者执行请求');
+        }
+    }
+
+    /* 命令对象类 */
+    class Command {
+        constructor(receiver) {
+            this.receiver = receiver;
+        }
+
+        // 调用接收者对应接口执行
+        execute() {
+            console.log('命令对象 => 接收者 => 对应接口执行');
+            this.receiver.execute();
+        }
+    }
+
+    /* 发布者类 */
+    class Invoker {
+        constructor(command) {
+            this.command = command;
+        }
+
+        // 发布请求, 调用命令对象
+        invoke() {
+            console.log('发布者发布请求');
+            this.command.execute();
+        }
+    }
+
+    // 仓库
+    const warehouse = new Receiver();
+    // 订单
+    const order = new Command(warehouse);
+    // 客户
+    const client = new Invoker(order);
+    client.invoke();
+</script>
+</body>
+</html>

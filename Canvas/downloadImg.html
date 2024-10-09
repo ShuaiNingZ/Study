@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * 该 api 仅在不跨域情况下使用
+         * @param url 下载链接
+         * @param name 下载名字
+         */
+        function fetchFn(url, name) {
+            return fetch(url, {
+                method: 'get',
+            }).then(res => {
+                res.blob().then(blob => {
+                    let url = URL.createObjectURL(blob)
+                    let a = document.createElement('a');
+                    a.href = url
+                    a.download = name;
+                    a.click()
+                })
+            })
+        }
+
+        let imgArr = [...document.querySelectorAll('.list li a')].map(item => {
+            return item.href.replace('.htm', '-1920x1080.htm')
+        });
+
+        function createIframe(url, i) {
+            return new Promise(resolve => {
+                const iframeEl = document.createElement('iframe');
+                const bodyEl = document.body;
+                iframeEl.width = '100px';
+                iframeEl.height = '100px';
+                iframeEl.src = url;
+                iframeEl.id = `Z${i}`;
+                bodyEl.appendChild(iframeEl);
+                iframeEl.onload = (e) => {
+                    resolve(iframeEl)
+                }
+            })
+        };
+
+        Promise
+            .all(imgArr.map((item, i) => createIframe(item, i)))
+            .then(iframeEl => {
+                let imgUrl = iframeEl
+                    .filter(item => item.contentDocument && item.contentDocument.body.childNodes.item(5))
+                    .map(item => {
+                        return item.contentDocument.body.childNodes.item(5).querySelector('#main #endimg a').href
+                    });
+            });
+        const newWin = window.open(`http://img.netbian.com/?imgUrl=${encodeURIComponent(JSON.stringify(imgUrl))}`, '_self');
+        newWin.onload = () => {
+            JSON.parse(decodeURIComponent(location.search.split('?imgUrl=')[1])).map(
+                (item, i) => {
+                    setTimeout(() => {
+                        fetchFn(item, i);
+                    }, (i + 1) * 200)
+                }
+            )
+        }
+    </script>
+</body>
+
+</html>

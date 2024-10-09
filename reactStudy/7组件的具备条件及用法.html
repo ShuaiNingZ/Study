@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    // jsx xml -> html
+    /**
+     * 组件有两个非常重要的概念
+     * state 状态  负责页面的视图的数据 或者说是根据 state 的 去渲染视图 (用户界面)
+     * props 属性
+     */
+
+    function Head(props) {
+        console.log(props)
+        return (
+            <header>
+                <h2>头部组件</h2>
+                <h2>{props.content}</h2>
+                <h3>{props.data}</h3>
+            </header>
+        )
+    }
+
+    let ele = (
+        <div>
+            <Head content={'头部信息'}
+                  data={['首页', 'Hello World', '关于我们']}></Head>
+        </div>
+    )
+
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+
+</html>

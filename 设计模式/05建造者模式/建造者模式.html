@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 建造者模式关注的是创建对象的整个过程, 甚至创建对象的每个细节.
+     * 建造者模式属于创建型模式的一种, 提供一种创建复杂对象的方式.
+     * 它将一个复杂的对象的构建与它的表示分离, 使得同样的构建过程可以创建不同的表示.
+     *
+     * 建造者模式是一步一步的创建一个复杂的对象, 它允许用户只通过指定复杂的对象的类型和内容
+     * 就可以构建它们, 用户不需要指定内部的具体构造细节
+     */
+
+    /*class Navbar {
+        init() {
+            console.log('navbar-init')
+        }
+
+        getData() {
+            console.log('navbar-getData')
+            return 'navbar-111'
+        }
+
+        render() {
+            console.log('navbar-render')
+        }
+    }
+
+    class List {
+        init() {
+            console.log('list-init')
+        }
+
+        getData() {
+            console.log('list-getData')
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve('list-111')
+                }, 1000)
+            })
+        }
+
+        render() {
+            console.log('list-render')
+        }
+    }
+
+    class Creator {
+        async startBuild(builder) {
+            await builder.init()
+            const res = await builder.getData()
+            console.log(res)
+            await builder.render()
+        }
+    }
+
+    const op = new Creator();
+    op.startBuild(new Navbar());
+    op.startBuild(new List());*/
+
+    /**
+     * 建造者模式将一个复杂对象的构建层与其表示层相互分离, 同样的构建过程可采用不同的表示.
+     * 工厂函数主要是为了创建对象实例或者类簇 (抽象工厂), 关心的是最终创建的是什么, 而不关
+     * 心创建过程. 而建造者模式关心的是创建这个对象的整个过程, 甚至于创建对象的每个细节.
+     *
+     * 产品: 这是要构建的复杂对象, 它具有一系列属性和方法
+     * 建造者: 这是一个接口或抽象类, 用于为构建产品的各个组成部分定义方法. 具体的建造者实现这些方法, 并逐步构建产品.
+     * 指挥者: 这个组件负责管理建造过程, 确保按照正确的书序调用建造者的方法, 从而最终构建出目标对象.
+     * 指挥者可能包含一些额外的逻辑, 比如提供默认值和构造参数.
+     * 客户端: 客户端是调用指挥者以构建对象的代码. 它只需实例化指挥者和相应的建造者, 并将建造者传递给指挥者即可.
+     */
+        // 创建一位人类
+    const Human = function (param) {
+            // 如果存在 param 参数, 并且 param 拥有 skill 属性,
+            // 就用这个属性赋值给 this 的 skill 属性, 否则将 skill 默认值保密来设置
+            this.skill = param && param.skill || '保密';
+            this.hobby = param && param.hobby || '保密';
+        }
+
+    // 类原型方法
+    Human.prototype = {
+        getSkill: function () {
+            return this.skill
+        },
+        getHobby: function () {
+            return this.hobby
+        }
+    }
+
+    // 实例化姓名类
+    const Named = function (name) {
+        const that = this;
+
+        // 构造器
+        // 构造函数解析姓名的姓和名
+        (function () {
+            that.wholeName = name;
+            if (name.indexOf('') > -1) {
+                that.FirstName = name.slice(0, name.indexOf(' '));
+                that.SecondName = name.slice(name.indexOf(' '));
+            }
+        })(name, that)
+    }
+
+    // 实例化职位类
+    const Work = function (work) {
+        const that = this;
+        // 构造器
+        // 构造函数中通过传入的职位特征来设置相应职位以及描述
+        (function (work, that) {
+            switch (work) {
+                case 'code':
+                    that.work = '工程师';
+                    that.workDescript = '每天沉醉于编程';
+                    break;
+                case 'UI':
+                case 'UE':
+                    that.work = '设计师';
+                    that.workDescript = '设计更似一种艺术';
+                    break;
+                case 'teach':
+                    that.work = '教师';
+                    that.workDescript = '分享也是一种快乐';
+                    break;
+                default:
+                    that.work = work;
+                    that.workDescript = '对不起，我们还不清楚您所选择职位的相关描述';
+            }
+        })(work, that)
+    }
+
+    // 更换期望的职位
+    Work.prototype.changeWork = function (work) {
+        this.work = work;
+    }
+
+    // 添加对职位的描述
+    Work.prototype.changeDescript = function (sentence) {
+        this.workDescript = sentence;
+    }
+
+    // 创建抽象出来的 3 个类: 应聘者类, 姓名解析类和期望职位类
+    // 可通过这三个类的组合调用, 写一个建造者类来创建出一个完美的应聘对象
+    // 指挥者
+    const Person = function (name, work) {
+        const _person = new Human();
+        _person.name = new Named(name);
+        _person.work = new Work(work);
+        return _person;
+    }
+    // 产品
+    const person = new Person('xiao ming', 'code');
+    console.log(person);
+</script>
+</body>
+</html>

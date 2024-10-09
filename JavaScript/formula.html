@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/decimal.js/10.4.3/decimal.js"></script>
+    <script src="https://lib.baomitu.com/uuid/8.3.2/uuid.min.js"></script>
+    <script src="https://unpkg.com/pinyin-pro"></script>
+  </head>
+  <body>
+    <script>
+      const formulaFnCtx = {
+        // 数学函数 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+        // 数学函数可能有一个公共的问题就是 值超出最大限制(Number.MAX_VALUE|Number.MAX_SAFE_INTEGER)/最小限制(Number.MIN_VALUE|Number.MIN_SAFE_INTEGER)
+        /**
+         * @description ADD 求和 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        ADD: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.sum(...arguments));
+        },
+
+        /**
+         * @description AVERAGE 平均值 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        AVERAGE: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.sum(...arguments));
+        },
+
+        /**
+         * @description MAX 最大值 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        MAX: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.max(...arguments));
+        },
+
+        /**
+         * @description MIN 最小值 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        MIN: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.min(...arguments));
+        },
+
+        /**
+         * @description ABS 绝对值 验证
+         * @param {number} num
+         * @return {number}
+         */
+        ABS: function (num) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.NUMBER]);
+          return Number(Decimal.abs(num));
+        },
+
+        /**
+         * @description ROUND 四舍五入 验证
+         * @param {number} num
+         * @param {number} numDigit 四舍五入运算的位数
+         * @return {number}
+         */
+        ROUND: function (num, numDigit) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(new Decimal(num).toFixed(numDigit));
+        },
+
+        /**
+         * @description CEILING 向上舍入整数倍数 验证
+         * @param {number} num
+         * @param {number} multiple 向上舍入整数倍数
+         * @return {number}
+         */
+        CEILING: function (num, multiple) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          const intNum = Decimal.trunc(num);
+          if (intNum % multiple) {
+            if (intNum > 0) {
+              // (intNum + multiple) - (intNum % multiple)
+              return Number(
+                Decimal.add(
+                  Decimal.add(intNum, multiple),
+                  -Decimal.mod(intNum, multiple)
+                )
+              );
+            } else {
+              // intNum + (Math.abs(intNum) % multiple)
+              return Number(
+                Decimal.add(intNum, Decimal.mod(Decimal.abs(intNum), multiple))
+              );
+            }
+          } else {
+            return Number(intNum);
+          }
+        },
+
+        /**
+         * @description FLOOR 向下舍入整数倍数 验证
+         * @param {number} num
+         * @param {number} multiple 向下舍入整数倍数
+         * @return {number}
+         */
+        FLOOR: function (num, multiple) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          const intNum = Decimal.trunc(num);
+          if (intNum % multiple) {
+            if (intNum > 0) {
+              // intNum - (intNum % multiple)
+              return Number(
+                Decimal.add(intNum, -Decimal.mod(intNum, multiple))
+              );
+            } else {
+              // (intNum - multiple) + (Math.abs(intNum) % multiple)
+              return Number(
+                Decimal.add(
+                  Decimal.add(intNum, -multiple),
+                  Decimal.mod(Decimal.abs(intNum), multiple)
+                )
+              );
+            }
+          } else {
+            return Number(intNum);
+          }
+        },
+
+        /**
+         * @description INT 向下舍入整数 验证
+         * @param {number} num
+         * @return {number}
+         */
+        INT: function (num) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(new Decimal(num).toFixed(0, Decimal.ROUND_FLOOR));
+        },
+
+        /**
+         * @description LOG 对数 验证
+         * @param {number} num
+         * @param {number} base 对数的底数
+         * @return {number}
+         */
+        LOG: function (num, base) {
+          base = base || Array.prototype.push.call(arguments, 10);
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          if (base <= 0 || base === 1) {
+            throw new Error(
+              `${arguments.callee.name} 函数第 2 个参数不能小于等于 0 或 等于 1`
+            );
+            // return '--'
+          } else {
+            // 向下取整 求对数
+            // return Number(new Decimal(Decimal.log(num, base)).toFixed(0, Decimal.ROUND_DOWN))
+            return Number(new Decimal(Decimal.log(num, base)));
+          }
+        },
+
+        /**
+         * @description MOD 余数/取模 验证
+         * @param {number} num
+         * @param {number} divisor 除数
+         * @return {number}
+         */
+        MOD: function (num, divisor) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          // return Number(new Decimal(Decimal.mod(num, divisor)).toFixed(0, Decimal.ROUND_DOWN))
+          return Number(new Decimal(Decimal.mod(num, divisor)));
+        },
+
+        /**
+         * @description POWER 向下取整 乘幂 验证
+         * @param {number} base 基数
+         * @param {number} power 幂
+         * @return {number}
+         */
+        POWER: function (base, power) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.pow(base, power));
+        },
+
+        /**
+         * @description FIXED 舍入指定位数 验证
+         * @param {number} num
+         * @param {number} decimals 小数点右边的位数
+         * @return {number}
+         */
+        FIXED: function (num, decimals) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(new Decimal(num).toFixed(decimals, Decimal.ROUND_DOWN));
+        },
+
+        /**
+         * @description SQRT 算术平方根 验证
+         * @param {number} num
+         * @return {number}
+         */
+        SQRT: function (num) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          if (num < 0) {
+            throw new Error(`${arguments.callee.name} 函数参数不能小于 0`);
+            // return '--'
+          } else {
+            return Number(Decimal.sqrt(num));
+          }
+        },
+
+        /**
+         * @description SUM 求和 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        SUM: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(Decimal.sum(...arguments));
+        },
+
+        /**
+         * @description PRODUCT 数字相乘 验证
+         * @param {number[]} arguments
+         * @return {number}
+         */
+        PRODUCT: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return Number(
+            [...arguments].reduce((prev, cur) => {
+              return Decimal.mul(prev, cur);
+            })
+          );
+        },
+
+        /**
+         * @description PRODUCT 数组项乘积之和 验证
+         * @param {number[[]]} arguments
+         * @return {number}
+         */
+        SUMPRODUCT: function () {
+          actualParamsNum.call(arguments, Infinity);
+          const arg = [...arguments];
+          const { type, label } = FuncType.ARRAY;
+          const { name } = arguments.callee;
+          return arg.reduce((prev, cur, i) => {
+            if (!(typeCheck(cur) === type))
+              throw new Error(
+                `${name} 函数第 ${i + 1} 个参数不是 ${label} 类型`
+              );
+            if (cur.length < 2)
+              throw new Error(
+                `${name} 函数第 ${i + 1} 个参数的数组项不能小于 2 个`
+              );
+            if (arg.some((item) => item.length !== arg[0].length))
+              throw new Error(`${name} 函数每个数组参数的长度必须相同`);
+            const { type: type1, label: label1 } = FuncType.NUMBER;
+            const product = cur.reduce((prev1, cur1, i1) => {
+              if (typeCheck(cur1) !== type1)
+                throw new Error(
+                  `${name} 函数第 ${i + 1} 个参数的第 ${
+                    i1 + 1
+                  } 项不是 ${label1} 类型`
+                );
+              return Decimal.mul(prev1, cur1);
+            });
+            return Number(Decimal.add(prev, product));
+          }, 0);
+        },
+
+        /**
+         * @description RMBFORMAT 人民币格式 验证
+         * @param {number} num
+         * @param {number} type 0/1/2/3 即: (元/角/分/厘)
+         * @return {number}
+         */
+        RMBFORMAT: function (num, type) {
+          type = type || Array.prototype.push.call(arguments, 3);
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          // 数字 => 汉字
+          const CNNum = [
+              "零",
+              "壹",
+              "贰",
+              "叁",
+              "肆",
+              "伍",
+              "陆",
+              "柒",
+              "捌",
+              "玖"
+            ],
+            // 基本单位
+            CNBaseUnit = ["", "拾", "佰", "仟"],
+            // 扩展单位
+            CNUnit = ["", "万", "亿", "兆"],
+            // 小数单位
+            CNDecimalsUnit = ["角", "分", "厘"],
+            // 整数金额后跟字符
+            CNInteger = "整",
+            // 整数后单位
+            CNIntUnit = "元";
+          // 整数部分
+          let integer,
+            // 小数部分
+            decimals,
+            // 存储 [整数, 小数]
+            numArr,
+            // 输出中文
+            outputCN = [];
+          if (num > Number.MAX_SAFE_INTEGER)
+            throw new Error(
+              `${arguments.callee.name} 函数参数超出最大处理数值!!!`
+            );
+          if (num < Number.MIN_SAFE_INTEGER)
+            throw new Error(
+              `${arguments.callee.name} 函数参数超出最小处理数值!!!`
+            );
+          if (num === 0) return `${CNNum[num]}${CNIntUnit}${CNInteger}`;
+          num = num.toString();
+          if (num.includes(".")) {
+            numArr = num.split(".");
+            integer = numArr[0];
+            decimals = numArr[1].substring(0, type);
+          } else {
+            integer = num;
+          }
+          //获取整型部分转换
+          if (parseInt(integer) > 0) {
+            let intLen = integer.length,
+              // 记多个连续的 0 次数
+              zeroCount = 0;
+            for (let i = 0; i < intLen; i++) {
+              const index = intLen - 1 - i;
+              const item = integer[i],
+                moduloIndex = index % CNBaseUnit.length,
+                multipleIndex = index / CNBaseUnit.length;
+              if (item === "0") {
+                zeroCount++;
+              } else {
+                if (zeroCount > 0) outputCN.push(CNNum[0]);
+                zeroCount = 0;
+                outputCN.push(CNNum[item]);
+                outputCN.push(CNBaseUnit[moduloIndex]);
+              }
+              if (!moduloIndex && Number.isInteger(multipleIndex))
+                outputCN.push(CNUnit[multipleIndex]);
+            }
+            outputCN.push(CNIntUnit);
+          }
+          // 小数部分
+          if (decimals) {
+            let intLen = decimals.length;
+            for (let i = 0; i < intLen; i++) {
+              const item = decimals[i];
+              if (item !== "0") {
+                outputCN.push(CNNum[item]);
+                outputCN.push(CNDecimalsUnit[i]);
+              }
+            }
+          } else {
+            outputCN.push(CNInteger);
+          }
+          return outputCN.join("");
+        },
+
+        /**
+         * @description NUMBERCOMPARE  比较数值大小 验证
+         * @param {number} num1
+         * @param {number} num2
+         * @return {boolean}
+         */
+        NUMBERCOMPARE: function (num1, num2) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.NUMBER);
+          return num1 > num2;
+        },
+
+        // 文本函数 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+        /**
+         * @description CONCATENATE 字符串拼接 验证
+         * @param {string[]} arguments
+         * @return {string}
+         */
+        CONCATENATE: function () {
+          actualParamsNum.call(arguments, Infinity);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return [...arguments].reduce((prev, cur) => {
+            return prev + cur;
+          }, "");
+        },
+
+        /**
+         * @description LEFT 从左指定长度截取字符 验证
+         * @param {string} text
+         * @param {number} len 长度
+         * @return {string}
+         */
+        LEFT: function (text, len) {
+          len = len || text.length;
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, [FuncType.STRING, FuncType.NUMBER]);
+          return text.substring(0, len);
+        },
+
+        /**
+         * @description RIGHT 从右指定长度截取字符 验证
+         * @param {string} text
+         * @param {number} len 长度
+         * @return {string}
+         */
+        RIGHT: function (text, len) {
+          len = len || text.length;
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, [FuncType.STRING, FuncType.NUMBER]);
+          return text.slice(-len);
+        },
+
+        /**
+         * @description LEN 字符个数 验证
+         * @param {string} text
+         * @return {string}
+         */
+        LEN: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return text.length;
+        },
+
+        /**
+         * @description LOWER 字母转小写 验证
+         * @param {string} text
+         * @return {string}
+         */
+        LOWER: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return text.toLocaleLowerCase();
+        },
+
+        /**
+         * @description LOWER 字母转大写 验证
+         * @param {string} text
+         * @return {string}
+         */
+        UPPER: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return text.toLocaleUpperCase();
+        },
+
+        /**
+         * @description REPLACE 替换文本 验证
+         * @param {string} oldText
+         * @param {number} startNum 替换开始位置
+         * @param {number} endNum 替换结束位置
+         * @param {string} newText
+         * @return {string}
+         */
+        REPLACE: function (oldText, startNum, endNum, newText) {
+          actualParamsNum.call(arguments, 4);
+          actualParamsType.call(arguments, [
+            FuncType.STRING,
+            FuncType.NUMBER,
+            FuncType.NUMBER,
+            FuncType.STRING
+          ]);
+          const oldTextArr = oldText.split("");
+          oldTextArr.splice(startNum - 1, endNum, newText);
+          return oldTextArr.join("");
+        },
+
+        /**
+         * @description REPT 重复文本 验证
+         * @param {string} text
+         * @param {number} num
+         * @return {string}
+         */
+        REPT: function (text, num) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, [FuncType.STRING, FuncType.NUMBER]);
+          return text.repeat(num);
+        },
+
+        // TODO 没明白 SEARCH 函数是什么意思 未完成
+        /**
+         * @description SEARCH 查找文本 验证
+         * @param {string} searchText 查找文字
+         * @param {string} withinText 从该文段中查找
+         * @param {number} num 从文段中第几个字符开始查找
+         * @return {string}
+         */
+        SEARCH: function (searchText, withinText, num) {
+          actualParamsNum.call(arguments, 3);
+          actualParamsType.call(arguments, [
+            FuncType.STRING,
+            FuncType.STRING,
+            FuncType.NUMBER
+          ]);
+        },
+
+        // TODO 没明白 TEXT 函数是什么意思 未完成
+        /**
+         * @description TEXT 数字格式化 验证
+         * @param {number|date} data
+         * @param {string} pattern 指定格式
+         * @return {string}
+         */
+        TEXT: function (data, pattern) {
+          actualParamsNum.call(arguments, 2);
+          // actualParamsType.call(arguments, [FuncType.STRING, FuncType.STRING]);
+        },
+
+        /**
+         * @description SPLIT 分隔文本 验证
+         * @param {string} text
+         * @param {string} separator 分隔符
+         * @return {array}
+         */
+        SPLIT: function (text, separator) {
+          actualParamsNum.call(arguments, 2);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return text.split(separator);
+        },
+
+        /**
+         * @description TRIM 删除首尾空格 验证
+         * @param {string} text
+         * @return {string}
+         */
+        TRIM: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.STRING);
+          return text.trim();
+        },
+
+        /**
+         * @description UUID 唯一字符串 验证
+         * @return {string}
+         */
+        UUID: function () {
+          return uuid.v4();
+        },
+
+        /**
+         * @description VALUE 文本转换数字 验证
+         * @param {string} text
+         * @return {string}
+         */
+        VALUE: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, FuncType.STRING);
+          const num = Number(text);
+          if (isNaN(num)) return "";
+          return num + 1;
+        },
+
+        /**
+         * @description MID 截取文本 验证
+         * @param {string} text
+         * @param {string} startIndex
+         * @param {string} len
+         * @return {string}
+         */
+        MID: function (text, startIndex, len) {
+          actualParamsNum.call(arguments, 3);
+          actualParamsType.call(arguments, [
+            FuncType.STRING,
+            FuncType.NUMBER,
+            FuncType.NUMBER
+          ]);
+          return text
+            .split("")
+            .splice(startIndex - 1, len)
+            .join("");
+        },
+
+        /**
+         * @description ISEMPTY 判断字段是否为空 验证
+         * @param {string} text
+         * @return {boolean}
+         */
+        ISEMPTY: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.STRING]);
+          return text === "";
+        },
+
+        /**
+         * @description HASEMPTYTEXT 判断子表单是否包含空值 验证
+         * @param {string} text
+         * @return {boolean}
+         */
+        HASEMPTYTEXT: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.STRING]);
+          return text === "";
+        },
+
+        /**
+         * @description ISNULL 判断子表单字段是否为空 验证
+         * @param {string} text
+         * @return {boolean}
+         */
+        ISNULL: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.STRING]);
+          return text === null;
+        },
+
+        /**
+         * @description PINYINHEADCHAR 字符大写首字母 验证
+         * @param {string} text
+         * @return {boolean}
+         */
+        PINYINHEADCHAR: function (text) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.STRING]);
+          return pinyinPro
+            .pinyin(text, {
+              pattern: "first",
+              toneType: "none",
+              type: "array"
+            })
+            .join("")
+            .toLocaleUpperCase();
+        },
+
+        // 逻辑函数 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+        /**
+         * @description IF 条件判断 验证
+         * @param {[boolean, any, any]} arguments
+         * @return {any}
+         */
+        IF: function () {
+          actualParamsNum.call(arguments, 3);
+          actualParamsType.call(arguments, [
+            FuncType.BOOLEAN,
+            FuncType.any,
+            FuncType.any
+          ]);
+          return arguments[0] ? arguments[1] : arguments[2];
+        },
+
+        /**
+         * @description LOGINUSER 获取当前登陆人名称 验证
+         * @return {string}
+         */
+        LOGINUSER: function () {
+          return "登陆人名称";
+        },
+
+        /**
+         * @description TIMESTAMP 时间戳 验证
+         * @param {date} date
+         * @return {number}
+         */
+        TIMESTAMP: function (date) {
+          actualParamsNum.call(arguments, 1);
+          actualParamsType.call(arguments, [FuncType.DATE]);
+          return new Date(date).getTime();
+        },
+
+        /**
+         * @description TODAY 获取今天日期 验证
+         * @return {date}
+         */
+        TODAY: function () {
+          return new Date();
+        }
+      };
+
+      const FuncType = {
+        STRING: {
+          type: "string",
+          label: "文本"
+        },
+        NUMBER: {
+          type: "number",
+          label: "数字"
+        },
+        BOOLEAN: {
+          type: "boolean",
+          label: "布尔"
+        },
+        ARRAY: {
+          type: "array",
+          label: "数组"
+        },
+        TIMESTAMP: {
+          type: "timestamp",
+          label: "时间戳"
+        },
+        DATE: {
+          type: "date",
+          label: "日期"
+        },
+        MEMBER: {
+          type: "member",
+          label: "成员"
+        },
+        GENERICITY: {
+          type: "genericity",
+          label: "泛型"
+        },
+        ANY: {
+          type: "any",
+          label: "任意类型"
+        }
+      };
+
+      /**
+       * 数据类型检测
+       * data 检测数据
+       */
+      const typeCheck = (data) =>
+        Object.prototype.toString
+          .call(data)
+          .replace(/^\[object (\w+)\]$/g, "$1")
+          .toLowerCase();
+
+      // 非严格模式 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+      /**
+       * @description 实参数量 验证
+       * @param {number} num
+       */
+      function actualParamsNum(num) {
+        if (!Reflect.has(this, "callee"))
+          throw new Error(
+            `${arguments.callee.name} 函数 this 未指向该函数执行环境的 arguments`
+          );
+        const { name } = this.callee;
+        if (num !== Infinity) {
+          if (num > this.length) {
+            throw new Error(
+              `${name} 函数参数不足, ${name} 函数必传 ${num} 个参数`
+            );
+          }
+          if (num < this.length) {
+            throw new Error(
+              `${name} 函数参数超出, ${name} 函数必传 ${num} 个参数`
+            );
+          }
+        } else {
+          if (this.length < 1)
+            throw new Error(
+              `${name} 函数参数不足, ${name} 函数至少要 1 个参数`
+            );
+        }
+      }
+
+      /**
+       * @description 实参类型 验证
+       * @param {number[]} arguments
+       * @param {object|string[]} paramsType
+       */
+      function actualParamsType(paramsType) {
+        if (!Reflect.has(this, "callee"))
+          throw new Error(
+            `${arguments.callee.name} 函数 this 未指向该函数执行环境的 arguments`
+          );
+        switch (typeCheck(paramsType)) {
+          case "object":
+            const { type, label } = paramsType;
+            const index = [...this].findIndex(
+              (item) => typeCheck(item) !== type
+            );
+            if (~index)
+              throw new Error(
+                `${this.callee.name} 函数第 ${
+                  index + 1
+                } 个参数不是 ${label} 类型`
+              );
+            break;
+          case "array":
+            // 查找 (参数等于 any 或者 项的类型等于对应项的类型) 取反, 这两种情况不抛出错误
+            const i = [...this].findIndex(
+              (item, i) =>
+                !(
+                  paramsType[i].type === FuncType.ANY ||
+                  typeCheck(item) === paramsType[i].type
+                )
+            );
+            if (~i)
+              throw new Error(
+                `${this.callee.name} 函数第 ${i + 1} 个参数不是 ${
+                  paramsType[i].label
+                } 类型`
+              );
+            break;
+          default:
+            break;
+        }
+      }
+
+      /**
+       * 非严格 模式下 可使用 with 延长作用域链
+       * @description 代替 eval 函数
+       * @param {string} str 字符串表达式
+       * @return {function}
+       */
+      /* function insteadOfEval(str, ctx) {
+        const Fn = Function;
+        const code = `with (ctx){
+            return ${str}
+        }`;
+        const fn = new Fn("ctx", code);
+        return fn(ctx);
+      } */
+      // 非严格模式 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+
+      // 严格模式 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+      // 如需使用 严格模式 请将上述 formulaFnCtx 内部的方法 按照 ADD 函数这样修改即可
+      /**
+       * @description 实参数量 验证
+       * @param {any[]} args
+       * @param {string} name
+       * @param {number} num
+       */
+      /* function actualParamsNum(args, name, num) {
+        // if (!Reflect.has(this, 'callee'))
+        //   throw new Error(`${arguments.callee.name} 函数 this 未指向该函数执行环境的 arguments`);
+        // const { name } = this.callee;
+        if (num !== Infinity) {
+          if (num > args.length) {
+            throw new Error(
+              `${name} 函数参数不足, ${name} 函数必传 ${num} 个参数`
+            );
+          }
+          if (num < args.length) {
+            throw new Error(
+              `${name} 函数参数超出, ${name} 函数必传 ${num} 个参数`
+            );
+          }
+        } else {
+          if (args.length < 1)
+            throw new Error(
+              `${name} 函数参数不足, ${name} 函数至少要 1 个参数`
+            );
+        }
+      } */
+
+      /**
+       * @description 实参类型 验证
+       * @param {any[]} args
+       * @param {string} name
+       * @param {object|string[]} type
+       */
+      /* function actualParamsType(args, name, paramsType) {
+        // if (!Reflect.has(this, 'callee'))
+        //   throw new Error(`${arguments.callee.name} 函数 this 未指向该函数执行环境的 arguments`);
+        switch (typeCheck(paramsType)) {
+          case "object":
+            const { type, label } = paramsType;
+            const index = [...args].findIndex(
+              (item, i) => typeCheck(item) !== type
+            );
+            if (~index)
+              throw new Error(
+                `${name} 函数第 ${index + 1} 个参数不是 ${label} 类型`
+              );
+            break;
+          case "array":
+            // 查找 (参数等于 any 或者 项的类型等于对应项的类型) 取反, 这两种情况不抛出错误
+            const i = [...args].findIndex(
+              (item, i) =>
+                !(
+                  paramsType[i].type === FuncType.ANY ||
+                  typeCheck(item) === paramsType[i].type
+                )
+            );
+            if (~i)
+              throw new Error(
+                `${name} 函数第 ${i + 1} 个参数不是 ${paramsType[i].label} 类型`
+              );
+            break;
+          default:
+            break;
+        }
+      } */
+
+      /**
+       * @description ADD 求和 验证
+       * @param {number[]} args
+       * @return {number}
+       */
+      /* function ADD(...args) {
+        actualParamsNum(args, "ADD", Infinity);
+        actualParamsType(args, "ADD", FuncType.NUMBER);
+        return Number(Decimal.sum(...args));
+      } */
+      // 严格模式 >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>> >>>>>
+
+      /**
+       * 严格模式下
+       * @description 代替 eval 函数
+       * @param {string} str 字符串表达式
+       * @return {function}
+       */
+      function insteadOfEval(str, ctx) {
+        const Fn = Function;
+        const props = Object.keys(ctx);
+        const params = props.join(",");
+        const funcStr = `return function(${params}){return ${str}}`;
+        const func = new Fn(funcStr)();
+        const args = props.map((prop) => ctx[prop]);
+        return func(...args);
+      }
+
+      let err = "";
+      try {
+        console.log(insteadOfEval("SUM(1,2,2)", formulaFnCtx));
+      } catch (error) {
+        console.log(error);
+        err = "语法错误";
+      }
+      console.log(err);
+    </script>
+  </body>
+</html>

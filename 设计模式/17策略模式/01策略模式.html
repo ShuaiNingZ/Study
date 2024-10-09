@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 策略模式:
+     * 定义一些列算法, 把他们封装起来, 并且可以相互替换.
+     * 就是把看似毫无联系的代码提取封装、复用, 使之更容易被理解和拓展.
+     * 案例:
+     *  用于一次 if 判断、switch 枚举、数据字典等流程判断语句中.
+     */
+
+    function getExperience(level, experience) {
+        if (level == 'S') {
+            return 4 * experience;
+        }
+        if (level == 'A') {
+            return 3 * experience;
+        }
+        if (level == 'B') {
+            return 2 * experience;
+        }
+        return experience;
+    }
+
+    /* 策略模式 */
+    const strategy = {
+        'S': function (experience) {
+            return 4 * experience
+        },
+        'A': function (experience) {
+            return 3 * experience
+        },
+        'B': function (experience) {
+            return 2 * experience
+        }
+    }
+
+    strategy.__proto__['C'] = function (experience) {
+        return 2 * experience
+    }
+
+    function getExperience1(strategy, level, experience) {
+        return Reflect.has(strategy, level) ? strategy[level](experience) : experience;
+    }
+
+    const s = getExperience1(strategy, 'S', 100);
+    const a = getExperience1(strategy, 'A', 100);
+    const c = getExperience1(strategy, 'C', 99);
+    console.log(s, a, c)
+</script>
+</body>
+</html>

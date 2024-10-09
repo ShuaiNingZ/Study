@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格项排序</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid {
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: repeat(3, 60px);
+            grid-auto-flow: column;
+            /*grid-auto-flow: row;*/
+            /*grid-auto-flow: dense;*/
+            /*grid-auto-flow: column dense;*/
+            /*grid-auto-flow: row dense;*/
+        }
+
+        .grid1,
+        .grid2 {
+            grid-template-columns: 50px 50px 50px;
+            grid-template-rows: 50px 50px 50px;
+            grid-auto-rows: 50px;
+            grid-auto-columns: 50px;
+            border: 1px solid #ddd;
+        }
+
+        .grid1 {
+            /*如果不想有空网格单元, 就使用 grid-auto-flow: dense;*/
+            grid-auto-flow: dense;
+        }
+
+        .grid1 > div:nth-child(2) {
+            grid-column-start: 3;
+        }
+
+        .grid2 {
+            grid-auto-flow: column dense;
+        }
+
+        .grid2 > div:nth-child(2) {
+            /*grid-column-start: 3;*/
+            grid-row-start: 3;
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even),
+        .grid2 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd),
+        .grid2 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+    </style>
+</head>
+<body>
+<!--
+    grid-auto-flow 是设置网格项排序的属性, 这个属性设置在容器上.
+    在网格行列设置好了后, 网格项会按照默认的 网格顺序一个个的放置到网格单元中.
+    默认的网格顺序设置是 grid-auto-flow: row; 先放第一行, 再放第二行..., 即先行后列
+    row 先行后列(默认)
+    column 先列后行
+    dense 网格项填充网格中的任何单元
+    row dense 先行后列, 并填满网格中的任何网格单元
+    column dense 先列后行, 并填满网格中的任何网格单元
+
+    grid-auto-flow 是
+            grid-auto-rows
+            grid-auto-columns 的符合属性
+
+    dense 是密集的, 会让网格变得很密集, 不出现空网格单元
+
+    grid-auto-flow: column dense
+    grid-auto-flow: column 是设置网格项按照先列后行的顺序, 放到网格单元
+    grid-auto-flow: column dense 是设置网格项按照先列后
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+</div>
+<div class="grid1">
+    <div>00001</div>
+    <div>00002</div>
+    <div>00003</div>
+    <div>00004</div>
+    <div>00005</div>
+    <div>00006</div>
+    <div>00007</div>
+    <div>00008</div>
+    <div>00009</div>
+</div>
+<div class="grid2">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+</body>
+</html>

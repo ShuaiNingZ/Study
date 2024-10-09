@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /**
+     * 组件 2 个重要的概念
+     *      state   状态 负责用户界面
+     *      props   组件传值 通讯
+     *      后期 会把组件独立一个文件 一个后缀名为 jsx 或 js 就是一个组件
+     *      能够复用
+     *      每个组件负责 一个页面 或 一个部分视图的显示
+     */
+
+    class Son extends React.Component {
+        render() {
+            return (
+                <div>
+                    <h2>{this.props.title}</h2>
+                    <div>{this.props.data}</div>
+                    <button onClick={this.props.clickFn}>点击按钮</button>
+                </div>
+            )
+        }
+    }
+
+    class Person extends React.Component {
+        constructor() {
+            super(...arguments);
+            this.state = {
+                data: '父组件数据'
+            }
+        }
+
+        clickFn() {
+            console.log('哈哈哈')
+        }
+
+        render() {
+            return (
+                <div>
+                    <h1>组件</h1>
+                    <Son title={'Son'} data={this.state.data} clickFn={this.clickFn}></Son>
+                </div>
+            )
+        }
+    }
+
+    ReactDOM.render(
+        <Person/>,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+</html>

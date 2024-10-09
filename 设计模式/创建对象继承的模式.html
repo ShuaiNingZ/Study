@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 原型链继承: 构造函数都有原型对象, 原型对象又包含一个指向构造函数的指针, 实例包含原型对象的指针
+    // 子类的 prototype 继承父类的实例, 并将子类的 prototype.constructor 写成子类, 方便 instanceof 判断
+    // 每个实例使用的同一个原型对象, 当一个发生变化所有都发生变化
+    function Parent() {
+        this.arr = [1, 2, 3]
+    }
+
+    function Son(name) {
+        this.name = name;
+    }
+
+    const parent = new Parent()
+
+    Son.prototype = new Parent()
+    Son.prototype.constructor = Son;
+
+    const son = new Son('son');
+    const son1 = new Son('son');
+    son1.arr.push(4);
+    console.log(son.arr, son1.arr)
+
+    // 构造函数继承 利用 call apply bind
+    // 优点: 子类型构造函数借用父类构造函数并向父类型传递参数
+    // 缺点: 属性方法都在函数内部, 无法共享公共属性和方法
+    function Parent1(name) {
+        this.name = name;
+    }
+
+    Parent1.prototype.getName = function () {
+        return this.name
+    }
+
+    function Son1(type, name) {
+        Parent1.call(this, name)
+        this.type = type;
+    }
+
+    const son2 = new Son1('哈哈', 'string');
+    console.log(son2)
+    // console.log(son2.getName()) // 报错
+
+    // 组合继承
+    // 优点: 既解决了原型链模式修改原型导致每个实例都修改的问题, 又解决了构造函数无法共享属性的问题
+    // 缺点: 调用了两次父构造函数
+    function Parent2(name) {
+        this.name = name;
+    }
+
+    Parent2.prototype.getName = function () {
+        return this.name
+    }
+
+    function Son2(type, name) {
+        Parent2.call(this, name)
+        this.type = type;
+    }
+
+    const prototype = Object.create(Object.getPrototypeOf(new Parent2()), {});
+    prototype.constructor = Son2;
+    Son2.prototype = prototype;
+
+    // Son2.prototype = new Parent2()
+    // Son2.prototype.constructor = Son;
+
+    const son3 = new Son2('哈哈', 'string');
+    console.log(son3)
+    console.log(son3.getName())
+
+    // 原型式继承
+    // 借助原型, 将已有的对象设为创建新的对象的原型, 可以用 Object.create 代替 middleFn
+    // 缺点: 所有属性都在原型上, 一旦原型中存在一个引用类型, 就可以在实例中修改原型
+    function middleFn(object) {
+        function F() {
+        }
+
+        F.prototype = object;
+        return new F();
+    }
+
+    let person4 = {
+        name: '子非鱼、',
+        hobby: ['运动', '音乐'],
+        sayName() {
+            console.log(this.name);
+        }
+    }
+    let person5 = middleFn(person4);
+    let person6 = middleFn(person4);
+    person5.hobby.push('古文');    // 会直接修改原型上的对象
+    console.log(person5, person6)
+
+    // 寄生式继承
+    // 将原型式继承的基础上, 将引用类型重新以工厂函数形式返回新的对象方式添加, 多次引用的不指向同一个地址, 但这是一个浅拷贝
+    function middleFn1(object) {
+        function F() {
+        }
+
+        F.prototype = object;
+        return new F();
+    }
+
+    function person7(o) {
+        const person = middleFn1(o);
+        person.hobby = ['运动', '音乐'];
+        return person
+    }
+
+    let per1 = {
+        name: '子非鱼、',
+        sayName() {
+            console.log(this.name);
+        }
+    }
+    let person8 = person7(per1);
+    let person9 = person7(per1);
+    person8.hobby.push('古文');    // 会直接修改原型上的对象
+    console.log(person8, person9)
+
+    // 寄生组合式继承
+    function middleFn2(object) {
+        function F() {
+        }
+
+        F.prototype = object;
+        return new F();
+    }
+
+    function inheritPrototype(subType, fatherType) {
+        const prototype = middleFn2(fatherType.prototype);
+        prototype.constructor = subType;
+        subType.prototype = prototype;
+    }
+
+    function Parent10(name) {
+        this.name = name;
+    }
+
+    Parent10.prototype.sayName = function () {
+        console.log(this.name);
+    }
+
+    function Son10(type, ...arg) {
+        Parent10.apply(this, arg)
+        this.type = type;
+    }
+
+    inheritPrototype(Son10, Parent10);
+    console.log(new Son10('1', '哈哈'));
+</script>
+</body>
+</html>

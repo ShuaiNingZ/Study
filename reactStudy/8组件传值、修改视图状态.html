@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    // 有状态的组件
+    // 定义 Main 组件 继承自 React 的 component 组件
+    // 那么就可以去调用 React 的 component 组件所提供的 方法或属性
+    class Main extends React.Component {
+        constructor() {
+            // 如果 不在 constructor 构造函数里面 用实例对象上的 props, 可以不用 ...arguments 传参
+            super(...arguments)     // 执行父类的构造函数
+            this.name = '竹木'
+            this.age = 20
+            // 对象里面的数据 是从后端返回的
+            // state 是负责当前组件 Head 的用户界面
+            // 如果 state 里面的数据 发生改变 视图就会自动更新 -> 响应式数据
+            this.state = {
+                abc: this.props.text
+            }
+            console.log(this.props) // 获取 this.props 有值, 必须再 super 利用 ...arguments 接收
+
+            // 改变 this 指向方法 3
+            // this.handleClick = this.handleClick.bind(this)
+        }
+
+        // 不要写 function
+        say() {
+            console.log('say 方法');
+        }
+
+        // 这里定义的 属性并没有再原型上, 而是实例内部属性
+        xyz = {}
+
+        handleClick() {
+            console.log('handleClick')
+            console.log(this) // 若不修改 此处 this 为 undefined
+            // 修改视图状态--------------------------------------------------------------------
+            this.setState({
+                abc: '哈哈哈'
+            })
+        }
+
+        // 该方法并没有在 原型 prototype 上
+        handleClick4 = () => {
+            // this 指向上下文
+            console.log(this)
+            // 修改视图状态--------------------------------------------------------------------
+            this.setState({
+                abc: '哈哈哈'
+            })
+        }
+
+        // 渲染
+        render() {
+            return (
+                // 改变 this 指向方法 1
+                // <main onClick={this.handleClick.bind(this)}>这是真正有状态的组件 {this.say()} {this.state.abc}</main>
+
+                // 改变 this 指向方法 2
+                <main onClick={() => {
+                    this.handleClick(this)
+                }}>这是真正有状态的组件 {this.say()} {this.state.abc}</main>
+
+                // 改变 this 指向方法 3
+                // <main onClick={this.handleClick}>这是真正有状态的组件 {this.say()} {this.state.abc}</main>
+
+                // 改变 this 指向方法 4
+                // <main onClick={this.handleClick4}>这是真正有状态的组件 {this.say()} {this.state.abc}</main>
+            )
+        }
+    }
+
+    console.dir(Main)
+
+
+    const ele = (
+        <div>
+            <Main text={'内容部分'}></Main>
+        </div>
+    );
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+
+</html>

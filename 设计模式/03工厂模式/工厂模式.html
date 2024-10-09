@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 工厂模式:
+     * 优点: 用于创建同一类对象
+     * 缺点: 只能用于创建的对象数量较小, 对象的创建逻辑不复杂时使用
+     * 应用场景: 组件或对象的创建
+     */
+    // 函数: 03工厂模式
+    function UserFactory(role) {
+        function User(role, pages) {
+            this.role = role;
+            this.pages = pages;
+        }
+
+        switch (role) {
+            case 'superadmin':
+                return new User('superadmin', ['home', 'user-manage', 'right-manage', 'news-manage']);
+            case 'admin':
+                return new User('admin', ['home', 'user-manage', 'news-manage']);
+            case 'editor':
+                return new User('editor', ['home', 'news-manage']);
+            default:
+                throw new Error('参数错误');
+        }
+    }
+
+    console.log(UserFactory('superadmin'));
+
+    /**
+     * 去除创建对象的代码冗余, 用于创建同一类对象
+     * 缺点: 不能确定创建的对象是哪个构造函数的实例
+     * 应用场景: 组件或对象创建
+     */
+</script>
+</body>
+</html>

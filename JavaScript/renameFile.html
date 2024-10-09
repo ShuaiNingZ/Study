@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>重命名上传的文件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        input,
+        textarea,
+        button {
+            outline: none;
+        }
+
+        .fileBox {
+            position: relative;
+            width: 360px;
+            height: 200px;
+            margin: 20px auto;
+        }
+
+        .fileBox .fileDesc,
+        #file {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+        }
+
+        #file {
+            opacity: 0;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #file + .fileDesc {
+            display: grid;
+            place-content: center;
+            color: #aaaaaa;
+            border: 2px dashed #dddddd;
+        }
+
+        #file:hover + .fileDesc {
+            color: #0099ff;
+            border-color: #0099ff;
+        }
+
+        .batchInpBox {
+            margin: 0 auto 20px;
+            width: 360px;
+            height: 100px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-column-gap: 20px;
+        }
+
+        #batchRenameInp {
+            padding: 10px;
+            border-radius: 10px;
+            resize: none;
+            border: 2px solid #dddddd;
+        }
+
+        #download {
+            border-radius: 10px;
+            border: 2px solid #dddddd;
+        }
+
+        #fileList {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .fileDiv {
+            display: grid;
+            justify-items: center;
+            padding: 10px;
+        }
+
+        .fileDiv input {
+            margin-top: 10px;
+            padding-left: 10px;
+            width: 100%;
+            height: 30px;
+            border: 2px solid #dddddd;
+            border-radius: 4px;
+        }
+
+        .previewImg {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+
+        .previewFile {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            word-wrap: break-word;
+            color: #0099ff;
+        }
+    </style>
+</head>
+<body>
+<div class="fileBox">
+    <input id="file" type="file" multiple draggable="true"/>
+    <div class="fileDesc">支持拖拽上传和点击上传</div>
+</div>
+<div class="batchInpBox">
+    <textarea id="batchRenameInp" placeholder="可传入 字符串(会自动拼接索引值) 或 JSON string[] 格式"></textarea>
+    <button id="download">点击下载</button>
+</div>
+<div id="fileList"></div>
+<script>
+    const fileInp = document.getElementById('file'),
+        batchRenameInp = document.getElementById('batchRenameInp'),
+        fileListDom = document.querySelector('#fileList'),
+        downloadDom = document.querySelector('#download');
+
+    /**
+     * 根据分隔符切割字符串
+     * @param text 切割字符串
+     * @param divide 分割符
+     * @returns {*[]} 返回切割分割符前和后的两段字符
+     */
+    function divisionFn(text, divide) {
+        const dotI = text.lastIndexOf(divide);
+        return [text.slice(0, dotI), text.slice(dotI)]
+    }
+
+    /**
+     * 点击下载
+     * @param url 路径
+     * @param name 下载文件名称
+     */
+    function downloadFn(url, name) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        a.click();
+    }
+
+    batchRenameInp.addEventListener('input', function (e) {
+        if (!fileInp.value) {
+            e.target.value = ''
+        }
+    });
+
+    // input change
+    fileInp.addEventListener('change', function (e) {
+        fileListDom.innerHTML = '';
+        const fileList = [...e.target.files],
+            fileFrag = document.createDocumentFragment();
+        const fileListEl = fileList.map((item, i) => {
+            const localUrl = URL.createObjectURL(new Blob([item]));
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'fileDiv';
+            let el;
+            if (divisionFn(item.type, '/')[0] === 'image') {
+                el = document.createElement('img');
+                el.classList.add('previewImg');
+                el.src = localUrl;
+                el.title = item.name;
+            } else {
+                el = document.createElement('div');
+                el.classList.add('previewFile');
+                el.setAttribute('data-url', localUrl);
+                el.title = item.name;
+                el.innerText = item.name;
+            }
+            const fileInpEl = document.createElement('input');
+            const [name, suffix] = divisionFn(item.name, '.');
+            fileInpEl.setAttribute('data-url', localUrl);
+            fileInpEl.setAttribute('data-suffix', suffix);
+            fileInpEl.value = name;
+            fileDiv.append(el, fileInpEl)
+            return fileDiv
+        })
+        fileFrag.append(...fileListEl);
+        fileListDom.append(fileFrag);
+    })
+
+    // 点击下载
+    downloadDom.addEventListener('click', () => {
+        if (fileInp.value) {
+            const inpArr = [...fileListDom.querySelectorAll('input')];
+            const batchRenameText = batchRenameInp.value.trim();
+
+            function allRename(cbName) {
+                inpArr.forEach((item, i) => {
+                    const {url, suffix} = item.dataset;
+                    downloadFn(url, `${cbName(item, i)}${suffix}`);
+                })
+            }
+
+            if (batchRenameText) {
+                try {
+                    const batchRenameArr = JSON.parse(batchRenameText);
+                    if (batchRenameArr.length < inpArr.length) {
+                        batchRenameArr.push(...inpArr.slice(batchRenameArr.length));
+                    }
+                    allRename((item, i) => `${batchRenameArr[i]}`)
+                } catch (e) {
+                    allRename((item, i) => `${batchRenameText}${i + 1}`)
+                }
+            } else {
+                allRename((item, i) => `${item.value}`)
+            }
+            fileInp.value = '';
+            batchRenameInp.value = '';
+            fileListDom.innerHTML = '';
+        }
+    })
+
+</script>
+</body>
+</html>

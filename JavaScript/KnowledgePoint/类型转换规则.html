@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 基础类型(原始) => Number(数字)
+     * true => 1
+     * false => 0
+     * null => 0
+     * undefined => NaN
+     * string 空字符串(含空白字符) => 0
+     * string 数字(包含前后空白字符) => 去掉引号
+     * string 不是纯数字 => NaN
+     */
+
+
+
+    /**
+     * 所有 => Boolean(布尔)
+     * null => false
+     * undefined => false
+     * '' => false
+     * 0 => false
+     * NaN => false
+     * false => false
+     * 其他 => true
+     */
+
+    /**
+     * 基础类型(原始) => 字符串
+     * null => 'null'
+     * undefined => 'undefined'
+     * Number => 'Number'
+     * Boolean => 'Boolean'
+     */
+
+    /**
+     * 对象 => 基础类型(原始)
+     * 对象 => 原始 ==> 调用 valueOf = 得到的是对象 ? 重新调用 toString : 输出结果终止 = 得到的还是对象 ? 报错终止 : 输出结果终止
+     * 将输出的结果调用转换基础类型的方法 Number、Boolean、String
+     * const obj = {};
+     * console.log(obj.valueOf()); // {}
+     * console.log(obj.toString()); // [object Object]
+     * console.log(Number(obj)); // NaN
+     * obj.valueOf = function () {
+     *     return 1
+     * }
+     * console.log(Number(obj)); // 1
+     * obj.valueOf = Object.prototype.valueOf();
+     * obj.toString = function () {
+     *     return 1
+     * }
+     * console.log(Number(obj)); // 1
+     */
+</script>
+</body>
+</html>

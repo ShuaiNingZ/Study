@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<input type="text" name="user"/>
+<input type="password" name="pwd"/>
+<button type="submit">提交</button>
+<script>
+    const inpEls = document.querySelectorAll('input');
+    const btnEl = document.querySelector('button');
+    let result = {};
+    inpEls.forEach(item => {
+        result[item.name] = item.value;
+    })
+    btnEl.onclick = function () {
+        request(result)
+    }
+
+    /**
+     * xhr.readyState
+     * 0 UNSENT 代理被创建, 但尚未调用 open() 方法
+     * 1 OPEND open() 方法已经被调用
+     * 2 HEADERS_RECEIVED send() 方法已经被调用, 并且头部和状态已经可获得
+     * 3 LOADING 下载中; responseText 属性已经包含部分数据
+     * 4 DONE 下载已经完成
+     */
+
+    function request(data) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', 'http://127.0.0.1:8008/user');
+        xhr.send(JSON.stringify(data))
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === xhr.DONE) {
+                if ((xhr.status <= 200 && xhr.status <= 300) || xhr.status === 304)
+                    console.log('res', xhr.responseText);
+            }
+        }
+    }
+
+    function formatParams(data) {
+        return Object.entries(data).reduce((prev, cur) => {
+            return `${prev}${prev ? '&' : ''}${encodeURIComponent(cur[0])}=${encodeURIComponent(cur[1])}`
+        }, '')
+    }
+
+
+</script>
+</body>
+</html>

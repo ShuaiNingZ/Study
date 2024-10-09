@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 解释器模式:
+     * 将代码解释为可执行的对象, 从而使代码更加灵活和易于维护, 通常用于解析和执行动态生成的代码.
+     * 该模式主要应用在需要将一个字符串翻译成一系列特定指令的场景中, 如编程语言解释器、正则表达式引擎等
+     *
+     * 场景:
+     *  动态生成代码: 可以将动态生成的代码解释为可执行对象, 从而使代码更加灵活和易于维护.
+     *  解析表达式: 可以用于解析和执行表达式, 如 数学表达式、逻辑表达式等.
+     *  实现 DSL: 用于实现领域特定语言 (DSL), 从而使代码更加易于理解和维护.
+     *
+     * 实现:
+     *  1. 定义语法规则: 定义要解析的语法规则, 如 数学表达式、逻辑表达式等
+     *  2. 解析语法规则: 将语法规则解析为一个可执行对象, 如 函数、对象等
+     *  3. 执行可执行对象: 执行可执行对象, 从而实现代码的功能
+     *
+     * js 中实现解释器模式:
+     *  1. 定义文法: 首先需要定义你的 '语言' 的文法规则. 这可能包括关键字、操作符、函数、变量等.
+     *  2. 构建抽象语法树 (AST): 将输入的字符串 (你的 '语言' 句子) 转换成一种更易于程序处理的解构,
+     *      通常是凑向语法树 (AST).
+     *  3. 实现解释器: 编写解释器来遍历 AST, 并执行相应的操作. 这通常涉及到递归地访问 AST 的节点,
+     *      并根据节点的类型执行相应的逻辑.
+     *  4. 执行: 使用你的解释器来执行 AST, 从而执行你的 '语言' 中的句子.
+     *
+     * 优点:
+     *  1. 易于改变和扩展文法.
+     *  2. 由于在解释器模式中使用类来表示语言的文法规则, 因此可以通过继承等机制来改变或扩展文法
+     *
+     * 缺点:
+     *  1. 执行效率较低, 在解释器模式中使用大量的循环和递归调用, 因此在解释较为复杂的句子时其速度慢
+     *  2. 对于复杂的文法比较难维护
+     */
+
+    /* 定义语法规则 */
+    const expression = '1123 + 1 - 3  +  2  *  3 / 1.5 + 3 - 2';
+
+    /* 解析语法规则 */
+    const parseExpression = (expression) => {
+        const tokens = expression.match(/\S/g);
+        const deque = [];
+        const signReg = /[+\-*\/]/;
+        const dequeue = [];
+        const stack = [];
+
+        while (tokens.length > 0) {
+            let front = tokens.shift();
+            if (signReg.test(front) || !deque.length) {
+                deque.push(front);
+                continue;
+            }
+            if (signReg.test(deque.at(-1))) {
+                deque.push(front);
+            } else {
+                deque.push(deque.pop() + front);
+            }
+        }
+
+        while (deque.length > 0) {
+            let front = deque.shift();
+            switch (front) {
+                case '*':
+                    dequeue.push(+dequeue.pop() * (+deque.shift()))
+                    break;
+                case '/':
+                    dequeue.push(+dequeue.pop() / (+deque.shift()))
+                    break;
+                default:
+                    dequeue.push(front);
+                    break;
+            }
+        }
+
+        while (dequeue.length > 0) {
+            let front = dequeue.shift();
+            switch (front) {
+                case '+':
+                    stack.push(+stack.pop() + (+dequeue.shift()))
+                    break;
+                case '-':
+                    stack.push(+stack.pop() - (+dequeue.shift()))
+                    break;
+                default:
+                    stack.push(front);
+                    break;
+            }
+        }
+
+        return stack.pop()
+    }
+
+    const result = parseExpression(expression);
+    console.log(result);    // 1126
+
+</script>
+</body>
+</html>

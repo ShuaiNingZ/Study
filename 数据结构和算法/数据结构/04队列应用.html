@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    class Queue {
+        #items = {};
+        #lowCount = 0;
+        #count = 0;
+
+        dequeue() {
+            if (this.isEmpty()) return undefined;
+            let res = this.#items[this.#lowCount];
+            delete this.#items[this.#lowCount++];
+            return res
+        }
+
+        enqueue(data) {
+            this.#items[this.#count++] = data;
+        }
+
+        front() {
+            return this.#items[this.#lowCount];
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        size() {
+            return this.#count - this.#lowCount;
+        }
+
+        clear() {
+            this.#items = {};
+            this.#lowCount = 0;
+            this.#count = 0;
+        }
+
+        toString() {
+            let str = '';
+            for (let i = this.#lowCount; i < this.#count; i++) {
+                str += `${ this.#items[i] }`
+            }
+            return str;
+        }
+    }
+
+    /**
+     * 击鼓传花
+     */
+    function game(list, num) {
+        let queue = new Queue();
+        for (const key of list) {
+            queue.enqueue(key);
+        }
+
+        console.log(queue)
+
+        while (queue.size() > 1) {
+            for (let i = 0; i < num; i++) {
+                queue.enqueue(queue.dequeue());
+            }
+            queue.dequeue()
+        }
+
+        return queue.toString()
+    }
+
+    console.log(game(['game', '哈哈', '击鼓传话', 'hahaha', '纳尼'], 7));
+</script>
+</body>
+</html>

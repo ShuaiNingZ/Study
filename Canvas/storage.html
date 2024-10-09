@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Storage</title>
+</head>
+<body>
+<script>
+    /**
+     * 本地存储的优缺点:
+     * 优点:
+     * 1. 将数据存储本地, 直接访问数据速度更快
+     * 2. 减少请求, 节省网络流量
+     * 3. 减少请求, 减轻服务器压力
+     * 4. 数据存储在本地, 可以创建离线应用
+     * 缺点:
+     * 1. 数据无法同步
+     * 2. 存储限制比较模糊, 各个浏览器的存储大小不相同
+     */
+
+    /**
+     * Cookie
+     * Cookie 是一段不超过 4KB 的小型文本数据, 由一个 名称 (Name)、值 (Value) 和 其他几个用于控制 Cookie 有效期、安全性、使用范围的可选属性组成
+     * Name/Value: 设置 Cookie 的名称及相对应的
+     * Expires|Max-Age: 设置 Cookie 的生存期, 存储类型: 会话性(默认) | 持久性
+     *          会话性: 仅存再客户端内存中, 并在用户关闭浏览器时失效
+     *          持久性: Cookie 会保存在用户硬盘中, 直至生存期到货用户直接在网页中注销
+     * Domain: 指定可以访问该 Cookie 的域名, Cookie 并未遵循严格的同源策略, 允许一个子域可以设置或获取其父域的 Cookie
+     * Path: 指定当前域名下的文件夹路径
+     * Secure: 指定是否使用 https 协议
+     * HTTPOnly: 用于防止客户端通过 document.cookie 访问 Cookie, 有助于保护 Cookie 不被跨站脚本攻击窃取或篡改
+     */
+    const token = '竹木、';
+    document.cookie = `token=${token}`
+    document.cookie = `name=哈哈哈;domain=localhost;url=http://localhost;path=/;Max-Age=${30 * 24 * 60 * 60};HTTPOnly;`;
+    document.cookie = `name=哈哈哈;domain=localhost;url=http://localhost;path=/name;Expires=Sun, 31 Dec 2022 12:00:00 UTC;`;
+
+    const cookieStorage = {
+        getItem(key) {
+            return decodeURIComponent(
+                document.cookie.replace(
+                    new RegExp(`(?:(?:^|.*;)\\s*${encodeURIComponent(key).replace(/[-.+*]/g, "\\$&")}\\s*\\=\\s*([^;]*).*$)|^.*$`),
+                    "$1"
+                )
+            ) || null;
+        },
+        setItem(key, value, expires, domain, path, secure, httponly) {
+            if (!key || /^(expires|max\-age|path|domain|secure|httponly)$/i.test(key)) return false;
+            let expiresStr = '';
+            if (expires) {
+                switch (expires.constructor) {
+                    case Number:
+                        expiresStr = expires === Infinity ? 'expires=Fri, 31 Dec 9999 23:59:59 GMT' : `; max-age=${expires}`;
+                        break;
+                    case String:
+                        expiresStr = '; expires=' + expires;
+                        break;
+                    case Date:
+                        expiresStr = '; expires=' + expires.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}${expiresStr}${domain ? '; domain=' + domain : ''}${path ? '; path=' + path : ''}${secure ? '; secure=' + secure : ''}${httponly ? '; httponly=' + !!httponly : ''}`
+            return true;
+        },
+        hasItem(key) {
+            return (new RegExp(`(?:^|;\\s*)${encodeURIComponent(key).replace(/[-.+*]/g, "\\$&")}\\s*\\=`).test(document.cookie))
+        },
+        removeItem(key, path, domain) {
+            if (!key || !this.hasItem(key)) return false;
+            document.cookie = `${encodeURIComponent(key)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT${domain ? '; domain=' + domain : ''}${path ? '; path=' + path : ''}`
+            return true;
+        },
+        clear() {
+            document.cookie = '';
+        },
+        keys() {
+            let keys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (let i = 0; i < keys.length; i++) {
+                keys[i] = decodeURIComponent(keys[i]);
+            }
+            return keys;
+        }
+    }
+    cookieStorage.setItem('nickName', '竹木、', 30 * 24 * 60 * 60, 'localhost', '/name');
+
+
+    /**
+     * localStorage
+     * 可以长期存储; 不同浏览器存储大小不同, 一般支持 5M; 可多页签获取;
+     * localStorage.setItem(key, value): 设置特定键的值
+     * localStorage.getItem(key): 获取指定键的值
+     * localStorage.removeItem(key): 删除键及与其关联的值
+     * localStorage.clear(): 删除所有的键/值对（但只限于发出请求的特定域名）
+     */
+    /**
+     * sessionStorage
+     * 会话存储, 从打开浏览网页到关闭; 同源策略限制; 单页签页限制; 一般支持 5M;
+     * sessionStorage.setItem(key, value): 设置特定键的值
+     * sessionStorage.getItem(key): 获取指定键的值
+     * sessionStorage.removeItem(key): 删除键及与其关联的值
+     * sessionStorage.clear(): 删除所有的键/值对（但只限于发出请求的特定域名）
+     */
+
+</script>
+</body>
+</html>

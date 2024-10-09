@@ -1,0 +1,22 @@
+{
+    "name": "testexpress",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "pm2 start ./bin/www --watch -o ./log.txt",
+        "server": "node ./bin/www",
+        "pm2": "pm2 start app.js --watch -o ./log.txt"
+    },
+    "dependencies": {
+        "axios": "^1.6.2",
+        "cors": "^2.8.5",
+        "debug": "~2.6.9",
+        "express": "~4.16.1",
+        "hbs": "~4.0.4",
+        "http-errors": "^1.6.3",
+        "morgan": "^1.9.1"
+    },
+    "devDependencies": {
+        "cookie-parser": "^1.4.6"
+    }
+}

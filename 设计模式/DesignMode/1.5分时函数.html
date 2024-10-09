@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /*function timeChunk(array, fn, step = 10, interval = 200) {
+        let timer;
+
+        function start() {
+            for (let i = 0; i < Math.min(step, array.length); i++) {
+                fn(array.shift())
+            }
+        }
+
+        return function () {
+            timer = setInterval(() => {
+                array.length === 0 ? clearInterval(timer) : start()
+            }, interval)
+        }
+    }
+
+    let arr = [];
+    for (let i = 0; i < 1000; i++) {
+        arr.push(i)
+    }
+    let renderFriendList = timeChunk(arr, function (n) {
+        let div = document.createElement('div');
+        div.innerHTML = n;
+        document.body.appendChild(div);
+    }, 8);
+
+    renderFriendList();*/
+
+
+
+    // 尾递归 并不是所有的函数都能使用尾递归优化的
+    let array = [1, [2, [3, [4, 5]]]];
+
+    // 不使用 js 数组方法实现数组扁平化
+    // 递归实现方案
+    function flatDeep(arr, result = []) {
+        for (const val of arr) {
+            if (Object.prototype.toString.call(val) === '[object Array]') {
+                flatDeep(val, result)
+            } else {
+                result[result.length] = val;
+            }
+        }
+        return result;
+    }
+
+    // 循环代替递归实现方案
+    function flatDeep(arr) {
+        let result = [];
+        let stack = [...arr]
+        while (stack.length) {
+            [stack[0], ...args] = stack;
+            let val = stack[0];
+            stack = args;
+            if (Object.prototype.toString.call(val) === '[object Array]') {
+                for (let i = 0; i < val.length; i++) {
+                    stack[stack.length] = val[i]
+                }
+            } else {
+                result[result.length] = val;
+            }
+        }
+        return result;
+    }
+
+    console.log(flatDeep(array))
+</script>
+</body>
+</html>

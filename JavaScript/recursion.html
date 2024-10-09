@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    const obj = {
+        name: '41',
+        children: [
+            {
+                name: '1',
+                children: [
+                    {
+                        name: '2',
+                        children: [
+                            {
+                                name: '3'
+                            }
+                        ]
+                    },
+                    {
+                        name: '4',
+                        children: [
+                            {
+                                name: '5'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: '21',
+                children: [
+                    {
+                        name: '22',
+                        children: [
+                            {
+                                name: '23'
+                            }
+                        ]
+                    },
+                    {
+                        name: '24',
+                        children: [
+                            {
+                                name: '25'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: '31',
+                children: [
+                    {
+                        name: '32',
+                        children: [
+                            {
+                                name: '33'
+                            }
+                        ]
+                    },
+                    {
+                        name: '34',
+                        children: [
+                            {
+                                name: '35'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+
+    function recursion(obj) {
+        obj.name = obj.name + obj.name;
+        if (Array.isArray(obj.children)) {
+            obj.children.map(item => {
+                return recursion(item)
+            })
+        }
+        return obj
+    }
+
+    console.log(recursion(obj))
+</script>
+</body>
+</html>

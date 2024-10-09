@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    // 有状态的组件
+    // 定义 Main 组件 继承自 React 的 component 组件
+    // 那么就可以去调用 React 的 component 组件所提供的 方法或属性
+    class Main extends React.Component {
+        constructor() {
+            super()     // 执行父类的构造函数
+            this.name = '竹木'
+            this.age = 20
+        }
+
+        // 不要写 function
+        say() {
+            console.log('say 方法');
+        }
+
+        // 渲染
+        render() {
+            return (
+                <main>这是真正有状态的组件 {this.say()}</main>
+            )
+        }
+    }
+
+
+    const ele = (
+        <div>
+            <Main></Main>
+        </div>
+    );
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+
+</html>

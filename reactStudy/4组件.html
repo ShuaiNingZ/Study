@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    // 区分是否是组件: 看组件是否有状态 或 无状态
+    // 什么是状态: 就是让数据驱动视图的响应式数据
+    // 状态 = 数据
+    // 请求后端 返回 字符串 数组 json
+    // 这些数据 放在一个地方 方便与管理 state = {}
+    // 是方便管理 但是 一个项目 有太多太多的页面,
+    // 状态就是数据
+
+    // 那么这页面都需要页面于页面之间的数据互联(网络互联)
+    // 那么有一个 js 库 帮我们进行管理, 方便在每一个页面 都是拿到最新的数据(页面通讯)
+    // 比如 redux js库能帮我们去管理 大量的数据
+    // 想要在每一个页面都能够很方便去调取 redux 里面的数据 react-redux 库
+
+    let str = "哈哈";
+
+    const ele = (
+        <div>
+            <h1>{str}</h1>
+        </div>
+    );
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+
+    setTimeout(() => {
+        str = '追梦'
+    }, 2000)
+</script>
+</body>
+
+</html>

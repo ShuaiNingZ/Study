@@ -1,0 +1,33 @@
+{
+    "name": "first-electron",
+    "version": "1.0.0",
+    "description": "my first electron",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "author": "竹木、",
+    "license": "ISC",
+    "dependencies": {
+        "iohook": "^0.9.3"
+    },
+    "devDependencies": {
+        "electron": "^12.2.3",
+        "node-abi": "^3.33.0"
+    },
+    "iohook": {
+        "targets": [
+            "node-83",
+            "electron-87"
+        ],
+        "platforms": [
+            "win32",
+            "darwin",
+            "linux"
+        ],
+        "arches": [
+            "x64",
+            "ia32"
+        ]
+    }
+}

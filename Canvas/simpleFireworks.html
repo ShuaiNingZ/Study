@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        // 随机数区间
+        function random(min, max) {
+            return Math.random() * (max - min) + min
+        }
+
+        let w,
+            h;
+        const canvas = document.querySelector('#canvas');
+        const ctx = canvas.getContext('2d');
+
+        // 绘画区域自适应窗口大小
+        (function () {
+            window.onresize = arguments.callee;
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        })()
+
+        class Fires {
+            constructor(x, y, n, r, c) {
+                this.x = x;
+                this.y = y;
+                this.c = c;
+                this.r = r;
+                this.n = n;
+                this.s = 2.5;
+            }
+
+            update() {
+                this.r += 2;
+                this.draw()
+            }
+
+            draw() {
+                ctx.fillStyle = this.c;
+                for (let i = 0; i < this.n; i++) {
+                    // 根据圆心, 圆半径, 角度, 获取点在圆上的位置
+                    const angle = 360 / this.n * i;
+                    const radian = angle * Math.PI / 180;
+                    const x = this.x + this.r * Math.cos(radian);
+                    const y = this.y + this.r * Math.sin(radian);
+                    ctx.beginPath();
+                    ctx.arc(x, y, this.s, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                return this
+            }
+        }
+        let fireArr = [];
+        for (let i = 0; i < 1; i++) {
+            fireArr.push(new Fires(random(0, w), random(0, h), 10, 0, '#ff3'))
+        }
+
+        (function () {
+            let timer;
+            function move() {
+                // 覆盖拖尾
+                // ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+                // ctx.rect(0, 0, w, h);
+                // ctx.fill()
+                // globalCompositeOperation 拖尾
+                ctx.globalCompositeOperation = 'destination-in'; // 设置模式为：目标图形和源图形重叠的部分会被保留（源图形），其余显示为透明
+                ctx.fillRect(0, 0, w, h); // 绘制矩形
+                ctx.globalCompositeOperation = 'lighter'; // 设置模式为: 源图像 + 目标图像。重叠部分的颜色会重新计算
+                ctx.globalAlpha = 0.8; // 设置画布上绘制图形的不透明度
+                fireArr.forEach(item => {
+                    item.update()
+                })
+                // ctx.clearRect(0, 0, w, h)
+                timer = requestAnimationFrame(move);
+            }
+            cancelAnimationFrame(timer)
+            move()
+        })()
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 装饰器模式:
+     * 向一个现有的对象添加新的功能, 同时又不改变其结构, 能够很好的对已有功能进行拓展,
+     * 这样不会更改原有的代码, 对其他的业务产生影响, 它是作为现有的类的一个包装
+     */
+    /*Function.prototype.before = function (beforeFn) {
+        let _this = this;
+        return function () {
+            beforeFn.apply(this, arguments)
+            return _this.apply(this, arguments)
+        }
+    }
+
+    Function.prototype.after = function (afterFn) {
+        let _this = this;
+        return function () {
+            _this.apply(this, arguments)
+            return afterFn.apply(this, arguments)
+        }
+    }
+
+    function test() {
+        console.log('111111')
+    }
+
+    test
+        .before(() => {
+            console.log('234234')
+        })
+        .after(() => {
+            console.log(789798)
+        })()*/
+
+    function test() {
+        console.log('test')
+    }
+
+    console.dir(test)
+
+    Function.prototype.before = function (beforeFn) {
+        const _this = this;
+        return function () {
+            beforeFn.apply(this, arguments)
+            return _this.apply(this, arguments)
+        }
+    }
+
+    Function.prototype.after = function (afterFn) {
+        const _this = this;
+        return function () {
+            _this.apply(this, arguments)
+            return afterFn.apply(this, arguments)
+        }
+    }
+
+    test
+        .before(() => {
+            console.log('before')
+        })
+        .after(() => {
+            console.log('after')
+        })()
+</script>
+</body>
+</html>

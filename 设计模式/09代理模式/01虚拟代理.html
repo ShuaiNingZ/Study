@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 代理模式:
+     * 保护代理: 控制不同权限的对象, 对目标对象的访问
+     * 虚拟代理: 把一些开销大的对象, 延迟到真正需要它的时候才去创建
+     *
+     * 优点:
+     *  1. 可以保护对象
+     *  2. 优化性能, 减少开销很大的对象
+     *  3. 缓存结果
+     */
+
+    const myImage = (function () {
+        let imgNode = document.createElement('img');
+        document.body.appendChild(imgNode);
+        return {
+            setSrc(src) {
+                img.src = src;
+            }
+        }
+    })();
+    // 虚拟代理
+    // 注: 代理和本体接口要保持一致性
+    const prosyImage = (function () {
+        let img = new Image();
+        img.onload = function () {
+            myImage.setSrc(img.src)
+        }
+        return {
+            setSrc(src) {
+                img.src = src;
+                myImage.setSrc('http://img.soogif.com/Mt2e8mi2VPHaCBERiwxEJm8fSUOcXeyM.gif')
+            }
+        }
+    })()
+    prosyImage.setSrc('../../study/img/8.png');
+</script>
+</body>
+</html>

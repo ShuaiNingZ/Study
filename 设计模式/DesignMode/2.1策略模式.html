@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    '策略模式'
+    // 定义一系列算法, 把它们一个个封装起来, 并且使它们可以相互替换
+    // 策略模式由两部分构成:
+    // 1. 封装不同策略的策略组
+    // 2. Context 通过组合和委托来让 Context 拥有执行策略的能力, 从而实现可复用、可扩展、可维护, 并且避免大量复制粘贴工作
+    // 主要解决: 在有多种算法相似的情况下, 使用 if...else 所带来的的复杂和难以维护
+    // 何时使用: 一个系统有许多类, 而区分它们的只是他们直接的行为
+    // 如何解决: 将这些算法封装成一个一个的类, 任意的替换
+    // 关键代码: 实现同一个接口. (静态有类型检查为了可以任意替换因此需要接口, 但 js 和他们不一样, 如果 ts 另当别论)
+</script>
+</body>
+</html>

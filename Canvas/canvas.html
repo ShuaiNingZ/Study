@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+<canvas width="250" height="250"></canvas>
+<canvas width="250" height="250"></canvas>
+<script>
+    /**
+     * Canvas 动画原理之长尾效果
+     * 长尾效果: 利用半透明 fillRect 覆盖实现
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let y = 10;
+    ~(function setSize() {
+        window.onresize = arguments.callee;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    })()
+    function animation() {
+        canCon.beginPath();
+        canCon.fillStyle = 'rgba(0, 0, 0, 0.06)';
+        canCon.fillRect(0, 0, canvas.width, canvas.height);
+        canCon.fillStyle = '#ef4565';
+        canCon.fillRect(66, y += 2, 2, 10);
+        canCon.lineCap = 'round';
+        requestAnimationFrame(animation)
+    }
+    requestAnimationFrame(animation)*/
+
+
+    /**
+     * Canvas 像素管理之获取数据、写入数据、数据格式、创建数据
+     * getImageData(left, top, width, height) 方法: 返回包含画布场景像素数据的 ImageData 对象, 它代表了画布区域的对象数据
+     * 此画布的四个角落分别表示为: (left, top)、(left + width, top)、(left, top + height)、(left + width, top + height)
+     * 这些坐标点被设定为画布坐标空间元素
+     * putImageData 方法: 对场景进行像素数据的写入
+     * dx 和 dy 参数表示在场景内左上角绘制的像素数据所得到的设备坐标
+     * putImageData(myImageData, dx, dy)
+     * ImageData 对象中存储着 canvas 对象的像素数据:
+     * width 图片宽度, 单位: px
+     * height 图片高度, 单位: px
+     * data 返回 Uint8ClampedArray 类型的一维数组 (包含着 RGBA 格式的整型数据, 范围在 0 - 255),
+     * 该数组可以作为查看初始像素数据, 每个像素用 4 个 1bytes 值 (按照红、绿、蓝和透明值的顺序, 这就是 RGBA 格式) 来代表
+     * 每个颜色值部分用 0 至 255 来代表, 每个部分被分不到一个在数组内连续的索引, 左上角像素的红色部分的数组的索引 0 位置,
+     * 像素从左到右被处理, 然后往下, 遍历整个数组
+     * createImageData() 方法: 创建一个新的, 空白的 ImageData 对象
+     * createImageData(width, height) 方法: 创建一个新的具体特定尺寸的 ImageData 对象, 所有像素被预设为透明黑
+     * createImageData(anotherImageData) 方法: 创建一个被 anotherImageData 对象指定的相同像素的 ImageData 对象,
+     * 新的对象像素全部被预设为透明黑, 并非复制了图片数据
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    // 例 1
+    let oldimg = new Image();
+    oldimg.src = './oldimg/8.png';
+    oldimg.onload = function () {
+        canCon.drawImage(oldimg, 0, 0, 500, 500);
+        const imgData = canCon.getImageData(0, 0, 500, 500);
+        let count = 1;
+        for (let i = 0; i < imgData.data.length; i++) {
+            if (/^([1-9][0-9]?|1[0-9]{2}|200)$/.test((i + 1) % (4 * 500))) {
+                if ((i + 1) % (4 * 500) === 1) {
+                    count++;
+                }
+                if (count <= 50) {
+                    imgData.data[i] = imgData.data[i] * 0.8;
+                }
+            }
+        }
+        canCon.putImageData(imgData, 0, 0);
+    }
+
+    // 例 2
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    let myImgData = canCon.createImageData(500, 500);
+    for (let i = 0; i < myImgData.data.length; i++) {
+        myImgData.data[i] = Math.floor(random(0, 255))
+    }
+    canCon.putImageData(myImgData, 0, 0);*/
+
+    /**
+     * Canvas 像素管理之缩放和反锯齿
+     * imageSmoothingEnabled 属性: 用来设置图片是否平滑的属性, true (默认值)表示反锯齿, false 表示锯齿
+     */
+    /*let canvas = document.querySelectorAll('canvas');
+    let [canCon, canCon1] = [...canvas].map(item => item.getContext('2d'));
+    canCon1.imageSmoothingEnabled = true;
+    let oldimg = new Image();
+    oldimg.src = './oldimg/8.png';
+    oldimg.onload = function () {
+        canCon.drawImage(oldimg, 0, 0, 250, 250);
+    }
+    canvas[0].addEventListener('mousemove', e => {
+        canCon1.clearRect(0, 0, 250, 250);
+        canCon1.drawImage(canvas[0], e.clientX, e.clientY, 100, 100, 0, 0, 250, 250);
+    })*/
+
+    /**
+     * Canvas 保存图片
+     * toDataURL(path, quality) 默认: 创建一个图片, 格式是 base64, quality: 质量 0-1, 1 表示质量最好
+     */
+    let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let img = new Image();
+    img.src = './img/8.png';
+    img.onload = function () {
+        canCon.drawImage(img, 0, 0, 250, 250);
+    }
+    canvas.addEventListener('click', () => {
+        let base64Img = canvas.toDataURL('./img/8.png', 1);
+        let elA = document.createElement('a');
+        elA.href = base64Img;
+        elA.download = '图片.png'; // 下载的文件名
+        elA.click();
+    })
+
+</script>
+</body>
+</html>

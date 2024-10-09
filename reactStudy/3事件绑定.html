@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /* 
+      value 属性被 defaultValue 代替
+    */
+
+    // 函数的最后一个参数是事件对象 event
+    // bind 绑定的第一个指向对象不再参数中
+    function handleClick(res, event) {
+        console.log('事件函数调用', res, event)
+    }
+
+    function handleKeyDown() {
+        console.log('handleKeyDown')
+    }
+
+    const ele = (
+        <div>
+            <h1>事件处理</h1>
+            <button
+                onClick={console.log('会自执行')}
+            >会自执行
+            </button>
+            <br/>
+            <br/>
+            <button
+                onClick={() => {
+                    console.log('利用箭头函数不自执行')
+                }}
+            >利用箭头函数不自执行
+            </button>
+            <br/>
+            <br/>
+            {
+                // call 会立马执行
+                // bind 不会自执行 预传参
+                // 传参的时候注意第一个参数是 事件所指的对象 this 指向
+            }
+            <button
+                onClick={handleClick.bind({}, '哈哈哈哈')}
+            >事件函数调用
+            </button>
+            <br/>
+            <br/>
+            <input
+                type="text"
+                defaultValue="keydown"
+                onKeyDown={handleKeyDown}
+            />
+        </div>
+    )
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+
+
+</script>
+</body>
+</html>

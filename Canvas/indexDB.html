@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>indexDB操作</title>
+</head>
+<body>
+<script>
+    let openRequest = indexedDB.open('school', 2);
+    // 打开一个数据库, 名称为 school 版本号是 1
+    openRequest.onupgradeneeded = e => {
+        // 首次打开数据库或是版本号更新时触发的函数
+        console.log('新建数据库或者版本号更新');
+        let thisDB = e.target.result;
+        if (!thisDB.objectStoreNames.contains('student')) {
+            let std = thisDB.createObjectStore('student', {keyPath: 'idcard'});
+            std.createIndex('name', 'name', {unique: false});
+            std.createIndex('sex', 'sex', {unique: false});
+            std.createIndex('phoneNumber', 'phoneNumber', {unique: true})
+        }
+        if (!thisDB.objectStoreNames.contains('class')) {
+            thisDB.createObjectStore('class', {autoIncrement: true});
+            console.log('我们创建一个新的对象存储');
+        }
+        if (!thisDB.objectStoreNames.contains('handsome')) {
+            thisDB.createObjectStore('handsome', {autoIncrement: true});
+            console.log('我们创建一个新的对象存储');
+        }
+    }
+    openRequest.onsuccess = e => {
+        // 访问数据库成功
+        console.log('访问数据库成功');
+        let db = e.target.result;
+        console.log(db);
+        // 事务
+        let transaction = db.transaction(['student'], 'readwrite');
+        let store = transaction.objectStore('student');
+        let request = store.add({
+            name: '竹木、',
+            sex: '男',
+            phoneNumber: '1231231211',
+            idcard: '1212121211121'
+        })
+        request.onsuccess = e => {
+            console.log('成功添加数据')
+        }
+        request.onerror = e => {
+            console.log('Error', e.target.error.name)
+        }
+    }
+    openRequest.onerror = e => {
+        // 访问数据库失败时
+        console.log('访问失败时');
+        console.log(e)
+    }
+</script>
+</body>
+</html>

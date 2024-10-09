@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+123123123123
+<script>
+    let myRequest = new XMLHttpRequest();
+    myRequest.open('post', '/data', true)
+    myRequest.setRequestHeader('Accept', 'application/json')
+    myRequest.send()
+
+    myRequest.onreadystatechange = () => {
+        if(myRequest.readyState === 4){
+            if(myRequest.status === 200){
+                console.log('请求成功, 数据以及正确返回')
+                console.log(myRequest.response)
+            }else{
+                alert('获取信息失败')
+            }
+        }else{
+            console.log(myRequest.status)
+        }
+    }
+</script>
+</body>
+</html>

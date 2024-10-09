@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form id="form">
+    <input type="text" name="user"/>
+    <input type="password" name="pwd"/>
+    <input type="file" name="file">
+</form>
+<button class="get" type="submit">get 提交</button>
+<button class="post" type="submit">post 提交</button>
+
+<script>
+    // 后端使用 ajaxServer.js 服务
+
+    const formEl = document.getElementById('form');
+    const btnGetEl = document.querySelector('button.get');
+    const btnPostEl = document.querySelector('button.post');
+    btnGetEl.onclick = function () {
+        let form = new FormData(formEl);
+        let data = {}
+        for (const [key, value] of form) {
+            data[key] = value;
+        }
+        request({
+            url: 'http://127.0.0.1:8008/data',
+            method: 'GET',
+            data: data,
+            withCredentials: true,
+            contentType: 'text/plain;charset=utf8',
+            requestHeaders: {
+                Cookies: document.cookie
+            },
+            success(data) {
+                console.log('get 请求返回数据', data)
+            },
+            error(err) {
+                console.log(err)
+            }
+        })
+    }
+
+    btnPostEl.onclick = function () {
+        let form = new FormData(formEl);
+        request({
+            url: 'http://127.0.0.1:8008/data',
+            method: 'POST',
+            data: form,
+            withCredentials: true,
+            contentType: 'multipart/form-data;charset=utf8',
+            requestHeaders: {
+                Cookies: document.cookie
+            },
+            success(data) {
+                console.log(data)
+            },
+            error(err) {
+                console.log(err)
+            }
+        })
+    }
+
+    function objToUrlParams(data) {
+        return Object.entries(data).reduce((prev, cur) => `${prev ? `${prev}&` : ''}${cur[0]}=${cur[1]}`, '')
+    }
+
+    function isJSON(str) {
+        if (!str) return false
+        try {
+            JSON.parse(str);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * ajax + jsonp
+     * @param url
+     * @param method
+     * @param data jsonp|json|text|blob|arrayBuffer
+     * @param dataType
+     * @param contentType
+     * @param success
+     * @param error
+     */
+
+    function request({
+        url = '/',
+        method = 'GET',
+        data = {},
+        dataType = 'json',
+        withCredentials = false,
+        requestHeaders = {},
+        contentType = 'application/xxx-www-form-urlencoded;charset=utf8',
+        success = function (data) {
+            console.log(data)
+        },
+        error = function (err) {
+            console.log(err)
+        }
+    }) {
+        if (dataType === 'jsonp') {
+            jsonpAPI({url, data, success});
+            return false
+        }
+
+        const xhr = new XMLHttpRequest();
+        method = method.toUpperCase();
+        // text/json/blob/buffer
+        xhr.responseType = dataType;
+        // 请求是否带上 cookie 等请求头信息
+        xhr.withCredentials = withCredentials;
+
+        if (method === 'GET') {
+            url = `${url}?${objToUrlParams(data)}`;
+            data = null;
+        }
+
+        if (/json/.test(contentType)) {
+            data = JSON.stringify(data);
+        }
+
+        if (/x-www-form-urlencoded/.test(contentType)) {
+            data = objToUrlParams(data);
+        }
+
+        xhr.open(method, url);
+
+        if (!(/multipart\/form-data/.test(contentType))) {
+            xhr.setRequestHeader('content-type', contentType);
+        }
+
+        if (xhr.withCredentials) {
+            Object.entries(requestHeaders).forEach(([key, value]) => {
+                console.log(key, value)
+                xhr.setRequestHeader(key, value);
+            })
+        }
+
+        xhr.send(data);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === xhr.DONE) {
+                if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                    let responseData = xhr.response;
+                    if (xhr.responseType === 'json' && isJSON(responseData)) {
+                        responseData = JSON.parse(responseData);
+                    }
+                    success(responseData)
+                }
+            }
+        }
+
+        xhr.onerror = function (err) {
+            error(err)
+        }
+    }
+
+    function jsonpAPI({url, data, success}) {
+        let callbackName = `fn${Date.now()}`;
+        let script = document.createElement('script');
+        let requestQuery = `${objToUrlParams(data)}&callback=${callbackName}`
+        script.src = url + requestQuery;
+        script.async = true;
+        document.head.appendChild(script);
+        window[callbackName] = function (data) {
+            console.log(data)
+            data = isJSON(data) && data
+            success(data)
+            delete window[callbackName];
+            document.head.removeChild(script);
+        }
+    }
+</script>
+</body>
+</html>

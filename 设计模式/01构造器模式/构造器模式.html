@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 01构造器模式:
+     * 1. 创建对象并分配内存空间
+     * 2. 接收参数, 通过构造器给对象赋值 (属性和方法)
+     *
+     * 用途: 创建大量对象属性、方法都一样的对象时, 可使用
+     * 缺点: 构造函数内部的方法每次都会被重新创建一份, 占用内存空间
+     */
+    function Poetry(title) {
+        this.title = title;
+        this.sayTitle = () => {
+            console.log(this.title);
+        }
+    }
+
+    class PoetryClass {
+        constructor(title) {
+            this.title = title;
+            this.sayTitle = () => {
+                console.log(this.title);
+            }
+        }
+    }
+
+    let poetry = new Poetry('滕王阁序');
+    let poetry1 = new Poetry('虞美人');
+    let poetryClass = new PoetryClass('滕王阁序');
+    let poetryClass1 = new PoetryClass('虞美人');
+
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+</script>
+</body>
+</html>

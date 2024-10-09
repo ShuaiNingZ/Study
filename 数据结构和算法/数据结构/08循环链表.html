@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    class Node {
+        constructor(element) {
+            this.element = element;
+            this.next = null;
+        }
+    }
+
+    class LinkedList {
+        constructor() {
+            this.count = 0;
+            this.head = null;
+        }
+
+        // push
+        push(element) {
+            const node = new Node(element);
+            if (this.head === null) {
+                this.head = node;
+            } else {
+                let current = this.head;
+                while (current.next !== null) {
+                    current = current.next
+                }
+                current.next = node;
+            }
+            this.count++;
+        }
+
+        // 指定位置删除
+        removeAt(index) {
+            /*if (!(index >= 0 && index < this.count)) return;
+            let cur = this.head
+            if (index === 0) {
+                this.head = this.head.next;
+            } else {
+                let prev;
+                for (let i = 0; i < index; i++) {
+                    prev = cur;
+                    cur = cur.next;
+                }
+                prev.next = cur.next;
+            }
+            this.count--;
+            return cur?.element*/
+            const node = this.getNodeAt(index);
+            if (!node) return;
+            let cur = this.head
+            if (index === 0) {
+                this.head = this.head.next;
+                this.count--;
+                return cur.element;
+            }
+            const prevNode = this.getNodeAt(index - 1);
+            cur = node;
+            prevNode.next = node.next;
+            this.count--;
+            return cur?.element;
+        }
+
+        // 获取指定位置节点
+        getNodeAt(index) {
+            if (!(index >= 0 && index < this.count)) return;
+            let node = this.head;
+            for (let i = 0; i < index; i++) {
+                node = node.next;
+            }
+            return node;
+        }
+
+        // 根据值删除
+        remove(element) {
+            const index = this.getIndex(element);
+            if (!index) return;
+            this.removeAt(index);
+        }
+
+        equalFn(a, b) {
+            // return a === b
+            // 1. 判断是对象. 对象1[key] === 对象2[key]
+            // 2. 之前基础上, 写一个递归函数, 深度检查是否相等
+
+            // 使用 imumutable 库
+            // console.log(JSON.stringify({ a: 1, b: 2 }) !== JSON.stringify({ b: 2, a: 1 }));
+            // console.log(JSON.stringify(a) === JSON.stringify(b));
+            return JSON.stringify(a) === JSON.stringify(b);
+        }
+
+        // 根据值获取索引
+        getIndex(element) {
+            let cur = this.head;
+            for (let i = 0; cur; i++) {
+                if (this.equalFn(cur.element, element)) {
+                    return i
+                }
+                cur = cur.next;
+            }
+            return -1;
+        }
+
+        // 指定位置插入元素
+        insert(element, index) {
+            if (!(index >= 0 && index <= this.count)) return false;
+            let cur = this.head;
+            const insertObj = new Node(element);
+            if (index === 0) {
+                insertObj.next = cur;
+                this.head = insertObj
+                this.count++;
+                return true
+            }
+            for (let i = 0; cur; i++) {
+                if (index - 1 === i) {
+                    insertObj.next = cur.next;
+                    cur.next = insertObj;
+                    this.count++;
+                    return true
+                }
+                cur = cur.next;
+            }
+            return false
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        size() {
+            return this.count
+        }
+
+        getHead() {
+            return this.head;
+        }
+    }
+
+    class CirculateLinkedList extends LinkedList {
+        constructor() {
+            super();
+        }
+
+        push(element) {
+            const node = new Node(element);
+            let cur = this.head;
+            if (this.head === null) {
+                this.head = node;
+            } else {
+                while (cur.next !== this.head) {
+                    cur = cur.next;
+                }
+                cur.next = node;
+            }
+            node.next = this.head;
+            this.count++;
+        }
+
+        insert(element, index) {
+            if (!(index >= 0 && index <= this.count)) return false;
+            const node = new Node(element);
+            let cur = this.head;
+            if (index === 0) {
+                if (this.head === null) {
+                    this.head = node;
+                    node.next = node;
+                } else {
+                    node.next = cur;
+                    this.getNodeAt(this.size() - 1).next = node;
+                    this.head = node;
+                }
+                this.count++;
+                return true
+            } else {
+                for (let i = 1; i <= this.count; i++) {
+                    if (i === index) {
+                        node.next = cur.next;
+                        cur.next = node;
+                        this.count++;
+                        return true
+                    }
+                    cur = cur.next;
+                }
+                return false
+            }
+        }
+
+        removeAt(index) {
+            if (!(index >= 0 && index < this.count)) return false;
+            let cur = this.head;
+            if (index === 0) {
+                if (this.size() === 1) {
+                    this.head = null;
+                } else {
+                    let last = this.getNodeAt(this.size() - 1);
+                    this.head = this.head.next;
+                    last.next = this.head;
+                }
+            } else {
+                for (let i = 1; cur.next !== this.head; i++) {
+                    if (i === index) {
+                        cur.next = cur.next.next
+                        this.count--;
+                        return true
+                    }
+                    cur = cur.next;
+                }
+            }
+            this.count--;
+            return cur?.element
+        }
+    }
+
+    const list = new CirculateLinkedList();
+    list.push(123123)
+    list.insert(789789, 1)
+    list.insert(456456, 0)
+    list.removeAt(1);
+    console.log(list)
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 适配模式
+     * 将一个类的接口转换成客户希望的另一个接口.
+     * 适配器模式让那些接口不兼容的类可以一起工作
+     */
+    class TencentMap {
+        show() {
+            console.log('开始渲染腾讯地图')
+        }
+    }
+
+    class BaiduMap {
+        display() {
+            console.log('开始渲染百度地图')
+        }
+    }
+
+    class TencentAdapter extends TencentMap {
+        constructor() {
+            super();
+        }
+
+        display() {
+            this.show()
+        }
+    }
+
+    function renderMap(map) {
+        map.display();
+    }
+
+    renderMap(new TencentAdapter());
+    renderMap(new BaiduMap());
+
+    /**
+     * 适配器模式:
+     * 适配器模式是用来解决两个接口不兼容的情况, 不需要改变已有的接口,
+     * 通过包装一层的方式, 实现两个接口正常协作.
+     *
+     * 生活案例: 插头装换器、电源插座、USB 转接头
+     */
+    function addEvent(ele, event, callback) {
+        if (ele.addEventListener) {
+            ele.addEventListener(event, callback, false);
+        } else if (ele.attachEvent) {
+            ele.attachEvent(`on${ event }`, callback);
+        } else {
+            ele[`on${ event }`] = callback;
+        }
+    }
+</script>
+</body>
+</html>

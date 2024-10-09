@@ -1,0 +1,69 @@
+<script src="https://cdn.bootcdn.net/ajax/libs/blueimp-md5/2.19.0/js/md5.js"></script>
+<h1>{{useHbs}}</h1>
+
+<form id="form">
+    <label for="username">
+        username
+        <input id="username" type="text" name="username"/>
+    </label>
+    <label for="username">
+        password
+        <input type="password" name="password"/>
+    </label>
+    <label for="username">
+        email
+        <input type="text" name="email"/>
+    </label>
+    <label for="username">
+        nickname
+        <input type="text" name="nickname"/>
+    </label>
+</form>
+<button id="login" type="submit">登录</button>
+<button id="register" type="submit">注册</button>
+<script>
+    const baseUrl = 'http://127.0.0.1:3000';
+    const form = document.querySelector('#form');
+    const login = document.querySelector('#login');
+    const register = document.querySelector('#register');
+
+    const userFn = async (url) => {
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData) {
+            if (key === 'password') {
+                value = md5(value);
+            }
+            data[key] = value
+        }
+        console.log(data)
+        const loginRes = await fetch(
+            `${ baseUrl }${ url }`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }
+        )
+        const loginData = await loginRes.json();
+        console.log(loginData);
+        return loginData
+    }
+
+    login.onclick = () => {
+        userFn('/login').then(res => {
+            console.log(res.data)
+            const token = res.data.token;
+            if (token) {
+                localStorage.setItem('TOKEN', token)
+                // location.pathname = '/home'
+            }
+        })
+    }
+    register.onclick = () => {
+        userFn('/register')
+    }
+
+</script>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 迭代器模式:
+     *      提供一种方法访问一个聚合对象中的各个元素, 而不需要暴露该对象的内部表示,
+     *      即遍历聚合对象中的各个元素, 并执行一个回调方法
+     * 迭代器分为 内部迭代器 和 外部迭代器 两类.
+     *      内部迭代器: 完全接手整个迭代过程, 外部只需一次初始化调用.
+     *      外部迭代器: 必须显式的请求迭代下一个元素. 外部迭代器增加了一些调用的复杂度, 但相对也
+     *          增强了迭代器的灵活性, 可以自定义控制迭代的过程和顺序
+     * Symbol.iterator
+     */
+
+    /* 内部迭代器 */
+    const each = function (arr, callback) {
+        for (let i = 0; i < arr.length; i++) {
+            callback(i, arr[i])
+        }
+    }
+    let arr = ['a', 'b', 'c'];
+    each(arr, function (i, n) {
+        console.log([i, n])
+    })
+
+    /* 外部迭代器 */
+    const Iterator = function (obj) {
+        let index = 0;
+        return {
+            next() {
+                const keys = Reflect.ownKeys(obj);
+                if (index < keys.length) {
+                    const key = keys[index++];
+                    return {
+                        value: {
+                            [key]: obj[key]
+                        },
+                        done: false
+                    }
+                } else {
+                    return {
+                        value: undefined,
+                        done: true
+                    }
+                }
+            }
+        }
+    }
+
+    const obj = {
+        a: '1',
+        b: 2,
+        c: true,
+        d: undefined,
+        e: ['1', '2'],
+        f: {
+            g: '哈哈',
+            h: 1
+        }
+    }
+
+    const objIt = Iterator(obj)
+    console.log(objIt.next());
+    console.log(objIt.next());
+    console.log(objIt.next());
+    console.log(objIt.next());
+    console.log(objIt.next());
+    console.log(objIt.next());
+    console.log(objIt.next());
+</script>
+</body>
+</html>

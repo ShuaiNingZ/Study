@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 建造者模式: 将一个复杂对象的构建与它的表示分离,
+    // 使得同样的构建过程可以创建不同的表示
+
+    let Builder = (function () {
+        // Rooms FloorSpace Style 表示部分
+        function Rooms(member) {
+            if (member <= 0) {
+                throw new Error('入住人数错误')
+            }
+            this.rooms = member >= 4 ? 4 : member
+        }
+
+        function FloorSpace(budget) {
+            if (typeof budget !== 'number' || Number.isNaN(budget) || (budget < 60)) {
+                throw new Error('预算过低或错误!');
+            }
+            this.budget = budget;
+        }
+
+        function Style(style) {
+            this.style = style || '常规风格'
+        }
+
+        // 构建部分
+        return class {
+            constructor(member, budget, style) {
+                Rooms.call(this, member);
+                FloorSpace.call(this, budget);
+                Style.call(this, style);
+            }
+        }
+    })()
+
+    let house1 = new Builder(1, 100, '小清新');
+    let house2 = new Builder(3, 200, '哈哈哈')
+    console.log(house1)
+    console.log(house2)
+</script>
+</body>
+</html>

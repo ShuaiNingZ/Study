@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000000;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <script>
+        let canvas = document.querySelector('canvas');
+        let canCon = canvas.getContext('2d');
+        let w, h;
+        let rainArr = [];
+        // canvas 绘画区自适应窗口
+        (function () {
+            window.onresize = arguments.callee;
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        })()
+
+        // 随机数区间
+        function random(min, max) {
+            return Math.random() * (max - min) + min
+        }
+
+        // 创建雨滴构造函数
+        class Rain {
+            constructor() {
+            }
+
+            // 初始化雨滴
+            init() {
+                this.y = 0; // 雨滴初始垂直坐标
+                this.x = random(1, w); // 雨滴初始水平坐标
+                this.endY = random(0.75 * h, 0.9 * h); // 雨滴最后位置
+                this.sW = Math.floor(random(2, 4)); // 雨滴初始宽度大小
+                this.sH = Math.floor(random(6, 10)); // 雨滴初始拖尾长度
+                this.v = random(1, 5); // 雨滴下落初始速度
+                this.r = this.sW; // 雨滴落地初始圆半径
+                this.a = 1; // 雨滴落地初始透明度
+                this.va = random(0.94, 0.96); // 随机透明度变淡
+                this.cArr = [
+                    [255, 0, 0],
+                    [255, 51, 0],
+                    [255, 102, 0],
+                    [255, 153, 0],
+                    [255, 255, 0],
+                    [153, 255, 0],
+                    [0, 255, 0],
+                    [0, 255, 255],
+                    [0, 0, 255],
+                    [102, 0, 255],
+                    [255, 0, 255],
+                    [255, 0, 102]
+                ];
+                this.c = this.cArr[Math.floor(random(0, 12))];
+            }
+
+            // 画雨滴及落地变圆
+            draw() {
+                canCon.beginPath();
+                if (this.y < this.endY - this.v) {
+                    canCon.fillStyle = `rgb(${this.c[0]}, ${this.c[1]}, ${this.c[2]})`;
+                    canCon.fillRect(this.x, this.y, this.sW, this.sH);
+                } else {
+                    canCon.strokeStyle = `rgba(${this.c[0]}, ${this.c[1]}, ${this.c[2]}, ${this.a})`;
+                    canCon.arc(this.x + this.sW / 2, this.y - this.sW / 2, this.r, 0, Math.PI * 2);
+                    canCon.stroke();
+                }
+            }
+
+            // 雨滴移动
+            move() {
+                if (this.y < this.endY) {
+                    this.y += this.v;
+                } else {
+                    if (this.a > 0.05) {
+                        this.r++;
+                        this.a *= this.va;
+                    } else {
+                        this.init();
+                    }
+                }
+                this.draw();
+            }
+        }
+
+        // 创建多少雨滴
+        function createRain(num) {
+            for (let i = 0; i < num; i++) {
+                setTimeout(() => {
+                    let rain = new Rain()
+                    rain.init();
+                    rain.draw();
+                    rainArr.push(rain);
+                }, 200 * i)
+            }
+        }
+
+        createRain(60);
+
+        setInterval(() => {
+            canCon.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            canCon.fillRect(0, 0, w, h);
+            for (let i = 0; i < rainArr.length; i++) {
+                rainArr[i].move();
+            }
+        }, 1000 / 60);
+    </script>
+</body>
+</html>

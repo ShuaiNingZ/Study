@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SnowFlake</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.querySelector('#canvas');
+        const ctx = canvas.getContext('2d');
+
+        let w, h, targetNum = 20;
+
+        // 绘画区域自适应窗口大小
+        (function () {
+            window.onresize = arguments.callee;
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+            ctx.shadowBlur = 10;
+        })()
+
+        class Snowflake {
+            /**
+             * 创建雪花
+             * @param cX 中心横坐标
+             * @param cY 中心纵坐标
+             * @param vX 横向速度
+             * @param vY 纵向速度
+             * @param lW 线条粗细
+             * @param lH 线条长度(半径)
+             * @param breakPoint 雪花主支上有多少拐点
+             * @param breakPointAngle 雪花拐点角度
+             * @param limbNum 雪花有多少根主支
+             * @param c 雪花颜色
+             */
+            constructor() {
+                this.cX;
+                this.cY;
+                this.vX;
+                this.vY;
+                this.lW;
+                this.lH;
+                this.breakPoint;
+                this.breakPointAngle;
+                this.limbNum;
+                this.c;
+            }
+
+            /**
+             * 随机数
+             * @param min 最小值
+             * @param max 最大值
+             * @returns {*}
+             */
+            random(min, max, num = 0) {
+                return Number(parseFloat(Math.random() * (max - min) + min).toFixed(num));
+            }
+
+            /**
+             * 根据圆心, 圆半径, 角度, 获取点在圆上的位置
+             * @param angle 角度
+             * @param radius 圆半径
+             * @param cX 圆心横坐标
+             * @param cY 圆心纵坐标
+             * @returns {{x: *, y: *}} 对应的角度坐标
+             */
+            getAngleLocal({ angle, radius, circleCenter: { cX, cY } }) {
+                return {
+                    x: cX + radius * Math.cos(angle * Math.PI / 180),
+                    y: cY + radius * Math.sin(angle * Math.PI / 180)
+                }
+            }
+
+            // 初始化雪花
+            init() {
+                this.cX = this.random(0, w);
+                this.cY = this.cY ? -this.lH : this.random(0, h);
+                this.vX = this.random(-1, 1, 2) || 1;
+                this.vY = this.random(1, 3, 2) || 1;
+                this.lW = this.random(1, 2, 2);
+                this.lH = this.random(10, 50);
+                this.breakPoint = this.random(4, 6);
+                this.breakPointAngle = this.random(20, 70);
+                this.limbNum = this.random(5, 8);
+                this.limbAngle = 360 / this.limbNum;
+                this.c = `rgba(${this.random(0, 255)}, ${this.random(0, 255)}, ${this.random(0, 255)}, ${this.random(1, 1, 2)})`;
+                // this.c = `hsl(0, 0%, ${(50 + this.random(20, 70) * 40) | 0}%)`;
+                return this
+            }
+
+            // 画雪花的每个主支
+            createSnowflakeItem() {
+                ctx.beginPath();
+                ctx.rotate((this.limbAngle * Math.PI) / 180);
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, this.lH);
+                ctx.stroke();
+
+                // 画每个主支上的圆
+                ctx.beginPath();
+                ctx.arc(0, this.lH, this.lW * 1.5, 0, -Math.PI * 2 / 180);
+                ctx.fill();
+
+                let bpStart = 0;
+                let bpGap = parseInt((this.lH - this.lW * 2) / this.breakPoint);
+                for (let j = 0; j < this.breakPoint; j++) {
+                    const bpEnd = this.getAngleLocal({
+                        angle: this.breakPointAngle,
+                        radius: this.lH * (j + 1) * 0.1,
+                        circleCenter: { cX: 0, cY: bpStart }
+                    });
+                    ctx.beginPath();
+                    ctx.moveTo(0, bpStart);
+                    ctx.lineTo(bpEnd.x, bpEnd.y);
+                    ctx.moveTo(0, bpStart);
+                    ctx.lineTo(-bpEnd.x, bpEnd.y);
+                    ctx.stroke();
+                    bpStart += bpGap;
+                }
+            }
+
+            // 画雪花
+            drawSnowflake() {
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = this.c;
+                ctx.fillStyle = this.c;
+                ctx.shadowColor = this.c;
+                ctx.lineWidth = this.lW;
+                ctx.translate(this.cX, this.cY);
+                for (let i = 0; i < this.limbNum; i++) {
+                    this.createSnowflakeItem()
+                }
+                ctx.translate(-this.cX, -this.cY);
+                return this
+            }
+
+            // 目标对象移动方法
+            moveTarget() {
+                this.cX += this.vX;
+                this.cY += this.vY;
+                if (this.cX <= -this.lH || this.cX >= w + this.lH) {
+                    this.init();
+                }
+                if (this.cY <= -this.lH || this.cY >= h + this.lH) {
+                    this.init();
+                }
+                this.drawSnowflake()
+                return this
+            }
+        }
+
+        /**
+         * 创建所有目标位置信息
+         * @returns {*[]}
+         */
+        function createAllTargetLocal() {
+            const targetLocalArr = [];
+            for (let i = 0; i < targetNum; i++) {
+                targetLocalArr.push(new Snowflake({}).init().drawSnowflake())
+            }
+            return targetLocalArr
+        }
+
+
+        (() => {
+            let targetLocalArr = createAllTargetLocal();
+            setInterval(() => {
+                ctx.clearRect(0, 0, w, h);
+                targetLocalArr.forEach(item => {
+                    item.moveTarget();
+                })
+            }, 1000 / 60)
+        })()
+    </script>
+</body>
+</html>

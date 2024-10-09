@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        div {
+            display: flex;
+
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>123123</p>
+</div>
+<script>
+    class Car {
+        drive() {
+            return 'driving'
+        }
+    }
+
+    class CarProxy {
+        constructor(driver) {
+            this.driver = driver;
+        }
+
+        drive() {
+            return (this.driver.age < 18) ? 'too young to drive' : new Car().drive()
+        }
+    }
+
+    class Driver {
+        constructor(age) {
+            this.age = age;
+        }
+    }
+
+    // 基于 Proxy 实现
+    let star = {
+        name: '张三',
+        age: 25,
+        phone: '12312312311'
+    }
+
+    let agent = new Proxy(star, {
+        get(target, key) {
+            if (key === 'phone') {
+                return '12341234123'
+            }
+            if (key === 'price') {
+                return 120000
+            }
+            return target[key]
+        },
+        set(target, key, val) {
+            if (key === 'customPrice') {
+                if (val < 100000) {
+                    throw new Error('价格太低')
+                } else {
+                    target[key] = val;
+                    return true
+                }
+            }
+        }
+    })
+    console.log(agent.name)
+    console.log(agent.age)
+    console.log(agent.phone)
+    console.log(agent.price)
+</script>
+</body>
+</html>

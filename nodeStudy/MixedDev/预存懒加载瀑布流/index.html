@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>预存 懒加载 瀑布流</title>
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
+        }
+
+        .list {
+            position: relative;
+            height: 100%;
+        }
+
+        .listItem {
+            position: absolute;
+            top: 100%;
+            left: calc(50% - 100px);
+            /*top: 0;*/
+            /*left: 0;*/
+            width: 200px;
+            box-shadow: 0 0 4px 2px #cccccc;
+            transition: all 1s;
+        }
+
+        .listItem .img {
+            width: 100%;
+        }
+
+        .listItem .imgDesc {
+            padding: 10px 20px;
+            background-color: #fff;
+        }
+
+        .listItem .imgDesc .imgSource {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .listItem .imgDesc .imgType {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<!--
+    懒加载
+        10000 张图片 用户访问的时候, 我一次性吧 10000 张图片都返回给客户的浏览器进行加载吗?
+
+            1. 用户访问网站, 网站的服务, 需要项运营商支付带宽费用(流量费) 为了节省成本
+            2. 用户客户端硬件和软件 对于一次性大数据量内容进行加载和渲染, 耗费的性能和时间更多
+            3. 避免不必要的性能浪费 流量浪费 用户体验浪费
+
+        分段加载 按需加载 延迟加载 预先加载 缓存加载
+
+        分段加载 (n 张一段)
+
+        按需加载 用户需要往后看再加载
+
+        预先加载 加载(HTTP) 请求需要时间 渲染需要时间 => 挂 loading 让用户等待
+
+        (懒加载 用户体验不太行 不会浪费请求)
+        首屏加载数据(加载 20 条) => 用户触发懒加载事件 => 请求后续数据(加载 20 条)(http 请求 loading) => 加载渲染数据 => 用户触发懒加载 => 循环...
+
+        (预存懒加载 多浪费一次数据请求 用户体验提升)
+        首屏加载数据(加载 20 条) => 渲染数据(20 条) => 渲染结束(0-19条) => 请求后续(20条 19-39) => 不加载进行缓存(19-39) =>
+            用户触发懒加载事件 => 去缓存读取数据 => 渲染数据 => 渲染结束 => 请求后续(20条 39-59) => 进行缓存缓存
+
+
+    瀑布流布局基础思想
+        分列
+        每一次都找上一行最短的那一列去添加新元素
+        分 3 列
+        先加载一行三列 加载后一列的时候, 确定第一行中最短的那一列 进行添加
+ -->
+
+
+<div class="list">
+
+</div>
+<script>
+    /**
+     * 1. 瀑布流布局初始化
+     *    1. 初始化场景宽度
+     *    2. 初始化每一个 item 的宽度
+     *    3. 初始化单行数量 (一行放几个)
+     */
+
+    class fallsStream {
+        constructor({listEl, itemWidth = 200, space = 20}) {
+            this.listEl = listEl;
+            this.listWidth = this.listEl.offsetWidth;
+            this.itemWidth = itemWidth;
+            this.space = space;
+            this.columns = 0;
+            // 水平偏移量
+            this.offsetVal = 0;
+
+            // 存储每一列的 Top 值
+            this.arrTop = [];
+            // 存储每一行里每一列 item 的 Left 值
+            this.arrLeft = [];
+        }
+
+        // 初始化布局
+        init() {
+            // item 实际宽度 = 元素宽度 + 间距;
+            let itemRealityW = this.itemWidth + this.space;
+            // 列数 = 可视区域宽度 / item 实际宽度;
+            this.columns = ~~(this.listWidth / itemRealityW);
+
+            this.offsetVal = ~~((this.listWidth - this.columns * itemRealityW) / 2);
+
+            for (let i = 0; i < this.columns; i++) {
+                this.arrTop.push(0);
+                this.arrLeft.push(i * itemRealityW + this.offsetVal);
+            }
+
+            // 第一行 每一列的总高度 和 每一列元素的 left 位置
+            return this;
+        }
+
+        // 渲染添加
+        render(data) {
+            let len = data.length;
+            let index = 0;
+
+            // 此处必须使用 递归, 不能使用 for 循环, 因为需要等到图片加载完成才能加载下一张,
+            // for 循环先循环完成, 再添加会出问题
+            let recur = () => {
+                let dataItem = data[index];
+                console.log(dataItem.top)
+                let minIndex = this.arrTop.indexOf(Math.min(...this.arrTop));
+                let listItemEl = document.createElement('div');
+                let timer = null;
+                listItemEl.className = 'listItem';
+                listItemEl.style.top = dataItem.top + 'px';
+                listItemEl.style.left = dataItem.left + 'px';
+                listItemEl.innerHTML = `<div class="img">
+                                            <img
+                                                src="${dataItem.url}"
+                                                alt="皮卡丘"
+                                            />
+                                        </div>
+                                        <div class="imgDesc">
+                                            <div class="imgSource">${dataItem.origin}</div>
+                                            <div class="imgType">${dataItem.title}</div>
+                                        </div>`;
+                this.listEl.appendChild(listItemEl);
+                listItemEl.querySelector('img').onload = () => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        listItemEl.style.left = this.arrLeft[minIndex] + 'px';
+                        listItemEl.style.top = this.arrTop[minIndex] + 'px';
+                        this.arrTop[minIndex] += listItemEl.offsetHeight + this.space;
+                        index++
+                        (index < len) && recur();
+                    }, 30)
+                }
+            }
+            recur();
+        }
+    }
+
+    const a = [
+        {
+            "url": "http://img0.baidu.com/it/u=2481415645,615893186&fm=253&app=138&f=JPEG?w=500&h=666",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=2078794729,795935223&fm=253&app=138&f=JPEG?w=500&h=666",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=2578118680,1024282580&fm=253&app=138&f=JPEG?w=500&h=666",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=1551650866,1013758275&fm=253&app=138&f=JPEG?w=500&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=826685719,669937433&fm=253&app=138&f=JPEG?w=500&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=3770962804,1633214120&fm=253&app=138&f=JPEG?w=667&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "https://img0.baidu.com/it/u=4016654991,2815765580&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1082",
+            "origin": "www.duitang.com",
+            "title": "皮卡丘 - 堆糖,美图壁纸兴趣社区"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=511876846,809536077&fm=253&app=138&f=JPEG?w=500&h=666",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=4015545534,4105475026&fm=253&app=138&f=JPEG?w=500&h=666",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=2847496733,943780012&fm=253&app=138&f=JPEG?w=500&h=615",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=506887028,3629332435&fm=253&app=138&f=JPEG?w=500&h=756",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=301744333,787237746&fm=253&app=138&f=JPEG?w=500&h=663",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=586990344,3773181202&fm=253&app=138&f=JPEG?w=500&h=792",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "https://img0.baidu.com/it/u=2580485238,1021985422&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083",
+            "origin": "www.enterdesk.com",
+            "title": "精灵宝可梦皮卡丘,动漫-手机壁纸"
+        },
+        {
+            "url": "https://img2.baidu.com/it/u=3028118594,2823223429&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=514",
+            "origin": "m.16pic.com",
+            "title": "可爱皮卡丘平面广告素材免费下载(图片编号:1892338)-六图网"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=2885939370,2032186430&fm=253&app=138&f=JPEG?w=677&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=987158159,4205896417&fm=253&app=138&f=JPEG?w=653&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=4204516399,3303673102&fm=253&app=138&f=JPEG?w=500&h=887",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=399688945,2695257816&fm=253&app=138&f=JPEG?w=500&h=625",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=493670263,1486122017&fm=253&app=138&f=JPEG?w=500&h=689",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=2148275203,199560817&fm=253&app=138&f=JPEG?w=500&h=625",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=1673345045,3106568268&fm=253&app=138&f=JPEG?w=500&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=2772205772,1889546721&fm=253&app=138&f=JPEG?w=500&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=767898747,79718240&fm=253&app=138&f=JPEG?w=500&h=609",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=299195697,3858275820&fm=253&app=138&f=JPEG?w=667&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=1472435026,4108949312&fm=253&app=138&f=JPEG?w=667&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img1.baidu.com/it/u=4048356277,3010719717&fm=253&app=138&f=JPEG?w=667&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img0.baidu.com/it/u=3058365224,577433257&fm=253&app=138&f=JPEG?w=507&h=500",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        },
+        {
+            "url": "http://img2.baidu.com/it/u=2584896782,3564907089&fm=253&app=138&f=JPEG?w=500&h=596",
+            "origin": "全网资源",
+            "title": "皮卡丘"
+        }
+    ]
+
+    const flow = new fallsStream({
+        listEl: document.querySelector('.list')
+    });
+    flow.init().render(a);
+
+    window.addEventListener('resize', debounce(() => {
+        const listEl = document.querySelector('.list');
+        console.log(document.querySelector('.list').clientWidth, window.innerWidth)
+        listEl.innerHTML = ''
+        const flow = new fallsStream({
+            listEl: listEl
+        });
+        flow.init().render(a);
+    }))
+
+    function debounce(fn, wait = 200) {
+        let timer = null;
+        return function () {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+                fn()
+            }, wait)
+        }
+    }
+
+    // 首次执行的防抖有问题
+    function debounce1(fn, wait = 1000) {
+        let date = Date.now();
+        return function () {
+            let nowDate = Date.now();
+            if (nowDate - date > wait) {
+                fn();
+                date = nowDate;
+            }
+        }
+    }
+
+    /*console.log(
+        JSON.stringify(a.reduce((prev, cur) => {
+            if (Object.hasOwn(cur, 'setList') && Array.isArray(cur.setList)) {
+                console.log(prev)
+                prev.push(...cur.setList.map(item1 => ({
+                    url: item1.thumbURL,
+                    origin: item1.fromURLHost,
+                    title: item1.fromPageTitle
+                })))
+                return prev
+            }
+            prev.push({
+                url: cur.thumbURL,
+                origin: cur.fromURLHost,
+                title: cur.fromPageTitle
+            })
+            return prev
+        }, []))
+    )*/
+</script>
+</body>
+</html>

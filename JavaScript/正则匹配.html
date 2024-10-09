@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 分组匹配
+        function case1() {
+            const RE_DATE = /(\d{4})-(\d{2})-(\d{2})/;
+            const matchObj = RE_DATE.exec('1999-12-31');
+            console.log(matchObj);
+
+            const year = matchObj[1];
+            const month = matchObj[2];
+            const day = matchObj[3];
+            console.log(matchObj.groups);
+        }
+        case1()
+
+        // 具名分组
+        function case2() {
+            const RE_DATE = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
+            const matchObj = RE_DATE.exec('1999-12-31');
+            console.log(matchObj);
+            const year = matchObj[1];
+            const month = matchObj[2];
+            const day = matchObj[3];
+            console.log(matchObj.groups);
+        }
+        case2()
+
+        // 无匹配到结果时
+        function case3() {
+            const RE_OPT_A = /^(?<as>a+)?$/;
+            const matchObj = RE_OPT_A.exec('');
+            console.log(matchObj.groups.as);
+            console.log('as' in matchObj.groups);
+        }
+        case3()
+
+        // 分组解构赋值
+        function case4() {
+            console.log(/^(?<one>.*):(?<two>.*)$/.exec('foo:bar'));
+            let { groups: { one, two } } = /^(?<one>.*):(?<two>.*)$/.exec('foo:bar');
+            console.log(one, two);
+        }
+        case4()
+
+        // 字符串替换
+        function case5() {
+            let re = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
+            let str = '2015-01-02';
+            console.log(str.replace(re, '$<day>/$<month>/$<year>'));
+        }
+        case5()
+    </script>
+</body>
+</html>

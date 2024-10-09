@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 中介者模式:
+     * 对象和对象之间借助第三方中介者进行通信.
+     * 用于减少类之间的直接相互依赖, 通过引入一个中介者对象来协调各个类之间的交互. 这样
+     * 各个类就不需要显式地引用其他类, 而是通过中介者来传递消息. 这有助于降低系统的耦合性,
+     * 使得系统更加灵活和易于维护.
+     * 主要构成角色:
+     * 1. Mediator (中介者): 定义各个对象间的交互接口, 负责协调各个对象之间的交互, 控制对象的交互方式.
+     * 2. Colleague (同事类): 持有中介者的引用, 并通过中介者与其他同事类通信, 而不直接引用其他同事类.
+     * 实现:
+     * 1. 定义中介者接口 (可选, 在 JS 中通常使用对象字面量或类来实现): 定义一个包含与同事对象通信的方法的接口
+     * 2. 实现中介者: 实现中介者接口, 包含存储同事对象应用的成员变量和接收同事对象通信的方法
+     * 3. 定义同事类: 持有中介者的引用, 通过中介者来与其他同事对象通信
+     */
+
+    /* 中介者 */
+    class ChatMediator {
+        constructor() {
+            this.users = [];
+        }
+
+        register(user) {
+            this.users.push(user);
+            user.setMediator(this);
+        }
+
+        sendMessage(from, message) {
+            this.users.forEach(user => {
+                if (user !== from) {
+                    user.receiveMessage(from, message)
+                }
+            })
+        }
+    }
+
+    /* 同事类 */
+    class User {
+        constructor(name) {
+            this.name = name;
+            this.mediator = null;
+        }
+
+        setMediator(mediator) {
+            this.mediator = mediator;
+        }
+
+        sendMessage(message) {
+            this.mediator.sendMessage(this, message);
+        }
+
+        receiveMessage(from, message) {
+            console.log(`${ from.name } says: ${ message } ${ this.name }`);
+        }
+    }
+
+    const mediator = new ChatMediator();
+    const alice = new User('Alice');
+    const ha = new User('Ha');
+    const bob = new User('Bob');
+    mediator.register(alice);
+    mediator.register(ha);
+    mediator.register(bob);
+    alice.sendMessage('Hello')
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<input type="text" id="input">
+<button id="btn">注册</button>
+<script>
+    /**
+     * 职责链模式
+     * 使多个对象都有机会处理请求, 从而避免了请求的发送者与多个接受者直接的耦合关系, 将这些接受者
+     * 连接成一条链, 顺着这条链传递该请求, 直到找到能处理该请求的对象.
+     *
+     * 优点:
+     *  1. 符合单一职责, 使用每个方法中都只有一个职责
+     *  2. 符合开放封闭原则, 在需求增加时可以很方便的扩充新的责任
+     *  3. 使用时不需要知道谁才是真正处理方法, 减少大量的 if 或 switch 语法
+     * 缺点:
+     *  1. 团队成员需要对责任链存在共识, 否则当看到一个方法莫名其妙的返回一个 next 时一定会很奇怪
+     *  2. 出错时不好排查问题, 因为不知道到底在哪个责任中出的错, 需要从链头开始往后找
+     */
+    /*btn.onclick = function () {
+        if (input.value.length === 0) {
+            console.log('不能为空')
+        } else {
+            if (Number.isNaN(+input.value)) {
+                console.log('必须是数字')
+            } else {
+                if (input.value.length <= 6) {
+                    console.log("必须大于6个数字")
+                }
+            }
+        }
+    }*/
+
+    // 由上改造
+    /*function checkEmpty() {
+        if (input.value.length === 0) {
+            console.log('不能为空')
+            return
+        }
+        return 'next'
+    }
+
+    function checkNumber() {
+        if (Number.isNaN(+input.value)) {
+            console.log('必须是数字')
+            return
+        }
+        return 'next'
+    }
+
+    function checkLength() {
+        if (input.value.length <= 6) {
+            console.log("必须大于6个数字")
+            return
+        }
+        return 'next'
+    }
+
+    class Chain {
+        constructor(fn) {
+            this.checkRule = fn;
+            this.nextRule = null;
+        }
+
+        addRule(nextRule) {
+            this.nextRule = nextRule;
+        }
+
+        check() {
+            this.checkRule() === 'next' ? this.nextRule.check() : null;
+        }
+    }
+
+    const checks = new Chain(checkEmpty);
+    const checkNumberChain = new Chain(checkNumber);
+    const checkLengthChain = new Chain(checkLength);
+    checks.addRule(checkNumberChain);
+    checkNumberChain.addRule(checkLengthChain)
+    checkLengthChain.addRule({
+        check: () => 'end'
+    });
+    btn.onclick = function () {
+        checks.check()
+    }*/
+
+    // 由上改造
+    function checkEmpty() {
+        if (input.value.length === 0) {
+            console.log('不能为空')
+            return
+        }
+        return 'next'
+    }
+
+    function checkNumber() {
+        if (Number.isNaN(+input.value)) {
+            console.log('必须是数字')
+            return
+        }
+        return 'next'
+    }
+
+    function checkLength() {
+        if (input.value.length <= 6) {
+            console.log("必须大于6个数字")
+            return
+        }
+        return 'next'
+    }
+
+    class Chain {
+        constructor(fn) {
+            this.checkRule = fn;
+            this.nextRule = null;
+        }
+
+        addRule(nextRule) {
+            this.nextRule = new Chain(nextRule);
+            return this.nextRule;
+        }
+
+        end() {
+            this.nextRule = {
+                check: () => 'end'
+            }
+        }
+
+        check() {
+            this.checkRule() === 'next' ? this.nextRule.check() : null;
+        }
+    }
+
+    const checks = new Chain(checkEmpty);
+    checks.addRule(checkNumber).addRule(checkLength).end();
+    btn.onclick = function () {
+        checks.check()
+    }
+</script>
+</body>
+</html>

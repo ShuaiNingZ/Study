@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 观察者模式:
+     *  观察者 和 被观察者, 其中重点是 被观察者.
+     *  观察者模式一般至少有一个可被观察的对象 Subject, 可以有多个 观察者 去观察这个对象.
+     *  二者关系是通过 被观察者主动 建立的, 被观察者 至少有三种方法 -- 添加观察者、移除观
+     *  察者、通知观察者.
+     *
+     * 1. 观察者主动申请加入被观察者的列表
+     * 2. 被观察者主动将观察者加入列表
+     * 前者会在观察者对象创建指出显式声明要被加入到被观察者的通知列表内, 后者则是被观察者
+     * 创建实例后由被观察者主动将其添加进列表
+     *
+     *
+     *  当被观察者将某个观察者添加到自己的 观察者列表 后, 观察者与被观察者的关联关系就建立
+     *  起来了, 只要被观察者在某种时机触发 通知观察者 方法时, 观察者即可接收到来自被观
+     *  察者方法时, 观察者即可接收到来自被观察者的消息
+     */
+
+
+    /* 被观察者 */
+    class Subject {
+        constructor() {
+            this.observerList = [];
+        }
+
+        addObserver(observer) {
+            this.observerList.push(observer);
+        }
+
+        removeObserver(observer) {
+            const i = this.observerList.findIndex(item => item.name === observer.name);
+            this.observerList.splice(i, 1);
+        }
+
+        notifyObserver(msg) {
+            this.observerList.forEach(item => {
+                item.notified(msg)
+            })
+        }
+    }
+
+    /* 观察者 */
+    class Observer {
+        constructor(name, subject) {
+            this.name = name;
+            if (subject) {
+                subject.addObserver(this);
+            }
+        }
+
+        notified(msg) {
+            console.log(`${ this.name } 获取消息 ${ msg }`)
+        }
+    }
+
+    const subject = new Subject();
+    const observeA = new Observer('observeA', subject);
+    const observeB = new Observer('observeB');
+
+    subject.addObserver(observeB);
+    subject.notifyObserver('哈哈');
+
+    subject.removeObserver(observeA);
+    subject.notifyObserver('移除 observeA');
+
+    /**
+     * 上述代码分别实现了观察者和被观察者的逻辑, 其中二者的关联有两种方式:
+     * 1. 观察者主动申请加入被观察者的列表
+     * 2. 被观察者主动将观察者加入列表
+     * 前者会在观察者对象创建指出显式声明要被加入到被观察者的通知列表内, 后者则是被观察者
+     * 创建实例后由被观察者主动将其添加进列表
+     */
+
+    /*class Subject {
+        constructor() {
+            this.observerList = [];
+        }
+
+        addObserver(observer) {
+            this.observerList.push(observer);
+        }
+
+        removeObserver(observer) {
+            const index = this.observerList.findIndex(o => o.name === observer.name);
+            this.observerList.splice(index, 1);
+        }
+
+        notifyObservers(message) {
+            const observers = this.observerList;
+            observers.forEach(observer => observer.notified(message))
+        }
+    }
+
+    class Observer {
+        constructor(name, subject) {
+            this.name = name;
+            if (subject) {
+                subject.addObserver(this)
+            }
+        }
+
+        notified(message) {
+            console.log(`${ this.name } got message ${ message }`)
+        }
+    }
+
+    const subject = new Subject();
+    const observerA = new Observer('observerA', subject);
+    const observerB = new Observer('observerB');
+    subject.addObserver(observerB);
+    subject.notifyObservers('Hello from subject');
+    subject.removeObserver(observerA);
+    subject.notifyObservers('Hello again');*/
+</script>
+</body>
+</html>

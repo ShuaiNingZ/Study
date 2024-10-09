@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 树:
+     * 分层数据的抽象模型
+     * 二叉树:
+     * 二叉树中的节点最多只能有两个子节点: 一个是左侧子节点, 另一个是右侧子节点
+     * 二叉搜索树:
+     * 二叉搜索树 (BST) 是二叉树的一种, 但是只允许你在左侧节点存储 (比父节点) 小的值, 在右侧节点存储 (比父节点) 大的值
+     */
+    const Compare = {
+        less: -1,
+        bigger: 1,
+        equ: 0
+    }
+
+    class Node {
+        constructor(key) {
+            this.key = key;
+            this.left = null;
+            this.right = null;
+        }
+    }
+
+    class BST {
+        constructor() {
+            this.root = null;
+            this.i = 0;
+        }
+
+        compareFn(a, b) {
+            return a == b ? Compare.equ : (a < b ? Compare.less : Compare.bigger);
+        }
+
+        insertNode(node, key) {
+            switch (this.compareFn(key, node.key)) {
+                case Compare.equ:
+                    return node
+                    break;
+                case Compare.less:
+                    if (node.left === null) {
+                        node.left = new Node(key);
+                        return node.left;
+                    }
+                    this.insertNode(node.left, key);
+                    break;
+                case Compare.bigger:
+                    if (node.right === null) {
+                        node.right = new Node(key);
+                        return node.right;
+                    }
+                    this.insertNode(node.right, key);
+                    break;
+            }
+        }
+
+        // 插入
+        insert(key) {
+            if (this.root == null) {
+                this.root = new Node(key);
+            } else {
+                this.insertNode(this.root, key);
+            }
+        }
+
+        /**
+         * 遍历:
+         * 1. 中序遍历是一种以上行顺序访问 BST 所有节点的遍历方式, 也就是以从最小到最大的顺序访问所有节点.
+         *    中序遍历的一种应用就是对树进行排序操作.
+         * 2. 先序遍历是以优先于后代节点的顺序访问每个节点的. 先序遍历的一种应用是打印一个结构化的文档.
+         * 3. 后续遍历则是先访问节点的后代节点, 再访问节点本身. 后序遍历的一种应用是计算一个目录及其子目录
+         *    中所有文件所占空间的大小.
+         */
+
+        // 中序遍历
+        inOrderMap(callback) {
+            this.inOrderMapNode(this.root, callback)
+        }
+
+        inOrderMapNode(node, callback) {
+            // console.log(++this.i)
+            // debugger;
+            if (node === null) return;
+            this.inOrderMapNode(node.left, callback);
+            callback(node.key);
+            this.inOrderMapNode(node.right, callback);
+        }
+
+        // 先序遍历
+        preOrderMap(callback) {
+            this.preOrderMapNode(this.root, callback)
+        }
+
+        preOrderMapNode(node, callback) {
+            console.log(++this.i)
+            debugger;
+            if (node === null) return;
+            callback(node.key);
+            this.preOrderMapNode(node.left, callback);
+            this.preOrderMapNode(node.right, callback);
+        }
+
+        // 后序遍历
+        postOrderMap(callback) {
+            this.postOrderMapNode(this.root, callback)
+        }
+
+        postOrderMapNode(node, callback) {
+            // console.log(++this.i)
+            // debugger;
+            if (node === null) return;
+            this.postOrderMapNode(node.left, callback);
+            this.postOrderMapNode(node.right, callback);
+            callback(node.key);
+        }
+    }
+
+    const myTree = new BST();
+    myTree.insert(100);
+    myTree.insert(80);
+    myTree.insert(110);
+    myTree.insert(70);
+    // myTree.insert(90);
+    // myTree.insert(150);
+    // myTree.insert(60);
+    // myTree.insert(50);
+
+    console.log(myTree);
+    // myTree.inOrderMap((value) => {
+    //     console.log(value)
+    // })
+
+    // 中序
+    // 第一个递归
+    // 1 100 进栈 callback 不执行
+    // 2 80 进栈 callback 不执行
+    // 3 null 进栈 第一个递归结束, 80 出栈, callback 执行, 第二个递归执行
+    // 4 第一个递归执行 80 的 node.left 为 null 结束, 80 的 node.right 为 null, 第二个递归结束, 当前栈没有清空, 不会出当前作用域, 100 出栈, callback 执行, 第二个递归再次执行
+    // 5 第一个递归执行 100 的 node.left 为 null 结束, 100 的 node.right 为 110, 第二个递归执行 入栈, 110 第二个递归出栈, 执行第一个递归,
+    // 6 第一个递归 null 结束, 110 继续执行 callback 执行, 第二个递归执行
+    // 7 node.right 为 null 执行第二个递归, 结束
+
+    myTree.preOrderMap((value) => {
+        console.log(value)
+    })
+
+    // 先序
+    // 1 打印 100, 100 入栈
+    // 2 打印 80, 80 入栈
+    // 3 打印 70, 70 入栈
+    // 4 null, 70 出栈, 70 node.right null
+    // 5 null, 80 出栈, 80 node.right null
+    // 6 null, 100 出栈, 100 node.right 110
+    // 7 110, 打印 110, 110 node.left null
+    // 8 null, 110 node.right null
+    // 9 null,
+
+    // myTree.postOrderMap((value) => {
+    //     console.log(value)
+    // })
+
+    // 后序
+    // 1 100 进栈
+    // 2 80 进栈
+    // 3 70 进栈
+    // 4 null 第一个递归结束, 70 出栈执行
+    // 5 70 node.right null 结束 打印 70, 80 出栈执行,
+    // 6 80 node.right null 结束 打印 80, 100 出栈执行
+    // 7 100 node.right 110, 110 进栈
+    // 8 110 node.left null 结束
+    // 9 110 node.right null 结束, 110 出栈执行, 都打印 110,  100 打印
+</script>
+</body>
+</html>

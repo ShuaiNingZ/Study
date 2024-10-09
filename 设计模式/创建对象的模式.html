@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 构造函数模式
+    // 弊端: 创建公共属性和方法时会每次重新创建公共属性和方法 资源浪费
+    function GouZao(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    const gou = GouZao('构造函数', 12);
+
+    // 工厂函数
+    // 每次调用根据参数返回不同的对象
+    function Son(name) {
+        const obj = new Object();
+        obj.name = name;
+        return obj;
+    }
+
+    function GongChang(name) {
+        switch (name) {
+            case '1':
+                return Son(1)
+            case '2':
+                return Son(1)
+            case '3':
+                return Son(1)
+        }
+    }
+
+    // 原型模式
+    // 优点: 补充了构造函数公共属性和方法的缺点
+    // 缺点: 实例修改原型会导致其他实例原型变化 和 构造函数原型变化
+    function YuanXing(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    YuanXing.prototype.sayName = function () {
+        console.log(this.name)
+    }
+
+    const YuanXing1 = new YuanXing(1, 34);
+    console.log(YuanXing1)
+    YuanXing1.sayName();
+
+    // 构造函数和原型组合模式
+    function GouzaoAndYuanxing(name) {
+        this.name = name;
+    }
+
+    GouzaoAndYuanxing.prototype = {
+        constructor: GouzaoAndYuanxing,
+        sayName() {
+            console.log(this.name);
+        }
+    }
+    // 优点: 改善了原型模式的每个实例继承原型链上所有属性, 节约内存
+
+    // 动态原型模式
+    function DongTai(data) {
+        this.data = data;
+        switch (Object.prototype.toString.call(data).replace(/\[object (.*)\]/, () => RegExp.$1)) {
+            case  'Array':
+                DongTai.prototype = Array.prototype;
+                break;
+            case 'Object':
+                DongTai.prototype = Object.prototype;
+                break;
+            case 'String':
+                DongTai.prototype = DongTai.prototype;
+                break;
+            default:
+                break;
+        }
+    }
+
+    // 寄生构造函数模式
+    // 通过 new 操作符调用, 与工厂函数区别在于使用 new 操作符调用
+    function JiSheng(name) {
+        let obj = new Object();
+        obj.name = name;
+        obj.sayName = function () {
+            console.log(this.name)
+        }
+        return obj
+    }
+
+    const ji2 = new JiSheng('嘿嘿嘿');
+    console.log(ji2);
+
+    // 稳妥构造函数模式
+    // 适合没有公共方法, 公共属性, 实例方法不引用 this, 不使用 new 操作符调用, 适合严格模式
+    function WenTuo() {
+        let obj = new Object();
+        obj.name = name;
+        obj.sayName = function () {
+            console.log(name)
+        }
+        return obj
+    }
+
+</script>
+</body>
+</html>

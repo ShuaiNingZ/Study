@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+</head>
+<body>
+<h1>Home</h1>
+<script>
+    const baseUrl = 'http://127.0.0.1:3000';
+    const TOKEN = 'TOKEN';
+    window.onload = async () => {
+        // 验证 Token 是否有效
+        const token = localStorage.getItem(TOKEN);
+        if (token) {
+            const verifyTokenRes = await fetch(
+                `${baseUrl}/verifyToken`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization': token
+                    }
+                }
+            )
+            const verifyTokenData = await verifyTokenRes.json();
+            console.log(verifyTokenData)
+            // 如果 Token 失效
+            if (verifyTokenData.data.status === 401) {
+                localStorage.removeItem(TOKEN);
+                location.pathname = '/loginHtml'
+            }
+        } else {
+            const getTokenRes = await fetch(
+                `${baseUrl}/verifyToken`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            )
+            const getTokenData = await getTokenRes.json();
+            const Token = getTokenData.data.token;
+            localStorage.setItem(TOKEN, Token);
+        }
+    }
+</script>
+</body>
+</html>

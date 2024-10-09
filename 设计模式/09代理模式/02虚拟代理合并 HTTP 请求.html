@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="wrapper">
+    <input type="checkbox" id="1"/>1
+    <input type="checkbox" id="2"/>2
+    <input type="checkbox" id="3"/>3
+    <input type="checkbox" id="4"/>4
+    <input type="checkbox" id="5"/>5
+    <input type="checkbox" id="6"/>6
+    <input type="checkbox" id="7"/>7
+    <input type="checkbox" id="8"/>8
+    <input type="checkbox" id="9"/>9
+</div>
+<script>
+    // 模拟 http 请求
+    /*const synchronousFile = function (id) {
+        console.log(`开始同步文件, id 为: ${ id }`)
+    }
+
+    const inputs = document.getElementsByTagName('input')
+    const wrapper = document.getElementById('wrapper')
+    wrapper.onclick = function (e) {
+        if (e.target.tagName === 'INPUT') {
+            synchronousFile(e.target.id)
+        }
+    }*/
+    // 缺点: 每点一次就发送一次 http 请求
+    // 模拟 http 请求
+    const synchronousFile = function (id) {
+        console.log(`开始同步文件, id 为: ${ id }`)
+    }
+
+    const wrapper = document.getElementById('wrapper')
+    wrapper.onclick = function (e) {
+        if (e.target.tagName === 'INPUT' && e.target.checked) {
+            proxySynchronousFile(e.target.id)
+        }
+    }
+
+    const proxySynchronousFile = (function () {
+        let cacheIds = [],
+            timeId = 0;
+        return function (id) {
+            if (cacheIds.indexOf(id) < 0) {
+                cacheIds.push(id)
+            }
+            clearTimeout(timeId);
+            timeId = setTimeout(() => {
+                synchronousFile(cacheIds.join(','))
+                cacheIds = []
+            }, 1000)
+        }
+    })()
+</script>
+</body>
+</html>

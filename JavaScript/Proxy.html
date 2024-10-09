@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let data = {
+            name: '不秋草、',
+            age: '24'
+        };
+        let p = new Proxy(data, {
+            // 定义数据属性|访问属性
+            defineProperty(target, prop, propDesc) {
+                console.log('proxy defineProperty ===>', prop);
+                return Reflect.defineProperty(target, prop, propDesc)
+            },
+            // 获取数据属性
+            getOwnPropertyDescriptor(target, prop) {
+                console.log('proxy getOwnPropertyDescriptor ===>', Reflect.getOwnPropertyDescriptor(target, prop));
+                return Reflect.getOwnPropertyDescriptor(target, prop)
+            },
+            // 设置器
+            set(target, prop, value) {
+                console.log('proxy set ===>', prop);
+                return Reflect.set(target, prop, value)
+            },
+            // 访问器
+            get(target, prop) {
+                console.log('proxy get ===>', Reflect.get(target, prop));
+                return Reflect.get(target, prop)
+            },
+            // 判断属性是否存在
+            has(target, prop) {
+                console.log('proxy has ===>', Reflect.has(target, prop));
+                return Reflect.has(target, prop)
+            },
+            // 对象自身的属性 key
+            ownKeys(target) {
+                console.log('proxy ownKey ===>', Reflect.ownKeys(target));
+                return Reflect.ownKeys(target)
+            },
+            // 删除属性
+            deleteProperty(target, prop) {
+                console.log('proxy deleteProperty ===>', prop);
+                return Reflect.deleteProperty(target, prop)
+            },
+            // 设置指定对象的原型
+            setPrototypeOf(target, prototype) {
+                console.log('proxy setPrototypeOf ===>', Reflect.setPrototypeOf(target, prototype));
+                return Reflect.setPrototypeOf(target, prototype)
+            },
+            // 获取指定对象的原型
+            getPrototypeOf(target) {
+                console.log('proxy getPrototypeOf ===>', Reflect.getPrototypeOf(target));
+                return Reflect.getPrototypeOf(target)
+            },
+            // 是否可以添加新属性
+            isExtensible(target) {
+                console.log('proxy isExtensible ===>', Reflect.isExtensible(target));
+                return Reflect.isExtensible(target)
+            },
+            // 阻止添加新属性
+            preventExtensions(target) {
+                console.log('proxy preventExtensions ===>', Reflect.preventExtensions(target));
+                return Reflect.preventExtensions(target)
+            }
+        });
+        function fn(n1, n2) {
+            return n1 + n2;
+        };
+        let p1 = new Proxy(fn, {
+            // 改变 this 指向
+            apply(target, object, args) {
+                console.log('proxy apply ===>', Reflect.apply(target, object, args));
+                return Reflect.apply(target, object, args)
+            },
+            construct(target, args) {
+                console.log('proxy construct ===>', Reflect.construct(target, args));
+                return Reflect.construct(target, args)
+            }
+        })
+        console.log('init ===>', p, data);
+        // defineProperty
+        Object.defineProperty(p, 'birthday', {
+            value: '1.1'
+        });
+        // set
+        p.age = 18;
+        // get
+        p.age;
+        // has
+        'name' in p;
+        // ownKeys| getOwnPropertyDescriptor
+        for (const key in p) { };
+        // deleteProperty
+        delete p.name;
+        // setPrototypeOf
+        Object.setPrototypeOf(p, {
+            setName() {
+                return '哈哈哈'
+            }
+        })
+        // getPrototypeOf
+        Object.getPrototypeOf(p);
+        // isExtensible
+        Object.isExtensible(p);
+        // apply
+        p1(1, 2);
+        p1.call(null, 4, 6)
+        // construct
+        new p1(1, 2)
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 函数: 原型模式
+    function Poetry(title, author) {
+        this.title = title;
+        this.author = author;
+    }
+
+    Poetry.prototype.sayTitle = function () {
+        console.log(this.title)
+    }
+
+    // 类: 原型模式
+    class PoetryClass {
+        constructor(title, author) {
+            this.title = title;
+            this.author = author;
+        }
+
+        sayTitle = () => {
+            console.log(this.title)
+        }
+    }
+
+    let poetry = new Poetry('滕王阁序', '王勃', '落霞与孤鹜齐飞, 秋水共长天一色.');
+    let poetry1 = new Poetry('虞美人', '李煜', '问君能有几多愁? 恰似一江春水向东流.');
+    let poetryClass = new PoetryClass('滕王阁序', '王勃', '落霞与孤鹜齐飞, 秋水共长天一色.');
+    let poetryClass1 = new PoetryClass('虞美人', '李煜', '问君能有几多愁? 恰似一江春水向东流.');
+
+    /**
+     * 优点: 改善了构造函数模式创建实例时每次重新创建公共属性和方法
+     * 缺点: 如果其中一个实例对原型属性或方法进行修改, 所有的实例都会发生变化, 解决这类问题可以使用 Object.definePrototype
+     * 将公共属性和方法设置为 configurable: true, 但是对象深层次数据还是会被引用篡改
+     */
+
+    /**
+     * 原型模式:
+     *  1. 通过构造函数的 prototype 共享某个对象原型的属性和方法, 从而达到提高性能、降低内存占用、代码复用的效果
+     *  2. 所有实例的 __proto__ 是引用关系, 其中一个修改, 所有实例原型都会变化, 可利用 Object.definePrototype
+     *  将公共属性和方法设置为 configurable: true, 但 如果对象深层次数据还会被篡改
+     */
+
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    Object.defineProperty(Person.prototype, 'sayName', {
+        value() {
+            console.log(this.name)
+        },
+        // 不可重写
+        writable: false,
+        // 不可遍历
+        enumerable: false,
+        // 不可配置
+        configurable: false
+    })
+
+    const person = new Person('哈哈哈', 12);
+    person.sayName();
+</script>
+</body>
+</html>

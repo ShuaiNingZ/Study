@@ -1,0 +1,18 @@
+<h1>{{title}}</h1>
+<p>{{msg}}</p>
+
+<ul>
+    {{#each list}}
+        <li>{{this}} {{@key}} {{@index}}</li>
+    {{/each}}
+    {{#each obj}}
+        <li>{{@key}} {{this}}  {{@index}}</li>
+    {{/each}}
+    {{#each orderList}}
+        <!--{{#each this}}
+            <li>{{@key}} {{this}}  {{@index}}</li>
+        {{/each}}-->
+        <h3>{{../msg}}{{name}}</h3>
+        <p>{{price}}</p>
+    {{/each}}
+</ul>

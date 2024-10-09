@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // ES5 类写法
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    Point.foo = 'bar';
+    Point.prototype.clickFn = function () {
+        return `${this.x}+${this.y}`
+    }
+
+    const P = new Point(1, 2);
+    console.log(Point.foo)
+    console.log(P)
+    console.log(P.clickFn())
+
+    // ES6 类写法
+    class Po {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        state = {}
+
+        clickFn() {
+            return `${this.x}+${this.y}`
+        }
+    }
+
+    const P1 = new Po(6, 6);
+    console.log(P1)
+    console.log(P1.clickFn())
+
+    class Po1 extends Point {
+        constructor(x, y, n) {
+            super(x, y, n);
+            this.n = n;
+        }
+    }
+
+    const P2 = new Po1(8, 8, 1)
+    console.log(P2)
+    console.log(P2.clickFn())
+</script>
+</body>
+</html>

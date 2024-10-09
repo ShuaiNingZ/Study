@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+	function trampoline(f) {
+		while (f && f instanceof Function) {
+			f = f();
+		}
+		return f;
+	}
+
+	function trampolineFn(fn) {
+		let value;
+		let active = false;
+		let accumulated = [];
+
+		return function accumulator() {
+			accumulated.push(arguments);
+			if (!active) {
+				active = true;
+				while (accumulated.length) {
+					value = fn.apply(this, accumulated.shift())
+				}
+				active = false;
+				return value
+			}
+		}
+	}
+
+	let sum = trampolineFn((x, y) => {
+		if (y > 0) {
+			return sum(x + 1, y - 1)
+		} else {
+			return x
+		}
+	});
+	console.log(sum(1, 1));
+</script>
+</body>
+</html>

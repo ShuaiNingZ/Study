@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<button id="loginBtn">点击</button>
+<script>
+    // 单例模式含义: 保证一个类仅有一个实例, 并提供一个访问它的全局访问点
+    /*let Singleton = function (name) {
+        this.name = name;
+        this.instance = null;
+    }
+
+    Singleton.prototype.getName = function () {
+        // alert(this.name)
+        console.log(this.name);
+    }
+
+    Singleton.getInstance = function (name) {
+        if (!this.instance) {
+            this.instance = new Singleton(name)
+        }
+        return this.instance;
+    }
+
+    let a = Singleton.getInstance('sing1');
+    let b = Singleton.getInstance('sing2');
+    // alert(this.name)
+    console.log(a === b);
+    console.log(a.getName());
+    console.log(b.getName());*/
+
+    // 透明单例模式: 用户从这个类中创建对象的时候, 可以像使用其他任何普通类一样
+    // 这个所有的透明是指从外观上, 看不出普通的类和透明的类之间的区别是什么
+
+    /*let CreateUniqDiv = (function () {
+        let instance;
+
+        class CreateDiv {
+            constructor(html) {
+                if (instance) {
+                    return instance
+                }
+                this.html = html;
+                instance = this
+            }
+
+            init() {
+                let div = document.createElement('div');
+                div.innerHTML = this.html;
+                document.body.appendChild(div);
+            }
+        }
+
+        return CreateDiv;
+    })();
+
+    let a = new CreateUniqDiv('div1');
+    let b = new CreateUniqDiv('div2');
+    console.log(a === b)
+    console.log(a)
+    console.log(b)*/
+
+    // 代理单例模式: 通过引入代理类的方式, 我们同样完成了一个单例模式的编写,
+    // 跟之前不同的是, 现在我们把负责管理单例的逻辑移到了代理类
+    // ProxySingletonCreateDiv 中, 这样一来, CreateDiv 就变成了一个
+    // 普通的类, 他跟 ProxySingletonCreateDiv 组合起来可以达到单例
+    // 模式的效果
+
+    // 多态思想: 将 '做什么' 和 '谁去做' 以及 '怎样做' 分离开来
+    // 这样做的目的是为了 功能单一原则
+    // 做什么 创建实例
+    /*class CreateDiv {
+        constructor(html) {
+            this.html = html;
+        }
+
+        init() {
+            let div = document.createElement('div');
+            div.innerHTML = this.html;
+            document.body.appendChild(div)
+        }
+    }
+
+    // 怎么做 由代理来实现
+    let ProxySingletonCreateDiv = (function () {
+        let instance;
+        return function (html) {
+            if (!instance) {
+                instance = new CreateDiv(html)
+            }
+            return instance
+        }
+    })()
+
+    // 什么时候做 这里实现
+    let a = ProxySingletonCreateDiv('div1');
+    let b = ProxySingletonCreateDiv('div2');
+    console.log(a === b)
+    console.log(a)
+    console.log(b)*/
+
+    // 惰性单例模式: 指的是在需要的时候才创建对象实例. 惰性单例是单例模式的重点
+    // 创建实例对象的职责和管理单例的职责分别放置在两个方法里, 这里那个方法可以
+    // 独立变化而互不影响, 当他们连接的时候, 就完成了创建唯一实例对象的功能
+
+    /**
+     * 要做到单例的复用性
+     * 那么我们先把之前实现单例的那些代码中的变与不变的部分拆分开
+     * @param fn
+     * @returns {function(): *}
+     */
+    /*function getSingle(fn) {
+        let result = null;
+        return function () {
+            return result || (result = fn.apply(this, arguments))
+        }
+    }
+
+    let createSingleIframe = getSingle(function () {
+        let iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        return iframe;
+    })
+    document.getElementById('loginBtn').onclick = function () {
+        let loginLayer = createSingleIframe();
+        console.log(loginLayer)
+        loginLayer.src = 'https://baidu.com'
+    }*/
+
+    function getSingle(fn) {
+        let result = null;
+        return function () {
+            return result || (result = fn.apply(this, arguments))
+        }
+    }
+
+    let bindEvent = getSingle(function () {
+        document.getElementById('loginBtn').onclick = function () {
+            alert('click')
+        }
+        return true;
+    })
+    let render = function () {
+        console.log('开始渲染列表');
+        bindEvent();
+    }
+    render()
+    render()
+    render()
+
+</script>
+</body>
+</html>

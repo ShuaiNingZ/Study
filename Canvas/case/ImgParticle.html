@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片粒子扩散</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .setting {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 66;
+        }
+
+        button {
+            padding: 2px 6px;
+        }
+
+        button+button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id='canvas'></canvas>
+    <div class="setting">
+        <input class="upload" type="file" />
+    </div>
+    <script>
+        let canvas = document.querySelector('#canvas'),
+            ctx = canvas.getContext('2d'),
+            w, h;
+        let settings = {
+            MarginRatio: 0.15,
+            size: 1,
+            imgUrl: '',
+            particles: []
+        }
+        let {
+            MarginRatio,
+            size,
+            imgUrl,
+            particles
+        } = settings;
+
+        setupBtn();
+        const uploadEl = document.querySelector('.upload');
+        /**
+         * 上传图片
+         */
+        uploadEl.addEventListener('change', async function () {
+            imgEl = document.createElement('img');
+            file = this.files[0];
+            imgUrl = URL.createObjectURL(file);
+            particles = [];
+            resize();
+            await setupParticles()
+        })
+
+        // 按钮
+        function setupBtn() {
+            const btnArr = [
+                {
+                    label: '粒子',
+                    click() {
+                        drawParticle()
+                    }
+                },
+                {
+                    label: '动态粒子',
+                    click() {
+                        drawParticle(true)
+                    }
+                }
+            ]
+            // 画粒子
+            let animationFrameId;
+            function drawParticle(isMove) {
+                cancelAnimationFrame(animationFrameId);
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, w, h);
+                if (isMove) {
+                    animationFrameId = requestAnimationFrame(drawParticle);
+                    particles.forEach(item => {
+                        ctx.fillStyle = item.color;
+                        ctx.fillRect(item.moveX, item.moveY, size, size);
+                        item.move();
+                    });
+                } else {
+                    particles.forEach(item => {
+                        ctx.fillStyle = item.color;
+                        ctx.fillRect(item.x, item.y, size, size);
+                        item.initXY();
+                    });
+                }
+            }
+            const settingEl = document.querySelector('.setting');
+            const frag = document.createDocumentFragment();
+            frag.append(
+                ...btnArr.map(item => {
+                    const btn = document.createElement('button');
+                    btn.innerText = item.label;
+                    btn.onclick = item.click;
+                    return btn
+                })
+            )
+            settingEl.append(frag);
+        }
+
+        // 设置 canvas 画布大小
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        // canvas getImageData 数据转换
+        function changeImageData(imgData, num = 4) {
+            let data = [];
+            for (let i = 0; i < imgData.length; i += num) {
+                data.push([...imgData.slice(i, i + num)])
+            }
+            return data
+        }
+
+        // 粒子实例
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = `rgba(${color.join()})`;
+                this.moveX = x;
+                this.moveY = y;
+                this.vX = Math.random(-3, 3);
+                this.vY = Math.random(-3, 3);
+            }
+
+            initXY() {
+                this.moveX = this.x;
+                this.moveY = this.y;
+            }
+
+            move() {
+                this.moveX += this.vX;
+                this.moveY += this.vY;
+            }
+        }
+
+        // 得到 粒子实例
+        function setupParticles() {
+            return new Promise(resolve => {
+                let img = new Image();
+                img.src = imgUrl;
+                img.onload = () => {
+                    // 图片 等比例缩放
+                    let imgW = parseInt((w * (1 - MarginRatio * 2)) / 2),
+                        imgH = parseInt(imgW / (img.naturalWidth / img.naturalHeight)),
+                        // 图片 水平居中, 垂直居中
+                        startX = w * MarginRatio * 2,
+                        startY = (h - imgH) / 2;
+                    ctx.drawImage(img, startX, startY, imgW, imgH);
+                    // 原始数据
+                    let imgData = ctx.getImageData(startX, startY, imgW, imgH);
+                    // rgba 分割数据
+                    let imgDataRgba = changeImageData(imgData.data);
+                    // 图片矩形 分割数据
+                    let imgDataRect = changeImageData(imgDataRgba, imgW);
+                    for (let x = 0; x < imgW; x++) {
+                        for (let y = 0; y < imgH; y++) {
+                            particles.push(
+                                // x * 2 和 y * 2 都是加间距
+                                new Particle(
+                                    startX / 2 + x * 2 * size,
+                                    startY / 2 + y * 2 * size,
+                                    imgDataRect[y][x]
+                                )
+                            );
+                            if (x === (imgW - 1) && y === (imgH - 1)) resolve();
+                        }
+                    }
+                }
+            })
+        }
+
+        /* function setupParticles() {
+            return new Promise(resolve => {
+                let oldimg = new Image();
+                oldimg.src = imgUrl;
+                oldimg.onload = () => {
+                    // 图片 等比例缩放
+                    let imgW = parseInt(w * (1 - MarginRatio * 2)),
+                        imgH = parseInt(imgW / (oldimg.naturalWidth / oldimg.naturalHeight)),
+                        // 图片 水平居中, 垂直居中
+                        startX = w * MarginRatio,
+                        startY = (h - imgH) / 2;
+                    ctx.drawImage(oldimg, startX, startY, imgW, imgH);
+                    // 原始数据
+                    let imgData = ctx.getImageData(startX, startY, imgW, imgH);
+                    // rgba 分割数据
+                    let imgDataRgba = changeImageData(imgData.data);
+                    // 图片矩形 分割数据
+                    let imgDataRect = changeImageData(imgDataRgba, imgW);
+                    for (let x = 0; x < imgW; x++) {
+                        for (let y = 0; y < imgH; y++) {
+                            particles.push(
+                                new Particle(
+                                    startX + x,
+                                    startY + y,
+                                    imgDataRect[y][x]
+                                )
+                            );
+                            if (x === (imgW - 1) && y === (imgH - 1)) resolve();
+                        }
+                    }
+                }
+            })
+        } */
+    </script>
+</body>
+</html>

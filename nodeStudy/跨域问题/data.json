@@ -1,0 +1,323 @@
+[
+    {
+        "nextId": [
+            "168cbb30-fd10-44b5-8307-265fc4353951"
+        ],
+        "children": [],
+        "name": "开始",
+        "icon": "",
+        "active": false,
+        "prevId": "",
+        "id": "1607634512025313280",
+        "type": "START_BTN",
+        "nodeId": "1"
+    },
+    {
+        "nextId": [
+            "1fe7b4f2-70b7-4e7a-9333-b272140c78f5"
+        ],
+        "name": "审批人",
+        "icon": "UserOutlined",
+        "active": false,
+        "prevId": "",
+        "id": "1607634512025313281",
+        "type": "APPROVER",
+        "nodeId": "168cbb30-fd10-44b5-8307-265fc4353951",
+        "props": {
+            "approverRadio": 2,
+            "approveType": "all",
+            "fieldData": [
+                {
+                    "isReadOnly": true,
+                    "isEdit": false,
+                    "comName": "1231123",
+                    "isHide": false
+                },
+                {
+                    "isReadOnly": false,
+                    "isEdit": true,
+                    "comName": "456456456",
+                    "isHide": false
+                }
+            ],
+            "RoleList": [
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-20",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0000",
+                    "title": "leaf"
+                },
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-21",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0001",
+                    "title": "hahah"
+                },
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-22",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0002",
+                    "title": "leaf"
+                },
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-20",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0010",
+                    "title": "leaf"
+                },
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-20",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0020",
+                    "title": "leaf"
+                },
+                {
+                    "level": 2,
+                    "icon": {
+                        "_store": {},
+                        "type": "div",
+                        "key": "icon-21",
+                        "props": {
+                            "children": {
+                                "_store": {},
+                                "type": {},
+                                "props": {
+                                    "size": 2,
+                                    "source": ""
+                                }
+                            },
+                            "style": {
+                                "paddingLeft": "3.2rem"
+                            }
+                        }
+                    },
+                    "id": "0021",
+                    "title": "leaf"
+                }
+            ],
+            "ApproverList": [],
+            "tableData": [
+                {
+                    "isUse": false,
+                    "batchApproval": true,
+                    "name": "同意23123123",
+                    "btn": "同意"
+                },
+                {
+                    "isUse": true,
+                    "batchApproval": false,
+                    "name": "拒绝",
+                    "btn": "拒绝"
+                }
+            ]
+        }
+    },
+    {
+        "nextId": [
+            "597f8cc8-2217-453e-91b3-1ef02c11af4c",
+            "8b8795a9-5aa6-40a1-9606-a689c7760eca"
+        ],
+        "children": [
+            {
+                "nextId": [
+                    "0"
+                ],
+                "lastPriority": 2,
+                "name": "条件分支",
+                "icon": "ApartmentOutlined",
+                "active": false,
+                "prevId": "1fe7b4f2-70b7-4e7a-9333-b272140c78f5",
+                "id": "1607634512029507585",
+                "type": "CONDITION_BRANCH",
+                "priority": 1,
+                "nodeId": "597f8cc8-2217-453e-91b3-1ef02c11af4c",
+                "props": {
+                    "expression": "",
+                    "calculate": "condition",
+                    "conditions": {
+                        "op": "且",
+                        "condition": "AND",
+                        "rules": [
+                            {
+                                "op": "且",
+                                "condition": "AND",
+                                "rules": [
+                                    {
+                                        "componentType": "EmployeeField",
+                                        "op": "等于",
+                                        "name": "发起人",
+                                        "opCode": "Equal",
+                                        "rules": [],
+                                        "ruleId": "1e2cc696-9153-4918-bb39-0e449a12a0dd",
+                                        "value": [
+                                            {
+                                                "label": "parent 3",
+                                                "id": "03",
+                                                "value": "03"
+                                            }
+                                        ],
+                                        "parentId": "c4a8b577-fd37-4049-9677-36188771d579"
+                                    },
+                                    {
+                                        "componentType": "EmployeeField",
+                                        "op": "等于",
+                                        "name": "发起人",
+                                        "opCode": "Equal",
+                                        "ruleId": "d03664a9-8ff4-4c5f-9bad-b0bca9ffaf1d",
+                                        "value": [
+                                            {
+                                                "label": "parent 7",
+                                                "id": "07",
+                                                "value": "07"
+                                            }
+                                        ],
+                                        "parentId": "c4a8b577-fd37-4049-9677-36188771d579"
+                                    }
+                                ],
+                                "ruleId": "c4a8b577-fd37-4049-9677-36188771d579",
+                                "parentId": "0",
+                                "conditionCode": "&&"
+                            },
+                            {
+                                "componentType": "EmployeeField",
+                                "op": "等于",
+                                "name": "发起人",
+                                "opCode": "Equal",
+                                "rules": [],
+                                "ruleId": "bbcc7d48-9c7e-4a7e-a35c-0ae84ac6295f",
+                                "value": [
+                                    {
+                                        "label": "parent 5",
+                                        "id": "05",
+                                        "value": "05"
+                                    }
+                                ],
+                                "parentId": "0"
+                            }
+                        ],
+                        "ruleId": "0",
+                        "conditionCode": "&&"
+                    }
+                }
+            },
+            {
+                "nextId": [
+                    "0"
+                ],
+                "lastPriority": 2,
+                "name": "其他分支",
+                "icon": "ApartmentOutlined",
+                "active": false,
+                "prevId": "1fe7b4f2-70b7-4e7a-9333-b272140c78f5",
+                "id": "1607634512029507586",
+                "type": "OTHER_CONDITION_BRANCH",
+                "priority": 2,
+                "nodeId": "8b8795a9-5aa6-40a1-9606-a689c7760eca",
+                "props": {}
+            }
+        ],
+        "name": "if 分支",
+        "icon": "",
+        "active": false,
+        "prevId": "",
+        "id": "1607634512029507584",
+        "type": "BRANCH",
+        "nodeId": "1fe7b4f2-70b7-4e7a-9333-b272140c78f5"
+    },
+    {
+        "nextId": [],
+        "children": [],
+        "name": "结束",
+        "icon": "",
+        "active": false,
+        "prevId": "",
+        "id": "1607634512029507587",
+        "type": "END_BTN",
+        "nodeId": "0"
+    }
+]

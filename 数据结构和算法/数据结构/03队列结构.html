@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 队列是一种特殊的线性表, 特殊之处在于它允许在标的前端 进行删除操作, 而在表的后端进行
+     * 插入操作, 和栈一样, 队列是一种操作受限制的线性表. 进行插入操作的端成为队尾, 进行
+     * 删除操作的端成为队头. 队列中没有元素时, 称为空队列.
+     * 队列的数据元素又称为队列元素. 在队列中插入一个队列元素称为入队, 从队列中删除一个队列
+     * 元素称为出队. 因为队列只允许在一端插入, 在另一端删除, 所以只有最早进入队列的元素才能
+     * 最先从队列中删除, 故队列又称为先进先出线性表.
+     *
+     * JavaScript 异步、事件循环、任务队列  Event Loop
+     */
+    /**
+     * 问题版队列
+     * 队列封装时注意, 使用 shift 删除第一项时, 数组的所有项会向前移一步, 性能并不好, 效率低下
+     */
+    class QueueIssue {
+        constructor() {
+        }
+
+        #items = []
+
+        dequeue() {
+            return this.#items.shift();
+        }
+
+        enqueue(data) {
+            this.#items.push(data);
+        }
+
+        front() {
+            // return this.items[this.items.length - 1]
+            return this.#items.at(0)
+        }
+
+        isEmpty() {
+            return this.#items.length === 0
+        }
+
+        size() {
+            return this.#items.length
+        }
+
+        clear() {
+            this.#items = [];
+        }
+
+        toString() {
+            return this.#items.join("")
+        }
+
+        getAll() {
+            return [...this.#items]
+        }
+    }
+
+    class Queue {
+        #items = {};
+        #lowCount = 0;
+        #count = 0;
+
+        dequeue() {
+            if (this.isEmpty()) return undefined;
+            let res = this.#items[this.#lowCount];
+            delete this.#items[this.#lowCount++];
+            return res
+        }
+
+        enqueue(data) {
+            this.#items[this.#count++] = data;
+        }
+
+        front() {
+            return this.#items[this.#lowCount];
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        size() {
+            return this.#count - this.#lowCount;
+        }
+
+        clear() {
+            this.#items = {};
+            this.#lowCount = 0;
+            this.#count = 0;
+        }
+
+        toString() {
+            let str = '';
+            for (let i = this.#lowCount; i < this.#count; i++) {
+                str += `${ this.#items[i] }`
+            }
+            return str;
+        }
+    }
+
+    let queue = new Queue();
+    queue.enqueue('queue1');
+    queue.enqueue('queue2');
+    queue.enqueue('queue3');
+    queue.dequeue();
+    queue.dequeue();
+    console.log(queue.isEmpty());
+    console.log(queue.size());
+    console.log(queue);
+</script>
+</body>
+</html>

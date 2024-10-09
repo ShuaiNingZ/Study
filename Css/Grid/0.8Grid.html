@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格行和列</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid {
+            border: 1px solid #ddd;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 50px;
+            grid-auto-rows: 50px;
+        }
+
+        .item6 {
+            grid-column-start: 2;
+            grid-row-start: 3;
+        }
+
+        .item7 {
+            grid-column-start: 3;
+            grid-row-start: 4;
+        }
+
+        .item8 {
+            grid-column-start: 1;
+            grid-row-start: 4;
+        }
+
+        .item9 {
+            grid-column-start: 2;
+            grid-row-start: 5;
+        }
+
+        .grid1 {
+            grid-template-rows: 60px 60px 60px;
+            grid-template-columns: 20% 20% 20%;
+            grid-template-areas: 'header header header' 'sidebar main main' 'footer footer footer';
+        }
+
+        .head {
+            grid-area: header;
+            /*等同于*/
+            /*grid-area: 1/1/2/4;*/
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+        }
+
+        .main {
+            grid-area: main;
+        }
+
+        .footer {
+            grid-area: footer;
+        }
+
+        .grid2 {
+            grid-template-rows: 60px 60px 60px;
+            grid-template-columns: 20% 20% 20%;
+        }
+
+        .colSpan {
+            grid-column-start: span 2;
+        }
+
+        .grid3 {
+            grid-template-rows: 60px  60px 60px;
+            grid-template-columns: 20% 20% 20%;
+        }
+
+        .item1 {
+            grid-column-start: 2;
+            grid-row-start: 1;
+            z-index: 200;
+        }
+
+        .item2 {
+            grid-column-start: 2;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            z-index: 100;
+            text-align: end;
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even),
+        .grid2 > div:nth-child(even),
+        .grid3 > div:nth-child(even),
+        .grid4 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd),
+        .grid2 > div:nth-child(odd),
+        .grid3 > div:nth-child(odd),
+        .grid4 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+
+        .grid7 {
+            display: grid;
+            grid-template-columns: max-content min-content max-content min-content;
+        }
+    </style>
+</head>
+<body>
+<!--
+    这些为子项目属性, 子项目定位排版
+    网格项定位 grid-column-start 和 grid-area
+    在实际使用中, 可能对某个网站项的位置有要求, 这时就可以用到网络项的
+    定位, 定位时, 有项目重叠, 则使用 z-index 属性指定项目的重叠顺序
+
+    grid-column-start 直接指定网格项开始在第几根列网格线, 这个属性
+    设置在网格项上
+
+    grid-column-start 网格项在第几根列线上开始
+    grid-column-end 网格项在几根列线上结束
+    grid-row-start 网格项在第几根行线上开始
+    grid-row-end 网格项在第几根行线上结束
+
+    区域 grid-area
+    网格设置区域, 网格项使用属性 grid-area 指定区域
+    在设置了区域时, 网格线也就被命名好了, 可以用网格线名定位
+
+    grid-area: <row-start> / <column-start> / <row-end> / <column-end>;
+
+    span 关键字, 表示开始边框到结束边框跨越了多少个单元格, 默认为1, 负整数或 0 为无效;
+
+    z-index
+    当项目重叠后, 使用属性 z-index
+
+    grid-column 和 grid-row
+    grid-column 属性是 grid-column-start 和 grid-column-end 的合并简写
+    grid-row 属性是 grid-row-start 和 grid-row-end 的合并简写
+
+    grid-column: <grid-column-start> / <grid-column-end>;
+	grid-row: <grid-row-start> / <grid-row-end>;
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div class="item6">6</div>
+    <div class="item7">7</div>
+    <div class="item8">8</div>
+    <div class="item9">9</div>
+</div>
+<div class="grid1">
+    <div class="head">1</div>
+    <div class="sidebar">4</div>
+    <div class="main">5</div>
+    <div class="footer">6</div>
+</div>
+<div class="grid2">
+    <div>1</div>
+    <div class="colSpan">2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+</div>
+<div class="grid3">
+    <div class="item1">1</div>
+    <div class="item2">2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+</body>
+</html>

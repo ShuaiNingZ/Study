@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 一组命令的集合
+    class MacroCommand {
+        constructor() {
+            // 子命令对象
+            this.list = []
+        }
+
+        add(command) {
+            this.list.push(command)
+        }
+
+        execute() {
+            for (let item of this.list) {
+                item.execute();
+            }
+        }
+    }
+
+    const Tabs = {
+        execute() {
+            console.log('选项卡执行')
+            this.init();
+            this.getData();
+            this.render();
+        },
+        init(){
+            console.log('init')
+        },
+        getData(){
+            console.log('getData')
+        },
+        render(){
+            console.log('render')
+        }
+    }
+
+    const Swipe = {
+        execute() {
+            console.log('轮播执行')
+        }
+    }
+
+    const macroCommand = new MacroCommand();
+    macroCommand.add(Tabs);
+    macroCommand.add(Swipe);
+
+    macroCommand.execute()
+</script>
+</body>
+</html>

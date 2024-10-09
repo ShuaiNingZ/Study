@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /**
+     * 什么是生命周期
+     *     一个组件从创建到销毁的过程
+     *     当组件实例被创建并且会插入到 DOM 中, 需要调用的函数, 就是生命周期函数
+     *     也就是说 组件加载完成前后, 组件更新数据, 组件销毁, 所触发的一系列方法
+     * Mounting 初始化阶段
+     *     组件创建到首次渲染页面
+     *     constructor  构造函数, 在创建组件的时候调用一次
+     *     UNSAFE_componentWillMount   在组件即将被挂在的时候调用一次
+     *          组件还没有渲染出来, 但 js 逻辑已经开始执行了, 一般用于异步的方法 ajax 请求数据
+     *     render   渲染函数
+     *     componentDidMount    在组建被挂在完成的时候调用一次, 可以在这里使用 refs 组件已经被渲染出来了
+     * Updating 运行中阶段 (更新阶段)
+     *     状态更新引起的变化
+     *     UNSAFE_componentWillReceiveProps(nextProps)  父组件的数据更新会触发子组件的这个函数
+     *          nextProps 父组件数据更新后子组件 props 接收的数据
+     *     shouldComponentUpdate(nextProps, nextState)
+     *          是否需要重新渲染 return false (不执行 render 函数, 视图层数据不发生改变) / (true 执行 render 函数, 视图层数据发生改变)
+     *     UNSAFE_componentWillUpdate(nextProps, nextState)
+     *          即将更新, render 函数触发, 才能执行该方法, 若 shouldComponentUpdate 返回 false, 则该生命周期不触发
+     *     render 渲染
+     *     componentDidUpdate()   完成更新, render 函数触发, 才能执行该方法, 若 shouldComponentUpdate 返回 false, 则该生命周期不触发
+     * Unmounting 销毁阶段
+     *     componentWillUnmount()  组件即将销毁
+     *
+     */
+
+    class List extends React.Component {
+        constructor() {
+            super(...arguments);
+            this.state = {
+                list: '这是 list 数据',
+                data: this.props.title
+            }
+            console.group('%c<------ 2-1 执行 constructor 构造函数 ------>', 'color: #00ebc7');
+            console.log(`%c<------ 获取 this ------>`, 'color: #a786df', this);
+        }
+
+        UNSAFE_componentWillReceiveProps(nextProps) {
+            console.group('%c<------ 2-3 执行 UNSAFE_componentWillReceiveProps 父组件更新 props 数据变化 ------>', 'color: #00ebc7');
+            console.log(`%c<------ 获取 nextProps ------>`, 'color: #a786df', nextProps);
+            this.setState({
+                data: nextProps.title
+            })
+        }
+
+        shouldComponentUpdate(nextProps, nextState) {
+            console.group('%c<------ 2-4 执行 shouldComponentUpdate 是否更新组件 ------>', 'color: #00ebc7');
+            console.log(`%c<------ 获取 设置 state 的值 ------>`, 'color: #a786df', this.state.data);
+            setTimeout(() => {
+                console.log(`%c<------ 获取 设置 state 的值 ------>`, 'color: #a786df', this.state.data);
+            })
+            // 此处必须有返回值, 返回 false 虽然数据发生改变了, 但是视图层不发生改变, render 函数未执行,
+            // 默认 true 数据改变, 视图层也改变, render 函数执行
+            if (this.state.data === nextProps.title) {
+                return false
+            } else {
+                return true
+            }
+            // 简写
+            // return this.state.data !== nextProps.title;
+        }
+
+        UNSAFE_componentWillUpdate(nextProps, nextState) {
+            // 触发问题, render 函数执行 才能触发该生命周期
+            console.group('%c<------ 2-5 执行 UNSAFE_componentWillUpdate 组件即将更新 ------>', 'color: #00ebc7');
+        }
+
+        componentDidUpdate(nextProps, nextState) {
+            console.group('%c<------ 2-6 执行 componentDidUpdate 组件更新完成 ------>', 'color: #00ebc7');
+        }
+
+        componentWillUnmount() {
+            console.group('%c<------ 3-1 执行 componentWillUnmount 组件即将销毁 ------>', 'color: #00ebc7');
+        }
+
+        render() {
+            console.group('%c<------ 2-2 执行 render 组件渲染函数 ------>', 'color: #00ebc7');
+            return (
+                <div>
+                    <h2> 这是 List 组件</h2>
+                    <div>{this.state.data}</div>
+                </div>
+            )
+        }
+    }
+
+    class App extends React.Component {
+        constructor(props) {
+            super(props);
+            // 构造函数只执行一次
+            // this.props 读取父组件传递的数据
+            // this.state 初始化状态
+            this.state = {
+                a: props.title,
+                b: this.props.title,
+                p: 'App',
+                onOff: true
+            }
+            console.group('%c<------ 1-1 执行 constructor 构造函数 ------>', 'color: #ff6e6c');
+            console.log(`%c<------ 获取 this ------>`, 'color: #a786df', this);
+        }
+
+        // 即将挂载
+        UNSAFE_componentWillMount() {
+            // 即将挂载 用于请求后端资源, 此处只能有 少量的请求, 大量请求会导致页面长时间白屏
+            // 可以访问 this
+            // 无法访问 dom
+            this.setState({
+                c: '哈哈哈'
+            })
+            console.group('%c<------ 1-2 执行 UNSAFE_componentWillMount 组件即将挂载 ------>', 'color: #ff6e6c');
+            console.log(`%c<------ 获取 this ------>`, 'color: #a786df', this);
+            console.log(`%c<------ 获取 ref ------>`, 'color: #a786df', this.h1Ref);
+            console.log(`%c<------ 获取 设置 state 的值 ------>`, 'color: #a786df', this.state.c);
+            // 因为 this.setState this.state this.props 都是异步操作
+        }
+
+        // 挂载完成
+        componentDidMount() {
+            // 页面在此处 请求后端接口
+            // 请求返回的数据 放在 state 里面优点:
+            // 1. 当前组件是根据 state 的数据进行渲染
+            // 2. state 的数据是响应式数据, 一旦数据变化了, 就会自动触发 render 函数 重新渲染
+            // 重点: 当前组件 维护当前组件的数据 (状态)
+            console.group('%c<------ 1-4 执行 componentDidMount 组件挂在完成 ------>', 'color: #ff6e6c');
+            console.log(`%c<------ 获取 ref ------>`, 'color: #a786df', this.h1Ref);
+            console.log(`%c<------ 获取 设置 state 的值 ------>`, 'color: #a786df', this.state.c);
+            // 生命周期 第一阶段 完成, 相当于 用户打开网页触发 1-1 至 1-4
+        }
+
+        handleClick = () => {
+            // 点击 当前组件的元素 执行当前的事件函数, 更新当前组件数据 b, 数据变化, 就会自动触发 render 函数
+            this.setState({
+                b: '点击事件改变数据',
+                p: 'haha'
+            })
+        }
+
+        handleDestory = () => {
+            this.setState({
+                onOff: !this.state.onOff
+            })
+        }
+
+        render() {
+            console.group('%c<------ 1-3 执行 render 组件渲染函数 ------>', 'color: #ff6e6c');
+            // 可以在这一步对 state 进行数据处理
+            console.log(`%c<------ 获取 ref ------>`, 'color: #a786df', this.h1Ref);
+            console.log(`%c<------ 获取 设置 state 的值 ------>`, 'color: #a786df', this.state.c);
+            return (
+                <div>
+                    <h1 ref={h1Ref => this.h1Ref = h1Ref}>App</h1>
+                    {this.state.a}
+                    <hr/>
+                    {this.state.b}
+                    <button
+                        ref={btn => this._btn = btn}
+                        onClick={this.handleClick}>
+                        点击组件更新
+                    </button>
+                    {
+                        this.state.onOff && <List title={this.state.p}></List>
+                    }
+                    <button onClick={this.handleDestory}>销毁 List 组件</button>
+                </div>
+            )
+        }
+    }
+
+    ReactDOM.render(
+        <App title={'abc123'}></App>,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+</html>

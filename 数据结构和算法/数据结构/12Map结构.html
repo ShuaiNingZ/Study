@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    const myMap = new Map();
+    const obj = { a: 1 };
+    myMap.set('name', '哈哈哈');
+    myMap.set({ a: 1 }, '1232123');
+    myMap.set(obj, '789789');
+    console.log(myMap)
+    console.log(myMap.entries());
+
+    const myWeakMap = new WeakMap();
+    let objKey = { a: 1 };
+    let objKey1 = { b: 2 }
+    myWeakMap.set(objKey1, '1232123');
+    myWeakMap.set(objKey, '789789');
+    // WeakMap 是弱引用, 只能使用对象作为 key, 当 WeakMap 的 key 被赋值为 null 的时候,
+    // WeekMap 里面的属性和属性值就没有了, 直接将对象字面量作为 key 插入无法访问
+    // 必须使用 WeekMap 操作 不然不行
+    objKey = null;
+    console.log(myWeakMap)
+</script>
+</body>
+</html>

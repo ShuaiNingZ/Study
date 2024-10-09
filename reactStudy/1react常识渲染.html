@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<!-- 页面入口 -->
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /*
+      写 react 语法 需要 babel 解析
+      react 框架 实现 UI 用户界面 只关注 UI 层
+      react-dom 用户交互 只处理 dom
+    */
+    console.log('ReactDOM :', ReactDOM);
+    console.log('React :', React);
+    // 渲染方法 1
+    // ReactDOM.render(
+    //   <h1>哈哈</h1>,
+    //   document.querySelector('#app')
+    // )
+    // 渲染方法 2
+    // js 里面写 html 代码 这种语法教 jsx
+    /*
+    const ele = <h1>
+        <span>哈哈</span>
+        <br />
+        {
+          '纳尼?'
+          // 插值符号里面写 js 代码
+          // 注释就这么写
+        }
+        <span>哈哈</span>
+      </h1>;
+    ReactDOM.render(
+      ele,
+      document.querySelector('#app')
+    )
+     */
+    // 渲染方式 3
+    // 常用这种方式  根据 数据 生成结构
+    function createJSX() {
+        return (
+            <h1>
+                <span>哈哈</span>
+                <span>哈哈</span>
+                <span>
+              {
+                  // 注释
+              }
+            </span>
+            </h1>
+        )
+    }
+
+    ReactDOM.render(
+        createJSX(),
+        document.querySelector('#app')
+    )
+</script>
+</body>
+</html>

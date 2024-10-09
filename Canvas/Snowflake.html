@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SnowFlake</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h, drawFn = createSnowflake, targetNum = 10;
+
+    // 绘画区域自适应窗口大小
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    // 随机数
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    /**
+     * 创建雪花
+     * @param cX 中心横坐标
+     * @param cY 中心纵坐标
+     * @param lW 线条粗细
+     * @param lH 线条长度(半径)
+     * @param breakPoint 雪花主支上有多少拐点
+     * @param limbNum 雪花有多少根主支
+     * @param c 雪花颜色
+     * @returns {{r: number, x, y}}
+     */
+    function createSnowflake({cX, cY, lW = 1, lH = 10, breakPoint = 4, limbNum = 6, c = '#ffffff'}) {
+        const limbAngle = 360 / limbNum;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = c;
+        ctx.fillStyle = c;
+        ctx.lineWidth = lW;
+        ctx.translate(cX, cY);
+
+        for (let i = 0; i < limbNum; i++) {
+            createSnowflakeItem()
+        }
+
+        // 画雪花的每个主支
+        function createSnowflakeItem() {
+            ctx.beginPath();
+            ctx.rotate((limbAngle * Math.PI) / 180);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, lH);
+            ctx.stroke();
+
+            // 画每个主支上的圆
+            ctx.beginPath();
+            ctx.arc(0, lH, lW * 1.5, 0, -Math.PI * 2 / 180);
+            ctx.fill();
+
+            let bpStart = 0;
+            let bpGap = parseInt((lH - lW * 2) / breakPoint);
+            for (let j = 0; j < breakPoint; j++) {
+                const bpEnd = getAngleLocal({
+                    angle: 45,
+                    radius: lH * (j + 1) * 0.1,
+                    circleCenter: {cX: 0, cY: bpStart}
+                });
+                ctx.beginPath();
+                ctx.moveTo(0, bpStart);
+                ctx.lineTo(bpEnd.x, bpEnd.y);
+                ctx.moveTo(0, bpStart);
+                ctx.lineTo(-bpEnd.x, bpEnd.y);
+                ctx.stroke();
+                bpStart += bpGap;
+            }
+        }
+
+        // 根据圆心, 圆半径, 角度, 获取点在圆上的位置
+        function getAngleLocal({angle, radius, circleCenter: {cX, cY}}) {
+            return {
+                x: cX + radius * Math.cos(angle * Math.PI / 180),
+                y: cY + radius * Math.sin(angle * Math.PI / 180)
+            }
+        }
+
+        ctx.translate(-cX, -cY);
+    }
+
+    /**
+     * 创建所有目标位置信息
+     * @returns {*[]}
+     */
+    function createAllTargetLocal() {
+        const targetLocalArr = [];
+        for (let i = 0; i < targetNum; i++) {
+            targetLocalArr.push({
+                x: random(0, w),
+                y: random(0, h),
+                r: random(10, 30),
+                vX: random(-1, 3),
+                vY: random(-3, 1),
+            })
+        }
+        return targetLocalArr
+    }
+
+    /**
+     * 目标对象移动方法
+     * @param x 中心横坐标
+     * @param y 中心纵坐标
+     * @param r 半径
+     * @param vX 横向加速度
+     * @param vY 纵向加速度
+     * @returns {{r, vX, vY, x, y}}
+     */
+    function moveTarget({x, y, r, vX, vY}) {
+        // 先绘图
+        drawFn({
+            cX: x, cY: y, lH: r
+        });
+        // 再移动
+        x += vX;
+        y += vY;
+        if (!(x >= r && x <= w - r)) {
+            vX *= -1;
+        }
+        if (!(y >= r && y <= h - r)) {
+            vY *= -1;
+        }
+        return {
+            x,
+            y,
+            r,
+            vX,
+            vY
+        }
+    }
+
+    (() => {
+        let targetLocalArr = createAllTargetLocal();
+        setInterval(() => {
+            ctx.clearRect(0, 0, w, h);
+            targetLocalArr = targetLocalArr.map(item => {
+                return moveTarget(item)
+            })
+        }, 1000 / 60)
+    })()
+</script>
+</body>
+</html>

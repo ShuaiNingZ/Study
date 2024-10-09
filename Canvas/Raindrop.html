@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+<canvas></canvas>
+<script>
+    let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let w, h;
+    let rainArr = []; // 存储所有新生成的雨滴
+    // canvas 绘画区域自动适应窗口大小
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    function random(min, max) {
+        return Math.random() * (max - min) + min
+    }
+
+    class Rain {
+        constructor() {
+        }
+
+        init() {
+            this.y = 0; // 雨滴初始化 Y 坐标
+            this.x = random(0, w); // 雨滴初始化 X 坐标
+            this.v = random(2, 4); // 雨滴初始化 v 速度
+            this.h = random(0.75 * h, 0.85 * h); // 雨滴绽放位置
+            this.r = 2; // 雨滴初始半径
+            this.maxR = 50; // 雨滴最大半径
+            this.a = 1; // 雨滴初始透明度
+            this.va = random(0.95, 0.98); // 透明度变淡
+        }
+
+        draw() {
+            if (this.y < this.h) {
+                canCon.fillStyle = '#3ff';
+                canCon.fillRect(this.x, this.y, 2, 10);
+            } else {
+                canCon.strokeStyle = `rgba(51, 255, 255, ${this.a})`;
+                canCon.beginPath();
+                canCon.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                canCon.stroke();
+            }
+        }
+
+        move() {
+            if (this.y < this.h) {
+                this.y += this.v;
+            } else {
+                if (this.a > 0.05) {
+                    this.r++;
+                    this.a *= this.va;
+                } else {
+                    this.init();
+                }
+            }
+            this.draw();
+        }
+    }
+
+    function createRain(num) {
+        for (let i = 0; i < num; i++) {
+            setTimeout(() => {
+                let rain = new Rain();
+                rain.init();
+                rain.draw();
+                rainArr.push(rain);
+            }, 200 * i)
+        }
+    }
+
+    createRain(30);
+
+    setInterval(() => {
+        canCon.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        canCon.fillRect(0, 0, w, h);
+        for (let i = 0; i < rainArr.length; i++) {
+            rainArr[i].move();
+        }
+    }, 1000 / 60)
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /*const x = 1;
+        const y = 1;
+        const z = 2454;
+        const defaultData = [];
+        const generateData = (_level, _preKey, _tns) => {
+            const preKey = _preKey || '0';
+            const tns = _tns || defaultData;
+    
+            const children = [];
+            for (let i = 0; i < x; i++) {
+                const key = `${preKey}-${i}`;
+                tns.push({title: key, key});
+                if (i < y) {
+                    children.push(key);
+                }
+            }
+            if (_level < 0) {
+                tns.children = defaultData;
+                return tns;
+            }
+            const level = _level - 1;
+            children.forEach((key, index) => {
+                tns[index].children = [];
+                return generateData(level, key, tns[index].children);
+            });
+        };
+        generateData(z);
+        // console.log(defaultData)*/
+
+
+        const generateJSON = (x, y, n) => {
+            let data = [];
+            for (let i = 0; i < x; i++) {
+                const o = {};
+                o.id = `${n}-${x}-${i}`;
+                o.children = [];
+                for (let j = 0; j < y; j++) {
+                    const a = {};
+                    a.id = `${n}-${x}-${i}-${y}-${j}`;
+                    o.children.push(a);
+                }
+                data.push(o);
+            }
+            return data
+        }
+
+        let jsonData = []
+        let curData = []
+        let n = 0;
+        while (n <= 5000000) {
+            n++;
+            if (curData.length) {
+                curData.forEach(item => {
+                    item.children.forEach(item1 => {
+                        const c = generateJSON(1, 1, n);
+                        item1.children = c;
+                        curData = c;
+                    })
+                })
+            } else {
+                curData = generateJSON(1, 1, n);
+                jsonData = curData;
+            }
+        }
+        console.log(jsonData)
+
+        /**
+         * 用于给 tree JSON 数组 添加属性使用
+         * @param data 数据
+         * @param key 递归 key, 用于判断递归的值的 key
+         * @returns {*[]} 返回数组
+         */
+        /* let i = 0;
+        const tailRecursionTree = function fn(data, key = 'children') {
+            // console.log(++i)
+            let arr = [];
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                item.label = item.title;
+                item.value = item.key;
+                arr.push({
+                    ...item,
+                    children: Array.isArray(item[key]) ? fn(item[key], key) : []
+                })
+            }
+            return arr
+        }
+
+        console.log(tailRecursionTree(jsonData)); */
+    </script>
+</body>
+</html>

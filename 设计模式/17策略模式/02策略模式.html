@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>使用功能策略模式验证表单</title>
+</head>
+<body>
+<form action="/" class="form">
+    <input type="text" name="username">
+    <div class="tip"></div>
+    <input type="text" name="password">
+    <div class="tip"></div>
+    <button>submit</button>
+</form>
+<script>
+    const strategies = {
+        // 非空
+        noEmpty(value, errMsg) {
+            if (value === '') {
+                return errMsg
+            }
+        },
+        minLength(value, errMsg, options) {
+            if (!value || value.length < options.length) {
+                return errMsg
+            }
+        },
+        maxLength(value, errMsg, options) {
+            if (value.length > options.length) {
+                return errMsg
+            }
+        }
+    }
+
+    class Validator {
+        constructor(strategies) {
+            this.strategies = strategies;
+            // 存储效验规则
+            this.cache = [];
+        }
+
+        add(dom, rules) {
+            rules.forEach(item => {
+                this.cache.push(() => {
+                    return this.strategies[item.rule].apply(dom, [dom.value, item.errMsg, item])
+                })
+            })
+            return this
+        }
+
+        validate(dom, rules, errMsg) {
+            for (let i = 0, validateFun; validateFun = this.cache[i++];) {
+                const message = validateFun();
+                // 返回报错信息, 终止验证并抛出异常
+                if (message) return message;
+            }
+        }
+    }
+
+    const form = document.querySelector('form');
+    form.addEventListener('input', function (e) {
+        switch (e.target.tagName.toLowerCase()) {
+            case 'input':
+            case 'textarea':
+                e.preventDefault();
+                const nextEle = e.target.nextElementSibling;
+                // 判断验证结果
+                const message = validate();
+                const msg = message[e.target.name];
+                if (msg) {
+                    nextEle.innerHTML = msg;
+                    this.style.color = 'red';
+                } else {
+                    nextEle.innerHTML = '';
+                }
+                break;
+        }
+    })
+    form.addEventListener('change', function (e) {
+        switch (e.target.tagName.toLowerCase()) {
+            case 'select':
+                console.log(`${ e.target.name }${ e.target.value }`)
+                break;
+        }
+    })
+
+    // 校验函数
+    function validate() {
+        const usernameValidator = new Validator(strategies).add(form.username, [
+            {
+                rule: 'noEmpty',
+                errMsg: '用户名不能为空!'
+            },
+            {
+                rule: 'minLength',
+                length: 3,
+                errMsg: `用户名长度大于3!`
+            }
+        ])
+        const passwordValidator = new Validator(strategies).add(form.password, [
+            {
+                rule: 'minLength',
+                length: 6,
+                errMsg: `密码长度大于6!`
+            },
+            {
+                rule: 'maxLength',
+                length: 10,
+                errMsg: `密码最大长度为10!`
+            }
+        ])
+        // 进行校验，并返回结果
+        return {
+            [form.username.name]: usernameValidator.validate(),
+            [form.password.name]: passwordValidator.validate()
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 集合: 集合是由一组无序且唯一 (即不能重复) 的项组成的, 如 Set
+     */
+
+    class MySet {
+        items = {};
+
+        add(element) {
+            if (!this.has(element)) {
+                this.items[element] = element;
+                return true;
+            }
+            return false;
+        }
+
+        delete(element) {
+            if (this.has(element)) {
+                delete this.items[element];
+                return true;
+            }
+            return false;
+        }
+
+        has(element) {
+            // {100: 100} 元素即是属性又是方法
+            return element in this.items;
+        }
+
+        clear() {
+            this.items = {};
+        }
+
+        size() {
+            return Object.keys(this.items).length;
+        }
+
+        values() {
+            return Object.values(this.items);
+        }
+    }
+
+    const myset = new MySet();
+    const arr = [1, 2, 3, 4, 2, 1, 2, 3, 2, 1, 2, 3, 4];
+
+    for (let i = 0; i < arr.length; i++) {
+        myset.add(arr[i]);
+    }
+    console.log(myset.values())
+
+    const mysetA = new Set([1, 2, 3]);
+    const mysetB = new Set([2, 3, 4]);
+    console.log('并集', new Set([...mysetA, ...mysetB]));
+    console.log('交集', new Set([...mysetA].filter(item => mysetB.has(item))));
+    console.log('差集', new Set([...mysetA].filter(item => !mysetB.has(item))));
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格布局</title>
+    <script>
+        /**
+         * 设置在网格容器上
+         * display
+         * 值: grid | inline-grid
+         *
+         * grid-template-columns
+         * grid-template-rows
+         * 值: px | % | em | ... | auto | fr | repeat() | minmax() | auto-fit | auto-fill | max-content | min-content
+         *
+         * grid-auto-flow
+         * 值: row | column | dense | row dense | column dense
+         *
+         * justify-content
+         * align-content
+         * place-content: <align-content> <justify-content>
+         * 值: stretch | start | end | center | space-around | space-between | space-evenly
+         *
+         * justify-items
+         * align-items
+         * place-items: <justify-items> <align-items>
+         * 值: stretch | start | end | center
+         *
+         * grid-column-gap
+         * grid-row-gap
+         * gap: <grid-row-gap> <grid-column-gap>
+         * 值: px | % | em | ...
+         *
+         * grid-auto-rows
+         * grid-auto-columns
+         * 值: px | % | em | ...
+         *
+         * grid-template-areas
+         * 值: 任意
+         *
+         * 设置在网格项上
+         * grid-row-start
+         * grid-row-end
+         * grid-column-start
+         * grid-column-end
+         * grid-row: <grid-row-start> / <grid-row-end>
+         * grid-column: <grid-column-start> / <grid-column-end>
+         * 值: 整数 | 网格线名称 | span 数字
+         *
+         * grid-area
+         * 值: 与 grid-template-areas 值对应
+         *
+         * justify-self
+         * align-self
+         * 值: stretch | start | end | center
+         */
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr) 2fr 2fr;
+            /*grid-auto-rows: 36px;*/
+        }
+
+        .grid > div {
+            padding: 10px 5px;
+            border: 1px solid #cccccc;
+        }
+
+        .grid > div.colSpan4 {
+            /*
+                方法 1:
+                grid-column-start: 1;
+                grid-column-end: 5;
+                方法 2:
+                grid-column: 1 / 5;
+                方法 3:
+                grid-column-start: span 4;
+            */
+            grid-column-start: span 4;
+            background-color: #eeeeee;
+        }
+
+        .grid > div.rowSpan2 {
+            /*
+                方法 1:
+                grid-row-start: 4;
+                grid-row-end: 6;
+                方法 2:
+                grid-row: 4 / 6;
+                方法 3:
+                grid-row-start: span 2;
+            */
+            grid-row-start: span 2;
+        }
+
+        .grid > div.rowSpan3 {
+            grid-row-start: span 3;
+        }
+
+        .grid > div.rowSpan6 {
+            grid-row-start: span 6;
+        }
+
+        .grid > div.rowSpan7 {
+            grid-row-start: span 7;
+        }
+    </style>
+</head>
+<body>
+<div class="grid">
+    <div>作用</div>
+    <div>属性</div>
+    <div>属性值</div>
+    <div>描述</div>
+    <div class="colSpan4">设置在网格容器上</div>
+    <div>排版方式</div>
+    <div>display</div>
+    <div>grid | inline-grid</div>
+    <div>块栅格 | 行内栅格</div>
+    <div class="rowSpan2">行和列</div>
+    <div>grid-template-rows</div>
+    <div class="rowSpan2">
+        px | % | em | ... | auto | fr | repeat() | minmax() | auto-fit | auto-fill | max-content | min-content
+    </div>
+    <div>设置网格多少行</div>
+    <div>grid-template-columns</div>
+    <div>设置网格多少列</div>
+    <div>网格排序方向</div>
+    <div>grid-auto-flow</div>
+    <div>row | column | dense | row dense | column dense</div>
+    <div>设置网格如何排序</div>
+    <div class="rowSpan3">网格项对齐</div>
+    <div>justify-content</div>
+    <div class="rowSpan3">stretch | start | end | center | space-around | space-between | space-evenly</div>
+    <div>网格在网格容器的水平方向如何对齐</div>
+    <div>align-content</div>
+    <div>网格在网格容器的垂直方向如何对齐</div>
+    <div>place-content</div>
+    <div>&lt;align-content&gt; &lt;justify-content&gt;</div>
+    <div class="rowSpan3">网格单元对齐</div>
+    <div>justify-items</div>
+    <div class="rowSpan3">stretch | start | end | center</div>
+    <div>网格项在网格单元的水平方向如何对齐</div>
+    <div>align-items</div>
+    <div>网格项在网格单元的垂直方向如何对齐</div>
+    <div>place-items</div>
+    <div>&lt;align-items&gt; &lt;justify-items&gt;</div>
+    <div class="rowSpan2">默认尺寸</div>
+    <div>grid-auto-rows</div>
+    <div class="rowSpan2">px | % | em | ...</div>
+    <div>行数未确定时, 指定未设置尺寸的行高度</div>
+    <div>grid-auto-columns</div>
+    <div>列数不确定时, 指定未设置尺寸的列宽度</div>
+    <div>网格区域</div>
+    <div>grid-template-areas</div>
+    <div>值: 任意, 每个网格项对应一个名称, 名称可以重复, 连续重复名称为合并, 每个字符串代表一行,
+        字符串与字符串之间使用空格连接
+    </div>
+    <div>设置网格项区域</div>
+    <div class="rowSpan3">网格间隙</div>
+    <div>grid-row-gap</div>
+    <div class="rowSpan3">px | % | em | ...</div>
+    <div>网格行间隙</div>
+    <div>grid-column-gap</div>
+    <div>网格列间隙</div>
+    <div>gap</div>
+    <div>&lt;grid-row-gap&gt; &lt;grid-column-gap&gt;</div>
+    <div class="colSpan4">设置在网格项上</div>
+    <div class="rowSpan7">网格项定位</div>
+    <div>grid-row-start</div>
+    <div class="rowSpan6">整数 | 网格线名称 | span 数字 | ...</div>
+    <div>网格项在第几根列线上开始</div>
+    <div>grid-row-end</div>
+    <div>网格项在第几根列线上结束</div>
+    <div>grid-row</div>
+    <div>&lt;grid-row-start&gt; / &lt;grid-row-end&gt;</div>
+    <div>grid-column-start</div>
+    <div>网格项在第几根列线上开始</div>
+    <div>grid-column-end</div>
+    <div>网格项在第几个列线上结束</div>
+    <div>grid-column</div>
+    <div>&lt;grid-column-start&gt; / &lt;grid-column-end&gt;</div>
+    <div>grid-area</div>
+    <div>与 grid-template-areas 值有对应关系</div>
+    <div>网格项定位于那个区域, 与 grid-template-areas 联用</div>
+    <div class="rowSpan2">网格项对齐</div>
+    <div>justify-self</div>
+    <div class="rowSpan2">stretch | start | end | center</div>
+    <div>单独设置网格项在网格单元的水平方向如何对齐</div>
+    <div>align-self</div>
+    <div>单独设置网格项在网格单元的垂直方向如何对齐</div>
+</div>
+</body>
+</html>

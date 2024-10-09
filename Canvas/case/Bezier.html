@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>贝塞尔曲线</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #canvas {
+            display: block;
+            background-color: #444444;
+        }
+
+        #canvas.pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, // canvas 宽、高
+        dotR = 8, // 点的半径
+        dotColor = 'rgb(17, 255, 228, 0.6)', // 点颜色
+        lineColor = 'rgb(17, 255, 228, 1)', // 点连线颜色
+        lineWidth = 3,
+        allDot = [], // 所有定位置
+        bColor = '#FF0000', // 贝塞尔曲线颜色
+        bT = 0,  // 贝塞尔曲线 t
+        bTV = 0.01, // t 的增长速度
+        bPath = [];  // 贝塞尔曲线 路径点数组
+
+    // 绘画区域自适应窗口大小
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    /**
+     * 判断 鼠标/点 是否在圆内/上
+     * @param circle {object} 圆 至少有三个值 x, y 圆心横纵坐标, r 圆半径
+     * @param dot {object} 点 至少有两个值 x, y 点的横纵坐标
+     * @returns {boolean}
+     */
+    function isInCircle(circle, dot) {
+        return Math.pow((dot.x - circle.x), 2) + Math.pow((dot.y - circle.y), 2) <= Math.pow(circle.r, 2)
+    }
+
+    class Dot {
+        /**
+         * 画点
+         * @param x {number} 水平坐标
+         * @param y {number} 垂直坐标
+         * @param r {number} 半径
+         * @param c {string} 颜色
+         */
+        constructor(x, y, r, c) {
+            this.x = x;
+            this.y = y;
+            this.r = r;
+            this.c = c;
+        }
+
+        addDot() {
+            ctx.beginPath();
+            ctx.fillStyle = this.c;
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    /**
+     * 连线
+     * @param dot1 {object} 至少有两个值 x, y 点 横纵坐标
+     * @param dot2 {object} 至少有两个值 x, y 点 横纵坐标
+     * @param c {string} 颜色
+     * @param lW {number} 线宽
+     */
+    function onLine(dot1, dot2, c, lW) {
+        ctx.beginPath();
+        ctx.lineWidth = lW;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = c;
+        ctx.moveTo(dot1.x, dot1.y);
+        ctx.lineTo(dot2.x, dot2.y);
+        ctx.stroke();
+    }
+
+    /**
+     * 杨辉三角递归函数
+     * @param num {number} 多少次后返回
+     * @param arr {array} 递归时, 上一次的数据
+     * @returns {*[]|number[]|[number]|*}  返回杨辉三角某一行的数据
+     */
+    function triangle(num, arr = []) {
+        if (num === 1) return [1];
+        const initArr = [1, 1]
+        if (num === 2) return initArr;
+        arr = arr.length ? arr : initArr;
+        let len = arr.length;
+        if (len++ < num) {
+            const returnArr = [];
+            for (let i = 0; i < len; i++) {
+                switch (i) {
+                    case 0:
+                    case len - 1:
+                        returnArr[i] = 1;
+                        break;
+                    default:
+                        returnArr[i] = arr[i - 1] + arr[i];
+                        break;
+                }
+            }
+            return triangle(num, returnArr);
+        } else {
+            return arr
+        }
+    }
+
+    /**
+     * 贝塞尔曲线变化生成点
+     * @param allDot {array} 页面上所有点
+     * @param t {number} 0 <= t < 1
+     */
+    function bezierFn(allDot, t) {
+        const len = allDot.length,
+            triangleArr = triangle(len),
+            pDot = {
+                x: 0,
+                y: 0
+            };
+        allDot.forEach((item, i) => {
+            /**
+             * 重点:
+             * t   0 <= t < 1, 1 - t > 0, (1 - t)ⁿ =
+             * len = 3      (1 - t)²P₁ + 2(1 - t)tP₂ + t²P₃
+             * len = 4      (1 - t)³P₁ + 3(1 - t)²tP₂ + 3(1 - t)t²P₃ + t³P₄
+             * len = 5      (1 - t)⁴P₁ + 4(1 - t)³tP₂ + 6(1 - t)²t²P₃ + 4(1 - t)t³P₄ + t⁴P₅
+             * 综上规律: 将每个 + 隔开为假定式子: a(1 - t)ᵇtᶜPᵥ
+             * len = 3      a: 1 2 1              b: 2 1 0            c: 0 1 2
+             * len = 4      a: 1 3 3 1            b: 3 2 1 0          c: 0 1 2 3
+             * len = 5      a: 1 4 6 4 1          b: 4 3 2 1 0        c: 0 1 2 3 4
+             * 得出: a: 杨辉三角规律    b: max: len - 1 倒序     c: max: len - 1 正序
+             * Pᵥ 表示将 点的 横纵坐标其中一个套入公式
+             */
+            pDot.x += triangleArr[i] * Math.pow((1 - t), len - i - 1) * Math.pow(t, i) * item.x;
+            pDot.y += triangleArr[i] * Math.pow((1 - t), len - i - 1) * Math.pow(t, i) * item.y;
+        })
+        bezierAssistFn(allDot, t);
+        return pDot;
+    }
+
+    /**
+     * 贝塞尔曲线变化辅助线
+     * @param pathArr {array} 辅助线的所有点
+     * @param t {number} 0 <= t < 1
+     * @param c {string} 颜色
+     * @returns {*}
+     */
+    function bezierAssistFn(pathArr, t, c = lineColor) {
+        if (!(pathArr.length > 1)) return;
+        const assistPath = [];
+        pathArr.forEach((item, i) => {
+            if (pathArr.length > 1 && i < pathArr.length - 1) {
+                const assistDot = {
+                    x: 0,
+                    y: 0
+                }
+                assistDot.x = (1 - t) * item.x + t * pathArr[i + 1].x;
+                assistDot.y = (1 - t) * item.y + t * pathArr[i + 1].y;
+                assistPath.push(assistDot);
+            }
+        })
+        assistPath.forEach((item, i) => {
+            if (assistPath.length > 1 && i < assistPath.length - 1) {
+                // 该判断是为了清除辅助线, 在最后与控制点线重合
+                t < 1 && onLine(item, assistPath[i + 1], c, 1);
+            }
+        })
+        return bezierAssistFn(assistPath, t);
+    }
+
+    /**
+     * 重置贝塞尔数据
+     */
+    function resetBezierData() {
+        bT = 0;
+        bPath = [];
+    }
+
+    /**
+     * 重绘贝塞尔曲线
+     */
+    function resetBezier() {
+        resetBezierData();
+        let moveBezier = setInterval(() => {
+            ctx.clearRect(0, 0, w, h);
+            resetAllDot();
+            bPath.push(bezierFn(allDot, bT));
+            if (bT < 1) {
+                bT += bTV;
+            } else {
+                clearInterval(moveBezier);
+            }
+            bPath.forEach((item, i) => {
+                if (bPath.length > 1 && i >= 1) {
+                    onLine(bPath[i - 1], item, bColor, lineWidth);
+                }
+            })
+        }, 1000 / 60)
+    }
+
+    /**
+     * 重绘所有点并连线
+     */
+    function resetAllDot() {
+        allDot.forEach((item, i) => {
+            item.addDot();
+            if (allDot.length > 1 && i < allDot.length - 1) {
+                onLine(item, allDot[i + 1], lineColor, lineWidth);
+            }
+        })
+    }
+
+    /**
+     * 鼠标对点的拖拽事件
+     */
+    canvas.addEventListener('mousedown', e => {
+        // 鼠标左键按下
+        if (e.button === 0) {
+            const dot = new Dot(e.clientX, e.clientY, dotR, dotColor);
+            const dotIndex = allDot.findIndex(item => isInCircle(item, {x: e.clientX, y: e.clientY}));
+            // 判断鼠标是否不在画的点上
+            if (!~dotIndex) {
+                dot.addDot();
+                allDot.push(dot);
+                if (allDot.length > 1) {
+                    onLine(allDot[allDot.length - 2], allDot[allDot.length - 1], lineColor, lineWidth);
+                    resetBezier();
+                }
+            } else {
+                const mousemoveFn = e => {
+                    ctx.clearRect(0, 0, w, h);
+                    dot.x = e.clientX;
+                    dot.y = e.clientY;
+                    allDot.splice(dotIndex, 1, dot);
+                    resetBezierData();
+                    resetAllDot();
+                }
+
+                const mouseupFn = () => {
+                    resetBezier();
+                    canvas.removeEventListener('mousemove', mousemoveFn);
+                    // 由于 addEventListener 会多次添加事件, 所以鼠标抬起是清除自己
+                    canvas.removeEventListener('mouseup', mouseupFn);
+                }
+
+                canvas.addEventListener('mousemove', mousemoveFn)
+                canvas.addEventListener('mouseup', mouseupFn)
+            }
+        }
+    })
+
+    /**
+     * 鼠标在 canvas 上 右击点, 删除某个点
+     */
+    canvas.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const dotIndex = allDot.findIndex(item => isInCircle(item, {x: e.clientX, y: e.clientY}));
+        if (~dotIndex) {
+            allDot.splice(dotIndex, 1);
+            resetBezier();
+        }
+    })
+
+    /**
+     * 鼠标在 canvas 上移动, 如果鼠标在点范围内变手指
+     */
+    canvas.addEventListener('mousemove', e => {
+        // 判断鼠标是否在点上
+        if (allDot.some(item => isInCircle(item, {x: e.clientX, y: e.clientY}))) {
+            canvas.classList.add('pointer');
+        } else {
+            canvas.classList.contains('pointer') && canvas.classList.remove('pointer');
+        }
+    })
+</script>
+</body>
+</html>

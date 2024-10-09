@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文字转图片返回 base64</title>
+</head>
+<body>
+    <script>
+        function txtImg(text, arg = {}) {
+            let config = {
+                width: 0,
+                height: 0,
+                wPadding: 20,
+                hPadding: 10,
+                backgroundColor: 'transparent',
+                fontSize: 20,
+                fontFamily: 'sans-serif',
+                borderColor: '#f33a53',
+                borderWidth: 2
+            }
+            config = { ...config, ...arg };
+            config.width = config.fontSize * text.length + config.wPadding * 2;
+            config.height = config.fontSize + config.hPadding * 2;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = config.width;
+            canvas.height = config.height;
+            canvas.style.backgroundColor = config.backgroundColor;
+            ctx.font = `${config.fontSize}px/${config.fontSize}px ${config.fontFamily}`;
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, (config.width - ctx.measureText(text).width) / 2, config.fontSize / 2 + config.hPadding + config.borderWidth);
+            ctx.strokeStyle = config.borderColor;
+            ctx.lineWidth = config.borderWidth;
+            ctx.beginPath();
+            ctx.arc(config.height / 2, config.height / 2, config.height / 2 - config.borderWidth / 2, Math.PI * 3 / 2, Math.PI / 2, true);
+            ctx.lineTo(config.width - config.height / 2, config.height - config.borderWidth / 2);
+            ctx.arc(config.width - config.height / 2, config.height / 2, config.height / 2 - config.borderWidth / 2, -Math.PI * 3 / 2, -Math.PI / 2, true);
+            ctx.lineTo(config.height / 2, config.borderWidth / 2);
+            ctx.stroke();
+            ctx.closePath();
+
+            const imgData = ctx.getImageData(0, 0, config.width, canvas.height);
+            return canvas.toDataURL(imgData, 1)
+        }
+
+        console.log(txtImg('1233'));
+    </script>
+</body>
+</html>

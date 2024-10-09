@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    const obj = [
+        ['name', '不秋草、'],
+        ['age', 18]
+    ]
+    console.log(Object.fromEntries(obj));
+    // { name: '不秋草、', age: 18 }
+
+    const map = new Map([
+        ['name', '不秋草、'],
+        ['age', 18]
+    ])
+    console.log(map)
+    console.log(Object.fromEntries(map));
+    // { name: '不秋草、', age: 18 }
+
+    const user = {
+        name: '不秋草、',
+        age: 18
+    }
+    const objDes = Object.getOwnPropertyDescriptor(user, 'name');
+    console.log(objDes)
+    // { value: '不秋草、', writable: true, enumerable: true, configurable: true }
+    const objDesc = Object.getOwnPropertyDescriptors(user);
+    console.log(objDesc)
+    // {{ value: '不秋草、', writable: true, enumerable: true, configurable: true }, { value: 18, writable: true, enumerable: true, configurable: true }}
+
+    console.log(Object.getOwnPropertyNames(user));
+    // ['name', 'age']
+
+    const name = Symbol('name'),
+        age = Symbol('age');
+    const person = {}
+    person[name] = '不秋草、';
+    person[age] = 18;
+    console.log(Object.getOwnPropertySymbols(person));
+    // [Symbol(name), Symbol(age)]
+
+    const son = Object.create(user);
+    console.log(son.__proto__);
+    // {name: '不秋草、', age: 18}
+    const sonPrototype = Object.getPrototypeOf(son);
+    console.log(sonPrototype)
+    // {name: '不秋草、', age: 18}
+
+    console.log(son)
+    console.log(user.isPrototypeOf(son));
+    // true
+
+    console.log(user.propertyIsEnumerable('name'));
+    // true
+    console.log(user.propertyIsEnumerable('toString'));
+    // false
+
+
+    // 电脑没有联网, 为什么之前的网页可以展示, 这是浏览器的什么机制
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 模板方式模式是由两部分组成:
+     *  1. 抽象父类
+     *  2. 具体的实现子类
+     * 通常在抽象父类中封装了子类的算法框架, 包括实现一些公共方法以及封装子类中所有方法的
+     * 执行顺序. 子类通过继承这个抽象类, 也继承了整个算法解构, 并且可以选择重写父类的方法
+     */
+    const Container = function (params = {}) {
+        let F = function () {
+
+        }
+
+        F.prototype.init = function () {
+            this.getData()
+            this.render()
+        }
+
+        F.prototype.getData = params.getData || function () {
+            throw new Error('必须传入 getData')
+        }
+
+        F.prototype.render = function () {
+            console.log('render')
+        }
+
+        return F
+    }
+
+    const MyClass = Container({
+        getData() {
+            console.log('获取 nowplaying')
+            return [1, 2, 3]
+        }
+    })
+    new MyClass().init()
+
+    const MyClass1 = Container({
+        getData() {
+            console.log('获取 comingsoon')
+            return [4, 5, 6]
+        }
+    })
+    new MyClass1().init()
+</script>
+</body>
+</html>

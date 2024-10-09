@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 03工厂模式
+    // 优点: 创建大量相似对象可以使用, 每次都返回独立的对象
+    // 缺点: 无法确定是哪个工厂函数创建, 每次都会将每个对象
+    function Fn(name) {
+        const obj = new Object();
+        obj.name = name;
+        obj.sayName = () => {
+            console.log(obj.name)
+        }
+        return obj;
+    }
+
+    // 构造函数模式
+    function Fn1(name) {
+        this.name = name;
+        this.sayName = () => {
+            console.log(this.name)
+        }
+    }
+
+    const fn1 = new Fn1('123');
+    fn1.sayName();
+    // 解决了 工厂函数无法知道由那个函数创建的问题, 构造函数的 constructor
+    // 没有显示的创建对象, 没有显示的返回, 直接将属性和方法赋值给 this, 通过 new 操作符调用
+    // 缺点: 公共方法属性在每次创建的时候都会创新创建一遍, 对内存的消耗
+
+    // 原型模式 又叫 构造函数和原型组合模式
+    function Fn2(name) {
+        this.name = name
+    }
+
+    Fn2.prototype.sayName = function () {
+        console.log(this.name);
+    }
+    // 解决了 构造函数公共属性或方法每次调用重新执行一遍的问题
+    // 缺点: 如果公共属性或方法被某个实例修改了, 其他实例对象的公共属性和方法也会被修改, Object.definePrototype 能解决一部分这样的问题, 但深层对象无法解决
+
+    // 动态原型模式
+    function Fn3(type) {
+        this.type = type;
+
+        if (this.type === 'string') {
+            Fn3.prototype.sayType = () => {
+                console.log(this.type);
+            }
+        }
+    }
+
+    const fn3 = new Fn3('string');
+    console.log(fn3)
+    fn3.sayType();
+    // 优点: 使原型对象更加灵活多变
+
+    // 寄生构造函数模式
+    function Fn4(name) {
+        const obj = new Object();
+        obj.name = name;
+        obj.sayName = function () {
+            console.log(this.name);
+        }
+        return obj
+    }
+
+    const fn4 = new Fn4('哈哈');
+    fn4.sayName();
+    // 缺点: 返回的对象与构造函数和构造函数的原型质质检没有关系, 不能通过 instanceof 来确定对象的类型
+
+    // 稳妥构造函数模式
+    function Fn5(name) {
+        const obj = new Object();
+        obj.name = name;
+        obj.sayName = function () {
+            console.log(name);
+        }
+        return obj
+    }
+
+    console.log(Fn5('h123'));
+</script>
+</body>
+</html>

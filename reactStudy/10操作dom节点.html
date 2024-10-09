@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /**
+     * 多种方式 操作 DOM
+     */
+    class Ele extends React.Component {
+        constructor() {
+            super();
+        }
+
+        handleClick(e) {
+            // 1. 通过 原生 获取 DOM
+            const ipt = document.querySelector('input');
+            console.log(ipt);
+            // 2. 事件对象
+            console.log(e.target)
+            // 3. ReactDOM.findDOMNode 参数是元素
+            console.log(ReactDOM.findDOMNode(e.target));
+
+            // 4. 不推荐使用: 字符串的方式 ref 获取 DOM
+            console.log(this.refs.btn)
+            // 5. 推荐使用: 箭头函数式 获取 ref
+            console.log(this.h1Ref)
+
+            /**
+             * 虚拟 DOM
+             * 只有当它插入文档以后, 才能变成真实的 DOM
+             * 需要从 组件中获取真是 DOM 可以使用 ref
+             * 新版本 React 不推荐使用 ref string, 推荐使用 ref callback 的方式获取 DOM
+             * 通过此种方式 挂在实例对象上 ref callback -> this.属性名
+             * 大多数情况下, 应该使用的 DOM 的固定引用 而非使用 findDOMNode 方法,
+             * 因为当 render 返回 null 时 findDOMNode 也会返回 null
+             */
+        }
+
+        render() {
+            return (
+                <div>
+                    {
+                        // 箭头函数式 获取 ref
+                    }
+                    <h1 ref={h1Ref => this.h1Ref = h1Ref}>
+                        Hello World
+                    </h1>
+                    <input type="button" defaultValue="操作 DOM" onClick={this.handleClick}/>
+                    <input ref={'btn'} type="button" defaultValue="ref 获取 DOM" onClick={this.handleClick.bind(this)}/>
+                    {
+                        // _list 下划线代表私有
+                    }
+                    <List ref={list => this._list = list}></List>
+                    {
+                        // 在使用 ReactDOM.findDOMNode 时 当参数是 DOM 返回值 此时是 DOM,
+                        // 当参数是 component 获取的 就是 component 的 render 中的 DOM
+                    }
+                    <input type="button" defaultValue="操作 DOM" onClick={() => {
+                        console.log(this._list)
+                        // 参数为 component
+                        console.log(ReactDOM.findDOMNode(this._list))
+                        console.log(ReactDOM.findDOMNode(this._list) == this._list) // false
+                        // 参数为 元素 DOM
+                        console.log(ReactDOM.findDOMNode(this.h1Ref) == this.h1Ref) // true
+                    }}/>
+                </div>
+            )
+        }
+    }
+
+    class List extends React.Component {
+        render() {
+            return (
+                <div>
+                    <h2>Item</h2>
+                </div>
+            )
+        }
+    }
+
+
+    ReactDOM.render(
+        <Ele/>,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+
+</html>

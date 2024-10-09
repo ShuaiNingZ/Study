@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 03工厂模式: 使 同一类别 的 类 综合起来, 使接口统一方便调用,
+    // 同时在修改以及扩展时更加方便
+    class Shop {
+        constructor(name) {
+            return this[name].apply(this, [...arguments])
+        }
+
+        Steak(name, price, time) {
+            this.name = name;
+            this.price = price;
+            this.time = time;
+        }
+
+        Grill(args) {
+            this.price = 12;
+            this.time = 15;
+        }
+
+        Noodles(args) {
+            this.price = 12;
+            this.time = 12;
+        }
+    }
+
+    let a = new Shop('Steak', 90, 30);
+    let b = new Shop('Grill')
+    let c = new Shop('Noodles')
+    console.log(a, b, c)
+</script>
+</body>
+</html>

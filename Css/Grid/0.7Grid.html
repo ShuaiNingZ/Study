@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格线和区域</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid {
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: repeat(3, 60px);
+            grid-column-start: 3;
+        }
+
+        .grid1 {
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: [a] 60px [b] 60px [c] 60px [d];
+        }
+
+        .grid2 {
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: repeat(3, 60px);
+            /*grid-template-areas: 'a . c'*/
+            /*                     'd . f'*/
+            /*                     'g . i';*/
+            grid-template-areas: 'header header header'
+                                 'sidebar main main'
+                                 'footer footer footer';
+            /*grid-template-areas: 'a b c'*/
+            /*                     'd e f'*/
+            /*                     'g h i';*/
+        }
+
+        .head {
+            grid-area: header;
+        }
+
+        .main {
+            grid-area: main;
+        }
+
+        .footer {
+            grid-area: footer;
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even),
+        .grid2 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd),
+        .grid2 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+    </style>
+</head>
+<body>
+<!--
+    网格项是可以指定位置的, 使用网格线和区域来定位
+    网格线
+        一个2行4列的网格, 就有3条行网格线, 5条列网格线,
+        在使用时在网格项直接指定第几根网格线(1, 2, 3...)
+    在默认的网格排序中, 想让某个网格项定位于第二列
+
+    .grid2
+    网格区域是由一个或多个网格单元组成的一个矩形区域, 在布局
+    中, 某些网格项需要类似于合并单元格, 那么使用区域就很方便快捷
+
+    1. 当使用区域 grid-template-areas 时, 必须要有相同数量的单元格
+    2. 区域名一样的, 能让网格项跨越这些单元格, 类似合并单元格
+    3. 如果不想使用某些区域, 用句点(.)声明
+    4. 网格区域的命名会影响网格线的命名, 当给区域命名后, 区域2条
+    边会自动得到命名 '-start' 和 '-end', 这意味着一条网格线可能有
+    多个名称
+
+    区域名称相同的, 在使用时就像单元格合并, 如果以上的 main,
+    其上边行线和左边列线为 main-start, 下边行线和右边列线为 main-end
+
+    网格的4条行网格线:
+    [header-start]、
+    [header-end sidebar-start main-start]、
+    [sidebar-end main-end footer-start]、
+    [footer-end]
+
+    网格的4条列网格线
+    [header-start sidebar-start footer-start]、
+    [sidebar-end main-start]、
+    []、
+    [header-end main-end footer-end]
+
+    grid-area: header;
+    等同于
+    {
+        grid-column-start: header-start; === sidebar-start === footer-start
+        grid-column-end: footer-end; === header-end === main-end
+    }
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+<div class="grid1">
+    <div>00001</div>
+    <div>00002</div>
+    <div>00003</div>
+    <div>00004</div>
+    <div>00005</div>
+    <div>00006</div>
+    <div>00007</div>
+    <div>00008</div>
+    <div>00009</div>
+</div>
+<div class="grid2">
+    <div class="head">3</div>
+    <div class="sidebar">4</div>
+    <div class="main">6</div>
+    <div class="footer">9</div>
+</div>
+</body>
+</html>

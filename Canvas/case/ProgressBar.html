@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #canvas {
+            display: block;
+            background-color: #444444;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    class ProgressBar {
+        constructor(options) {
+            this.options = options;
+            this.maxVal = 100;
+        }
+
+        draw() {
+            ctx.clearRect(0, 0, this.options.w, this.options.h);
+            const lineGrad = ctx.createLinearGradient(220, 20, 220, 400);
+            lineGrad.addColorStop(0, '#11ffe4');
+            lineGrad.addColorStop(0.5, '#03c6fd');
+            lineGrad.addColorStop(1, '#10a5ff');
+            // 画文字
+            ctx.beginPath();
+            ctx.fillStyle = '#fff';
+            ctx.shadowBlur = 0;
+            ctx.font = '40px sans-serif'
+            ctx.fillText(`${this.options.val}%`, this.options.cW - 50, this.options.cH + 15);
+            // 画圆圈
+            ctx.beginPath();
+            ctx.shadowColor = '#10fae7'
+            ctx.shadowBlur = 15;
+            ctx.lineWidth = this.options.s;
+            ctx.lineCap = this.options.cap;
+            ctx.strokeStyle = lineGrad;
+            ctx.arc(this.options.cW, this.options.cH, this.options.cR, 0, (Math.PI * 2 / this.maxVal) * this.options.val);
+            ctx.stroke();
+        }
+
+        move() {
+            this.options.val++;
+            this.draw();
+        }
+
+        init() {
+            let timer = setInterval(() => {
+                this.move();
+                if (this.options.val === this.maxVal) {
+                    clearInterval(timer);
+                }
+            }, 1000 / 60)
+        }
+    }
+
+    const bar = new ProgressBar({
+        val: 0, // 初始值
+        s: 10, // 进度条默认宽
+        cap: 'round', // 默认圆角,
+        w: w, // 画布宽
+        h: h, // 画布高
+        cW: 200, // 圆心水平坐标
+        cH: 200, // 圆心垂直坐标
+        cR: 100 // 圆心半径
+    });
+    bar.init();
+</script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 单例模式:
+     *  1. 保证一个类仅有一个实例, 并提供一个访问它的全局访问点
+     *  2. 主要解决一个全局使用的类频繁的创建和销毁, 占用内存
+     */
+    /*const Singleton = (function () {
+        function Model() {
+            this.visible = false;
+            this.bool = (bool) => {
+                console.log(bool)
+            }
+        }
+
+        let instance;
+
+        return function () {
+            if (!instance) {
+                instance = new Model()
+            }
+            return instance;
+        }
+    })()
+
+    console.log(Singleton() === Singleton())
+
+    let Singleton1 = (function () {
+        function Model1() {
+            this.visible = false;
+            this.bool = (bool) => {
+                console.log(bool)
+                this.visible = bool;
+            }
+        }
+
+        return new Model1()
+    })()
+
+    console.log(Singleton1)
+
+    class Singleton2 {
+        constructor() {
+            if (!Singleton2.instance) {
+                this.visible = false;
+                this.bool = (bool) => {
+                    console.log(bool)
+                    this.visible = bool;
+                }
+                Singleton2.instance = this
+            }
+
+            return Singleton2.instance
+        }
+    }
+
+    console.log(new Singleton2(), new Singleton2() === new Singleton2())*/
+
+    /* 简单版 单例模式 */
+    const Singleton = function (name) {
+        this.name = name;
+        this.instance = null;
+    }
+
+    Singleton.prototype.getName = function () {
+        console.log(this.name)
+    }
+
+    Singleton.getInstance = function (name) {
+        return this.instance || (this.instance = new Singleton(name));
+    }
+
+    const sing1 = Singleton.getInstance('簡單單例模式');
+    const sing2 = Singleton.getInstance('简单单例模式');
+    console.log(sing1 === sing2);
+    sing1.getName();
+    sing2.getName();
+
+    /* 透明版 单例模式 */
+    const CreateSingleton = (function () {
+        let instance;
+        return function (name) {
+            if (instance) {
+                return instance
+            }
+            this.name = name;
+            return instance = this;
+        }
+    })()
+
+    CreateSingleton.prototype.getName = function () {
+        console.log(this.name)
+    }
+
+    const sing3 = new CreateSingleton('透明單例模式');
+    const sing4 = new CreateSingleton('透明单例模式');
+    console.log(sing3 === sing4);
+    sing3.getName();
+    sing4.getName();
+
+    // 代理版 单例模式
+    const Single = function (name) {
+        this.name = name;
+    }
+
+    Single.prototype.getName = function () {
+        console.log(this.name);
+    }
+
+    const ProxySingleton = (function () {
+        let instance;
+        return function (name) {
+            // 代理函数仅作管理单例
+            return instance || (instance = new Single(name));
+        }
+    })()
+
+    const sing5 = new ProxySingleton('代理 單例模式');
+    const sing6 = new ProxySingleton('代理 单例模式');
+    console.log(sing5 === sing6);
+    sing5.getName();
+    sing6.getName();
+
+    // 惰性单例模式
+    const getSingleton = function (fn) {
+        let result;
+        return function () {
+            return result || (result = fn.apply(this, arguments))
+        }
+    }
+    const createAlertMessage = function (html) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        div.style.display = 'none';
+        document.body.appendChild(div);
+        return div
+    }
+    const createSingleAlertMessage = getSingleton(createAlertMessage);
+    document.addEventListener('click', function () {
+        // 多次点击只会产生一个弹窗
+        const alertMessage = createSingleAlertMessage('惰性单例模式!');
+        alertMessage.style.display = 'block';
+    })
+</script>
+</body>
+</html>

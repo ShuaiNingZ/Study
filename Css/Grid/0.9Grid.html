@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格行和列</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid {
+            border: 1px solid #ddd;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 50px;
+            grid-auto-rows: 50px;
+        }
+
+        .item6 {
+            grid-column-start: 2;
+            grid-row-start: 3;
+        }
+
+        .item7 {
+            grid-column-start: 3;
+            grid-row-start: 4;
+        }
+
+        .item8 {
+            grid-column-start: 1;
+            grid-row-start: 4;
+        }
+
+        .item9 {
+            grid-column-start: 2;
+            grid-row-start: 5;
+        }
+
+        .grid1 {
+            grid-template-rows: 60px 60px 60px;
+            grid-template-columns: 20% 20% 20%;
+            grid-template-areas: 'header header header' 'sidebar main main' 'footer footer footer';
+        }
+
+        .head {
+            grid-area: header;
+            /*等同于*/
+            /*grid-area: 1/1/2/4;*/
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+        }
+
+        .main {
+            grid-area: main;
+        }
+
+        .footer {
+            grid-area: footer;
+        }
+
+        .grid2 {
+            grid-template-rows: 60px 60px 60px;
+            grid-template-columns: 20% 20% 20%;
+        }
+
+        .colSpan {
+            grid-column-start: span 2;
+        }
+
+        .grid3 {
+            grid-template-rows: 60px  60px 60px;
+            grid-template-columns: 20% 20% 20%;
+        }
+
+        .item1 {
+            grid-column-start: 2;
+            grid-row-start: 1;
+            z-index: 200;
+        }
+
+        .item2 {
+            grid-column-start: 2;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            z-index: 100;
+            text-align: end;
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even),
+        .grid2 > div:nth-child(even),
+        .grid3 > div:nth-child(even),
+        .grid4 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd),
+        .grid2 > div:nth-child(odd),
+        .grid3 > div:nth-child(odd),
+        .grid4 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+
+        .grid7 {
+            display: grid;
+            grid-template-columns: max-content min-content max-content min-content;
+        }
+    </style>
+    <script src="../../../Wallpaper/batchChangeFileName.js"></script>
+</head>
+<body>
+<!--
+    子元素设置
+    网格项对齐 justify-self 和 align-self
+    justify-self 表示网格项在网格单元水平方向的对齐方式
+    align-self 表示网格项在网格单元垂直方向对齐方式
+
+    这两个属性的值跟在网格容器设置的单元对齐 justify-items 是一样的
+    可以理解为 justify-self 是某个网格项想要不一样的对齐方式而又的私人属性 self
+    align-self 这个属性在 flex 布局时也有用到, 注意区别
+
+    start 内容与网格区域的左端对齐
+    end 内容与网格区域的右端对齐
+    center 内容处于网格区域的中间位置
+    stretch 内容宽度占据整个网格区域(默认值)
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div class="item6">6</div>
+    <div class="item7">7</div>
+    <div class="item8">8</div>
+    <div class="item9">9</div>
+</div>
+<div class="grid1">
+    <div class="head">1</div>
+    <div class="sidebar">4</div>
+    <div class="main">5</div>
+    <div class="footer">6</div>
+</div>
+<div class="grid2">
+    <div>1</div>
+    <div class="colSpan">2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+</div>
+<div class="grid3">
+    <div class="item1">1</div>
+    <div class="item2">2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+</body>
+</html>

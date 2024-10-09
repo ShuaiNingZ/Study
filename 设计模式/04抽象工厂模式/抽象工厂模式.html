@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 抽象工厂是实现子类继承父类的方法, 抽象工厂模式并不是直接生成实例对象, 而是用于对产品类簇的创建.
+     * 即工厂函数返回的是对象, 而抽象工厂函数返回的是类或者构造函数
+     */
+    /*class User {
+        constructor(name, role, pages) {
+            this.name = name;
+            this.role = role;
+            this.pages = pages;
+        }
+
+        welcome() {
+            console.log('欢迎回来', this.name)
+        }
+
+        dataShow() {
+            throw new Error('抽象方法需要被实现')
+        }
+    }
+
+    class SuperAdmin extends User {
+        constructor(name) {
+            super(name, 'superadmin', ['home', 'user-manage', 'right-manage', 'news-manage']);
+        }
+
+        dataShow() {
+            console.log('superadmin-data-show')
+        }
+
+        addRight() {
+
+        }
+
+        addUser() {
+
+        }
+    }
+
+    class Admin extends User {
+        constructor(name) {
+            super(name, 'admin', ['home', 'user-manage', 'news-manage']);
+
+        }
+
+        dataShow() {
+            console.log('admin-data-show')
+        }
+
+        addUser() {
+
+        }
+    }
+
+    class Editor extends User {
+        constructor(name) {
+            super(name, 'editor', ['home', 'user-manage', 'news-manage']);
+        }
+
+        dataShow() {
+            console.log('editor-data-show')
+        }
+    }
+
+    function getAbstractUserFactory(role) {
+        switch (role) {
+            case 'superadmin':
+                return SuperAdmin
+            case 'admin':
+                return Admin
+            case 'editor':
+                return Editor
+            default:
+                throw new Error('参数错误')
+        }
+    }
+
+    let userClass = getAbstractUserFactory('superadmin');
+    console.log(new userClass())*/
+
+    // 工厂 抽象类
+    class AbstractFactory {
+        constructor() {
+            if (new.target === AbstractFactory) throw new Error('抽象类不能直接实例化!')
+        }
+
+        // 抽象方法
+        createProduct() {
+            throw new Error('抽象方法不能调用!')
+        }
+    }
+
+    // 具体工厂类
+    class Factory extends AbstractFactory {
+        constructor() {
+            super()
+        }
+
+        createProduct(type) {
+            switch (type) {
+                case 'Product':
+                    return new Product()
+                case 'Product1':
+                    return new Product1()
+                default:
+                    throw new Error('当前没有这个产品')
+            }
+        }
+    }
+
+    // 抽象产品类
+    class AbstractProduct {
+        constructor() {
+            if (new.target === AbstractProduct) throw new Error('抽象类不能直接实例化')
+            this.kind = '抽象产品类';
+        }
+
+        operate() {
+            throw new Error('抽象方法不能调用!')
+        }
+    }
+
+    // 具体产品类
+    class Product extends AbstractProduct {
+        constructor() {
+            super();
+            this.type = 'Product';
+        }
+
+        operate() {
+            console.log(this.kind + ' _ ' + this.type)
+        }
+    }
+
+    // 具体产品类1
+    class Product1 extends AbstractProduct {
+        constructor() {
+            super();
+            this.type = 'Product1';
+        }
+
+        operate() {
+            console.log(this.kind + ' _ ' + this.type)
+        }
+    }
+
+    const factory = new Factory();
+
+    const prod = factory.createProduct('Product');
+    prod.operate();
+    // 输出: Error
+    const prod1 = factory.createProduct('product2');
+
+    /**
+     * 实现 subType 类对工厂类中的 superType 类型的抽象类的继承
+     * @param subType 要继承的类
+     * @param superType 工厂类中的抽象类 type
+     */
+    /*const VehicleFactory = function (subType, superType) {
+        if (typeof VehicleFactory[superType] === "function") {
+            function F() {
+                this.type = '车辆';
+            }
+
+            F.prototype = new VehicleFactory[superType]();
+            subType.constructor = subType;
+            subType.prototype = new F()
+        } else throw new Error('不存在该抽象类')
+    }
+
+    VehicleFactory.Car = function () {
+        this.type = 'car';
+    }
+
+    VehicleFactory.Car.prototype = {
+        getPrice: function () {
+            return new Error('抽象方法不可使用')
+        },
+        getSpeed: function () {
+            return new Error('抽象方法不可使用')
+        }
+    }
+
+    const BMW = function (price, speed) {
+        this.price = price;
+        this.speed = speed;
+    }
+    VehicleFactory(BMW, 'Car');
+    BMW.prototype.getPrice = function () {
+        console.log(`BWM price is ${ this.price }`)
+    }
+    BMW.prototype.getSpeed = function () {
+        console.log(`BWM price is ${ this.speed }`)
+    }
+
+    const baomai5 = new BMW(30, 99);
+    baomai5.getPrice();
+    console.log(baomai5 instanceof VehicleFactory.Car);*/
+</script>
+</body>
+</html>

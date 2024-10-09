@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 职责链模式:
+     * 通过请求第一个条件, 会持续执行后续的条件, 直到返回结果为止
+     * 场景:
+     * 在项目中能对 if-else 语句进行优化
+     */
+
+    /**
+     * 场景: 某电商针对已付过定金的用户有优惠政策, 在正式购买后, 已经支付过 500 元定金的
+     * 用户会收到 100 元的优惠券, 200 元定金的用户可以收到 50 元优惠券, 没有支付过定金
+     * 的用户只能正常购买
+     * orderType: 表示订单类型
+     *      1: 500 元订金用户
+     *      2: 200 元订金用户
+     *      3: 普通用户
+     * pay: 表示用户是否已经支付订金
+     *      true: 已支付
+     *      false 未支付
+     * stock: 表示当前用于普通购买的手机库存数量, 已支付过订金的用户不受此限制
+     */
+    const order = function (orderType, pay, stock) {
+        if (orderType === 1) {
+            if (pay) {
+                console.log('500 元订金, 得 100 优惠券')
+            } else {
+                if (stock > 0) {
+                    console.log('普通购买, 无优惠券')
+                } else {
+                    console.log('库存不够, 无法购买')
+                }
+            }
+        } else if (orderType === 2) {
+            if (pay) {
+                console.log('200 元订金, 得 100 优惠券')
+            } else {
+                if (stock > 0) {
+                    console.log('普通购买, 无优惠券')
+                } else {
+                    console.log('库存不够, 无法购买')
+                }
+            }
+        } else if (orderType === 3) {
+            if (stock > 0) {
+                console.log('普通购买, 无优惠券')
+            } else {
+                console.log('库存不够, 无法购买')
+            }
+        }
+    }
+
+    order(3, true, 500);
+
+    // 使用职责链改造上面代码
+    const order500 = function (orderType, pay, stock) {
+        if (orderType === 1 && pay === true) {
+            console.log('500 元订金预购, 得到 100 元优惠券');
+        } else {
+            order200(orderType, pay, stock)
+        }
+    }
+
+    const order200 = function (orderType, pay, stock) {
+        if (orderType === 2 && pay === true) {
+            console.log('200 元订金预购, 得到 50 元优惠券');
+        } else {
+            orderCommon(orderType, pay, stock);
+        }
+    }
+
+    const orderCommon = function (orderType, pay, stock) {
+        if (orderType === 3 && stock > 0) {
+            console.log('普通购买, 无优惠券')
+        } else {
+            console.log('库存不够, 无法购买')
+        }
+    }
+
+    order500(3, true, 500);
+
+    // 改造后可以发现代码相对清晰了, 但是链路代码和业务代码依然耦合在一起, 进一步优化:
+    const order5000 = function (orderType, pay, stock) {
+        if (orderType === 1 && pay) {
+            console.log('500 元定金预购, 得到 100 元优惠券')
+        } else {
+            return 'nextSuccess'
+        }
+    }
+    const order2000 = function (orderType, pay, stock) {
+        if (orderType === 2 && pay) {
+            console.log('200 元定金预购, 得到 50 元优惠券');
+        } else {
+            return 'nextSuccess'
+        }
+    }
+    const orderCommon1 = function (orderType, pay, stock) {
+        if (orderType === 3 && stock > 0) {
+            console.log('普通购买, 无优惠券')
+        } else {
+            console.log('库存不够')
+        }
+    }
+    // 链路代码
+    const chain = function (fn) {
+        this.fn = fn;
+        this.successor = null;
+    }
+    chain.prototype.setNext = function (successor) {
+        this.successor = successor;
+    }
+    chain.prototype.init = function () {
+        const result = this.fn.apply(this, arguments);
+        if (result === 'nextSuccess') {
+            this.successor.init.apply(this.successor, arguments);
+        }
+    }
+
+    const order5000New = new chain(order5000)
+    const order2000New = new chain(order2000)
+    const orderCommonNew = new chain(orderCommon1)
+    order5000New.setNext(order2000New);
+    order2000New.setNext(orderCommonNew);
+    order5000New.init(3, true, 500)
+
+    // 重构后, 链路代码和业务代码彻底分离. 假如未来需要新增 order300, 那只需新增与其相关的函数
+    // 而不必改动原有业务代码
+
+</script>
+</body>
+</html>

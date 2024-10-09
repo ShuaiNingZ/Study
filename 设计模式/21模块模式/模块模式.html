@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script src="./1.js"></script>
+<script type="module">
+    /**
+     * 模块化模式最初被定义为在传统软件工程中为类提供私有和公共封装的一种方法
+     * 能够使一个单独的对象拥有公共/私有的方法和变量, 从而屏蔽来自全局作用域的特殊部分.
+     * 这可以减少我们的函数名与在页面中其他脚本区域内定义的函数名冲突的可能性
+     */
+    import o from './2.js';
+
+    console.log(o)
+    console.log(obj)
+
+    ~(function () {
+        // 模块化代码
+        const myModule = {};
+
+        myModule.sayHello = function () {
+            console.log('Module')
+        }
+
+        // IIFE this 严格模式下指向 undefined, 非严格模式下指向 window
+        console.log(this)
+
+        // 将模块暴露给全局变量 (可选)
+        window.myModule = myModule;
+    })()
+
+    (function (root, factory) {
+        if (typeof define === 'function' && define.amd) {
+            // AMD
+            define(['jquery'], factory);
+        } else if (typeof module === 'object' && module.exports) {
+            // CommonJS
+            module.exports = factory(require('jquery'));
+        } else {
+            // Browser globals
+            root.returnExports = factory(root.jQuery)
+        }
+    })(typeof self !== 'undefined' ? self : this, function ($) {
+        // 模块代码
+        function myModule() {
+        }
+
+        // 返回模块对外接口
+        return myModule;
+    })
+</script>
+</body>
+</html>

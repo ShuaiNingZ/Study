@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 将繁琐的 if 或 switch 判断改为 对象映射的方式
+     * 策略模式定义了一系列算法, 并将每个算法封装起来, 使它们可以相互替换, 且算法的变化
+     * 不会影响使用算法的客户. 策略模式属于对象行为模式, 它通过对算法进行封装, 把使用算法
+     * 的责任和算法的实现分割开来, 并委派给不同的对象对这些算法进行管理.
+     * 该模式主要解决在有多种算法相似的情况下, 使用 if...else 所带来的复杂和难以维护. 它
+     * 的优点是算法可以自由切换, 同时可以避免多重 if...else 判断, 且具有良好的扩展性.
+     */
+
+    let strategry = {
+        'S': (salary) => {
+            return salary * 6
+        },
+        'A': (salary) => {
+            return salary * 4
+        },
+        'B': (salary) => {
+            return salary * 3
+        },
+        'C': (salary) => {
+            return salary * 2
+        }
+    }
+
+    function calBonus(level, salary) {
+        return strategry[level](salary)
+    }
+
+    calBonus('A', 10000);
+    calBonus('B', 8000)
+</script>
+</body>
+</html>

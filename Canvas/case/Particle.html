@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #canvas {
+            display: block;
+            background-color: #444444;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, dotArr = [];
+    // 绘画区域自适应窗口大小
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    class Dot {
+        constructor() {
+            this.x = random(0, w + 1);
+            this.y = random(0, h + 1);
+            this.r = Math.floor(random(2, 4));
+            this.c = '#ef4565';
+            this.vX = random(-2, 2);
+            this.vY = random(-2, 2);
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.fillStyle = this.c;
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        move() {
+            /*if (this.x > w) {
+                this.x = w;
+                this.vX = -this.vX;
+            } else if (this.x <= 0) {
+                this.x = 0;
+                this.vX = -this.vX;
+            }
+            if (this.y > h) {
+                this.y = h;
+                this.vY = -this.vY;
+            } else if (this.y <= 0) {
+                this.y = 0;
+                this.vY = -this.vY;
+            }*/
+            this.x += this.vX;
+            this.y += this.vY;
+            if (!(this.x >= this.r && this.x <= w - this.r)) {
+                this.vX *= -1;
+            }
+            if (!(this.y >= this.r && this.y <= h - this.r)) {
+                this.vY *= -1;
+            }
+            this.draw();
+        }
+    }
+
+    function createDots(num) {
+        for (let i = 0; i < num; i++) {
+            let dot = new Dot();
+            dot.draw();
+            dotArr.push(dot);
+        }
+    }
+
+    createDots(300);
+
+    setInterval(() => {
+        ctx.clearRect(0, 0, w, h);
+        dotArr.forEach(item => {
+            item.move();
+        })
+    }, 1000 / 60)
+</script>
+</body>
+</html>

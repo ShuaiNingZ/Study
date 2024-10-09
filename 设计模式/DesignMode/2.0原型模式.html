@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 原型模式: 用原型实例指定创建对象的种类, 并通过拷贝这些原型创建新的对象
+
+    class Parent {
+        constructor(x) {
+            this.x = x;
+        }
+
+        showX() {
+            alert(this.x)
+        }
+    }
+
+    class ChildA extends Parent {
+        constructor(x, y) {
+            super(x);
+            this.y = y;
+        }
+
+        showY() {
+            alert(this.y)
+        }
+    }
+
+    class ChildB extends Parent {
+        constructor(x, z) {
+            super(x);
+            this.z = z;
+        }
+
+        showZ() {
+            alert(this.z)
+        }
+    }
+
+    console.log(new ChildA(1, 3))
+    console.log(new ChildB(5, 8))
+
+    // 多个类使用相同的属性或方法, 可以通过原型继承的方式来创造出类或者实例对象
+    let obj = {
+        sayHello() {
+            console.log(this.name)
+        }
+    }
+
+    let objA = Object.create(obj, {
+        name: {
+            writable: true,
+            configurable: true,
+            enumerable: true,
+            value: 'AA'
+        }
+    })
+
+    let objB = Object.create(obj, {
+        name: {
+            writable: true,
+            configurable: true,
+            enumerable: true,
+            value: 'BB'
+        }
+    })
+
+    objA.sayHello();
+
+    // 不使用 Object.create 实现原型模式
+    let declarePrototype = {
+        init(name) {
+            this.name = name;
+        },
+        sayHello() {
+            console.log(this.name)
+        }
+    }
+
+    function declareFn(name) {
+        function F() {
+        }
+
+        F.prototype = declarePrototype;
+        let f = new F();
+        f.init(name);
+        return f;
+    }
+
+    let fn = declareFn('哈哈哈哈');
+    fn.sayHello()
+
+</script>
+</body>
+</html>

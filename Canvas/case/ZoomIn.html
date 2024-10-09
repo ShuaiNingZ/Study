@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>马赛克</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .canvasMain {
+            display: flex;
+        }
+
+        .canvasBox, .canvasBox1 {
+            margin: 50px 50px;
+            width: 500px;
+            border: 1px solid #444444;
+        }
+
+        .canvasBox1 {
+            height: 500px;
+        }
+
+        .canvasBox .funcList {
+            display: flex;
+        }
+
+        .canvasBox .funcList .func {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50%;
+            height: 50px;
+            font-size: 30px;
+            color: #444444;
+            cursor: pointer;
+        }
+
+        .canvasBox .funcList .func .upload {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .canvasBox .funcList .func span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+
+        .canvasBox .funcList .func:hover {
+            color: #0099F7;
+        }
+
+        .canvasBox .funcList .func + .func {
+            border-left: 1px solid #444444;
+        }
+
+        #canvas, #canvas1 {
+            display: block;
+            background-color: #444444;
+        }
+
+        #canvas.pointer {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="canvasMain">
+    <div class="canvasBox">
+        <div>
+            <canvas id="canvas" width="500" height="500"></canvas>
+            <div class="funcList">
+                <div class="func" title="上传">
+                    <input class="upload" type="file"/>
+                    <span>↑</span>
+                </div>
+                <div class="func download" title="下载">↓</div>
+            </div>
+        </div>
+    </div>
+    <div class="canvasBox1">
+        <canvas id="canvas1" width="500" height="500"></canvas>
+    </div>
+</div>
+<script type="module">
+    const uploadEl = document.querySelector('.upload'),
+        downloadEl = document.querySelector('.download'),
+        canvas = document.querySelector('#canvas'),
+        ctx = canvas.getContext('2d'),
+        cW = canvas.width,
+        cH = canvas.height,
+        canvas1 = document.querySelector('#canvas1'),
+        ctx1 = canvas1.getContext('2d');
+    let file,
+        imgEl,
+        imgW, imgH,
+        imgUrl = '',
+        startX = 0,
+        startY = 0,
+        toggle = false,
+        mosaicSize = 50;
+
+    /**
+     * 上传图片并绘制
+     */
+    uploadEl.addEventListener('change', function () {
+        ctx.clearRect(0, 0, cW, cH);
+        imgEl = document.createElement('img');
+        file = this.files[0];
+        imgUrl = URL.createObjectURL(file);
+        imgEl.src = imgUrl;
+        imgEl.onload = function () {
+            let w = imgEl.naturalWidth,
+                h = imgEl.naturalHeight;
+            if (w > h) {
+                imgW = cW;
+                imgH = imgW * h / w;
+                startY = (cH - imgH) / 2;
+            } else {
+                imgH = cH;
+                imgW = imgH * w / h;
+                startX = (cW - imgW) / 2;
+            }
+            ctx.drawImage(imgEl, startX, startY, imgW, imgH);
+        }
+    })
+
+    /**
+     * 下载图片
+     */
+    downloadEl.addEventListener('click', function () {
+        if (imgUrl) {
+            const aEl = document.createElement('a');
+            aEl.href = canvas.toDataURL(imgUrl, 1);
+            aEl.download = `mosaic${file.name}`;
+            aEl.click()
+        }
+    })
+
+    /**
+     * 设置马赛克
+     * @param mouseX {number} 鼠标位置 x
+     * @param mouseY {number} 鼠标位置 y
+     */
+    function setMosaic(mouseX, mouseY) {
+        const mouseImg = ctx.getImageData(mouseX - mosaicSize / 2, mouseY - mosaicSize / 2, mosaicSize, mosaicSize);
+        // mouseImg.data.splice(0).concat(getData.flat(Infinity))
+        // const mosaicData = disposeImgData(mouseImgData, 4);
+        // ctx1.putImageData(mouseImg, 0, 0);
+        ctx1.imageSmoothingEnabled = true;
+        ctx1.drawImage(canvas, mouseX - mosaicSize / 2, mouseY - mosaicSize / 2, mosaicSize, mosaicSize, 0, 0, 500, 500)
+        /*let r = 0, g = 0, b = 0;
+        for (let i = 0; i < mosaicData.length; i++) {
+            r += mosaicData[i][0];
+            g += mosaicData[i][1];
+            b += mosaicData[i][2];
+        }
+        // 将周围值全部取平均值
+        ctx.fillStyle = `rgb(${Math.round(r / mosaicData.length)}, ${Math.round(g / mosaicData.length)}, ${Math.round(b / mosaicData.length)})`;
+        ctx.fillRect(mouseX - mosaicSize / 2, mouseY - mosaicSize / 2, mosaicSize, mosaicSize);*/
+    }
+
+    /**
+     * 处理 getImageData 数据
+     * @param imgDataArr {array} getImageData 数据
+     * @param num {number} 数量
+     */
+    function disposeImgData(imgDataArr, num) {
+        let imgData = new Array(parseInt(imgDataArr.length / num)),
+            count = 0;
+        for (let i = 0; i < imgData.length; i++) {
+            imgData[i] = imgDataArr.slice(count, count += num);
+        }
+        return imgData;
+    }
+
+    canvas.addEventListener('mousedown', mosaicFn);
+    canvas.addEventListener('mousemove', mosaicFn);
+    canvas.addEventListener('mouseup', mosaicFn);
+
+    function mosaicFn(e) {
+        e = e || event;
+        switch (e.type) {
+            case 'mousedown':
+                toggle = true;
+                setMosaic(e.offsetX, e.offsetY);
+                break;
+            case 'mousemove':
+                if (toggle) {
+                    setMosaic(e.offsetX, e.offsetY);
+                }
+                break;
+            case 'mouseup':
+                toggle = false;
+                break;
+        }
+    }
+</script>
+</body>
+</html>

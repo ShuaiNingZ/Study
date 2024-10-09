@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+
+</div>
+<script src="https://lib.baomitu.com/babel-standalone/6.26.0/babel.js"></script>
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+<script type="text/babel">
+    /* 
+      插值符号 {}
+        1 不能写 if 判断, 只能写表达式
+        2 可以写字符串 html 
+        3 可以写自执行函数, 函数里面是可以用 if 判断的
+        4 可以写数组, 但是数组会被展开相当于 arr.join('')
+        5 不能直接写对象, 可以转换成字符串
+        6 可以函数调用
+        7 可以放变量
+    */
+
+    const person = {
+        name: '子非鱼、',
+        age: 21,
+        sex: 'boy'
+    }
+
+    const arr = ['皮卡丘', '史迪仔', '苏轼', '苏洵', '苏辙', '苏小妹']
+
+    const style = {
+        title: {
+            background: 'pink',
+            color: 'aqua'
+        },
+        content: {
+            textShadow: `
+          -8px 0px 1px pink,
+          0px -8px 1px aqua,
+          8px 0px 1px pink,
+          0px 8px 1px aqua`
+        }
+    }
+
+    function getSex() {
+        return (person.sex)
+    }
+
+    const ele = (
+        <div>
+            <h1
+                style={style.content}
+            >憨憨</h1>
+            <h2>名字: {person.name}</h2>
+            <h2>年龄: {person.age}</h2>
+            <h2>性别: {person.sex}</h2>
+            <ul>
+                {
+                    // && 且遇假就停 || 或遇真就停
+                    arr.length && arr.map((item, index) => {
+                        return (
+                            <li
+                                key={index}
+                                className="red"
+                            >{item}</li>
+                        )
+                    })
+                }
+            </ul>
+            <em>
+                {
+                    (function () {
+                        return (
+                            '哈哈哈哈'
+                        )
+                    })()
+                }
+            </em>
+            <p>
+                {
+                    arr
+                }
+            </p>
+            <p>
+                {
+                    // JSON.stringify(person)
+                    // Object.keys(person)
+                    console.log(Array.from(Object.keys(person)))
+                }
+            </p>
+            <h2>
+                {
+                    getSex()
+                }
+            </h2>
+        </div>
+    )
+
+    ReactDOM.render(
+        ele,
+        document.querySelector('#app')
+    )
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Canvas Image Processing</title>
+</head>
+<body>
+<input type="file" id="imageFile" accept="image/*">
+<button id="processBtn">处理图片并导出</button>
+<canvas id="canvas"></canvas>
+
+<script>
+    document.getElementById('imageFile').addEventListener('change', loadImage);
+    document.getElementById('processBtn').addEventListener('click', processAndExport);
+
+    function loadImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.getElementById('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, img.width, img.height);
+                detectAndDrawCircles(ctx, img);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function detectAndDrawCircles(ctx, img) {
+        // 这里简化处理，实际应用中可能需要更复杂的图像处理算法
+        const imageData = ctx.getImageData(0, 0, img.width, img.height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            // 简单判断像素是否接近黑色，这里可以根据需要调整阈值
+            if (data[i] < 50 && data[i + 1] < 50 && data[i + 2] < 50) {
+                // 计算圆心位置，这里简化处理，实际可能需要更精确的检测算法
+                const x = (i / 4) % img.width;
+                const y = Math.floor(i / 4 / img.width);
+                drawCircle(ctx, x, y, 5, 'red'); // 绘制红色圆圈标记黑点
+            }
+        }
+    }
+
+    function drawCircle(ctx, x, y, radius, color) {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function processAndExport() {
+        const canvas = document.getElementById('canvas');
+        const link = document.createElement('a');
+        link.download = 'processed-image.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+
+</script>
+</body>
+</html>

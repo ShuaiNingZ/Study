@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 同源策略的小漏洞
+     * 我们不可以跨域进行脚本请求数据
+     * 但是我们可以通过资源引入和客户端页面不同源的资源文件 css js
+     *
+     * 1. 同源策略无法完全限制 link img script 的 src 资源请求
+     * 2. 资源 src 对于服务器来说, 就是一条 GET 方式的请求
+     * 3. 服务器根据 url 上的 query 部分 识别前端的 回调函数名称
+     * 4. 服务器返回对应的 回调函数名称(服务器返回数据) 写入 script 标签作为 js 脚本执行
+     * 5. 前端预先准备好 对应的回调函数 用来接收服务器的回调数据
+     *
+     * 服务端返回 js 脚本内容为 回调函数主动执行 参数为前端需要的数据 callback(data)
+     * 前端准备好一个回调函数 当 jsonp script 脚本执行的时候 我们通过函数活的 服务器发送给我们的数据
+     *
+     * 如果 jsonp 请求的 script 标签没有放到 回调函数声明 script 之后的话, 需要防止阻塞 加 async 异步加载
+     */
+    function objToUrlParams(data) {
+        return Object.entries(data).reduce((prev, cur) => `${prev ? `${prev}&` : '?'}${cur[0]}=${cur[1]}`, '')
+    }
+
+    function isJSON(str) {
+        try {
+            JSON.parse(str);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    function jsonpAPI({url, data, success}) {
+        let callbackName = `fn${Date.now()}`;
+        let script = document.createElement('script');
+        let requestQuery = `${objToUrlParams(data)}&callback=${callbackName}`
+        script.src = url + requestQuery;
+        script.async = true;
+        document.head.appendChild(script);
+        window[callbackName] = function (data) {
+            console.log(data)
+            data = isJSON(data) && data
+            success(data)
+            delete window[callbackName];
+            document.head.removeChild(script);
+        }
+    }
+
+    jsonpAPI({
+        url: 'http://127.0.0.1:8008/user',
+        data: {
+            name: '不秋草、',
+            pwd: '123'
+        },
+        success: (data) => {
+            console.log(data)
+        }
+    })
+</script>
+</body>
+</html>

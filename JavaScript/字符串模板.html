@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let template = `
+            <ul>
+            <% for(let i=0; i < data.supplies.length; i++) { %>
+                <li><%= data.supplies[i] %></li>
+            <% } %>
+            </ul>
+            `;
+        function compile(template) {
+            const evalExpr = /<%=(.+?)%>/g;
+            const expr = /<%([\s\S]+?)%>/g;
+            template = template
+                .replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`')
+                .replace(expr, '`); \n $1 \n  echo(`');
+            template = 'echo(`' + template + '`);';
+            let script =
+                `(function parse(data){
+                    let output = "";
+                    function echo(html){
+                    output += html;
+                    }
+                    ${template}
+                    return output;
+                })`;
+            return script;
+        }
+        let parse = eval(compile(template));
+        console.log(parse({ supplies: ["broom", "mop", "cleaner"] }));
+
+        // 标签模板其实不是模板, 而是函数调用的一种特殊形式
+        console.log(console.log`哈哈哈哈` === console.log(['哈哈哈哈'])); // true
+        // 如果模板字符里面有变量, 就不是简单的调用了
+        function tag(arr, str1, str2) {
+            console.log(arr[2]);
+            return `${arr.join('')}${str1}${str2}`
+        }
+        console.log(tag`哈哈哈${123}嘿嘿${456}`);
+        console.log(tag(['哈哈哈', '嘿嘿', ''], 123, 456));
+    </script>
+</body>
+</html>

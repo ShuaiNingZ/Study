@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    const mult = function () {
+        console.log('开始计算乘积')
+        let a = 1;
+        for (let i = 0, l = arguments.length; i < l; i++) {
+            a = a * arguments[i];
+        }
+        return a;
+    }
+    // mult(2, 3);
+    // mult(2, 3, 4);
+
+    const plus = function () {
+        console.log('开始计算和');
+        let a = 0;
+        for (let i = 0, l = arguments.length; i < l; i++) {
+            a = a + arguments[i];
+        }
+        return a;
+    };
+
+    /*const proxyMult = (function () {
+        const cache = {};
+        return function () {
+            let id = Array.prototype.join.call(arguments, ',');
+            if (cache[id]) {
+                return cache[id]
+            } else {
+                return cache[id] = mult.apply(this, arguments)
+            }
+        }
+    })()
+    console.log(proxyMult(2, 3)); // 输出：6
+    console.log(proxyMult(2, 3)); // 输出：6*/
+
+    const createProxyFactory = function (fn) {
+        const cache = {};
+        return function () {
+            let id = Array.prototype.join.call(arguments, ',');
+            if (cache[id]) {
+                return cache[id]
+            } else {
+                return cache[id] = fn.apply(this, arguments)
+            }
+        }
+    }
+    const proxyMult = createProxyFactory(mult),
+        proxyPlus = createProxyFactory(plus);
+    proxyMult(1, 2, 3, 4) // 输出：24
+    proxyMult(1, 2, 3, 4) // 输出：24
+    proxyPlus(1, 2, 3, 4) // 输出：10
+    proxyPlus(1, 2, 3, 4) // 输出：10
+</script>
+</body>
+</html>

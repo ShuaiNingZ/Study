@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .scroll {
+            height: 200px;
+            width: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        .loading {
+            text-align: center;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            background: #FFF6F6;
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+<div id="js-scroll" class="scroll">
+    <ul id="js-list">
+        <li>000000</li>
+        <li>000000</li>
+        <li>000000</li>
+        <li>000000</li>
+        <li>000000</li>
+    </ul>
+    <div class="loading hide" id="js-loading">加载中...</div>
+</div>
+<script>
+
+    function ScrollLoading() {
+        let [
+            handleScrollTime,
+            lastScrollTop,
+            requestFinish
+        ] = [0, 0, true];
+
+        // 重置数据
+        const resetData = () => {
+            handleScrollTime = 0;
+            lastScrollTop = 0;
+            requestFinish = true;
+        }
+
+        //
+        const scrollEventFn = (e) => {
+            const {
+                scrollHeight,
+                clientHeight,
+                scrollTop
+            } = e.target;
+            if (lastScrollTop > scrollTop) return;
+            lastScrollTop = scrollTop;
+            const distanceBtm = scrollHeight - clientHeight - scrollTop;
+            if (Math.floor(distanceBtm) <= 10) {
+                const timer = Date.now();
+                if (
+                    posterList.value.length < pageOptions.value.total
+                    && timer - handleScrollTime > 1000
+                    && requestFinish
+                ) {
+                    handleScrollTime = timer;
+                    requestFinish = false;
+                }
+            }
+        }
+
+        return {
+            resetData,
+        }
+    }
+
+    function throttle(fn, wait) {
+        let initTime = Date.now();
+        return function (...arg) {
+            const handleTime = Date.now();
+            if (handleTime - initTime < wait) return;
+            initTime = handleTime;
+            fn(...arg);
+        }
+    }
+
+    let index = 0 // 列表个数
+    const listDom = document.getElementById('js-list')
+    const loadingDom = document.getElementById('js-loading')
+    /**
+     * 使用 MutationObserver 监听列表的 DOM 改变
+     */
+    const config = {
+        attributes: true,
+        childList: true,
+        subtree: true
+    }
+    const callback = function (mutationsList, observer) {
+        for (let mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                if (index === 5) {
+                    loadingDom.innerText = '加载完毕'
+                } else {
+                    loadingDom.classList.add('hide')
+                }
+            }
+        }
+    }
+    const observer = new MutationObserver(callback)
+    observer.observe(listDom, config)
+    /**
+     * clientHeight 滚动可视区域高度
+     * scrollTop 当前滚动位置
+     * scrollHeight 整个滚动高度
+     */
+    const scrollDom = document.getElementById('js-scroll')
+    let lastScrollTop = 0;
+    scrollDom.onscroll = throttle((e) => {
+        const bottomOut = 100;
+        const {
+            scrollHeight,
+            clientHeight,
+            scrollTop
+        } = e.target;
+        console.log(lastScrollTop, scrollTop, lastScrollTop > scrollTop)
+        if (lastScrollTop > scrollTop) return;
+        lastScrollTop = scrollTop;
+        const distanceBtm = scrollHeight - clientHeight - scrollTop;
+        if (distanceBtm <= bottomOut) {
+            addList()
+        }
+
+        /*if (scrollDom.scrollHeight - scrollDom.clientHeight - scrollDom.scrollTop <= 100) {
+
+            if (loadingDom.classList.contains('hide') && index <= 5) {
+                loadingDom.classList.remove('hide')
+
+            }
+            if (index >= 5) {
+                observer.disconnect() // 加载完毕停止监听列表 DOM 变化
+            }
+        }*/
+    }, 200)
+
+    /**
+     * 添加列表
+     */
+    function addList() {
+        const fragment = document.createDocumentFragment()
+        setTimeout(() => {
+            ++index
+            for (let i = 0; i < 5; i++) {
+                const li = document.createElement('li')
+                li.innerText = new Array(6).fill(index).join('')
+                fragment.appendChild(li)
+            }
+            listDom.appendChild(fragment)
+        }, 1)
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 二叉堆是一种特殊的二叉树, 有以下两个特性
+     * 1. 它是一棵完全二叉树, 表示树的每一层都有左侧和右侧子节点 (除了最后一层的叶节点), 并且最后一层的叶节点
+     *    尽可能都是左侧子节点, 这叫作结构特性.
+     * 2. 二叉堆不是最小堆就是最大堆, 最小堆允许你快速导出树的最小值, 最大堆允许你快速导出树的最大值. 所有的
+     *    节点都大于等于 (最大堆) 或小于等于 (最小堆) 每个它的子节点. 这叫做 堆特性
+     */
+    const Compare = {
+        less: -1,
+        bigger: 1,
+        equ: 0
+    }
+
+    class MinHeap {
+        heap = []
+
+        getLeftIndex(index) {
+            return 2 * index + 1
+        }
+
+        getRightIndex(index) {
+            return 2 * index + 2
+        }
+
+        getParentIndex(index) {
+            return Math.floor((index - 1) / 2)
+        }
+
+        insert(value) {
+            if (value !== null) {
+                this.heap.push(value)
+                // 与父节点逐级对比, 如果比父节点小, 交换位置
+
+                this.shiftUp(this.heap.length - 1)
+                return true
+            }
+            return false;
+        }
+
+        compareFn(a, b) {
+            return a == b ? Compare.equ : (a < b ? Compare.less : Compare.bigger);
+        }
+
+        shiftUp(index) {
+            let parent = this.getParentIndex(index);
+            while (
+                index > 0
+                && this.compareFn(this.heap[parent], this.heap[index]) === Compare.bigger
+                ) {
+                this.swap(this.heap, parent, index);
+                index = parent
+                parent = this.getParentIndex(index);
+            }
+        }
+
+        swap(array, a, b) {
+            const temp = array[a];
+            array[a] = array[b];
+            array[b] = temp;
+            // [array[a], array[b]] = [array[b], array[a]];
+        }
+
+        size() {
+            return this.heap.length;
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        findTarget() {
+            return this.heap[0];
+        }
+
+        // 删除
+        extract() {
+            if (this.isEmpty()) return false;
+            if (this.size() === 1) return this.heap.shift();
+            const removed = this.heap[0];
+            this.heap[0] = this.heap.pop();
+            this.shiftDown(0);
+            return removed;
+        }
+
+        shiftDown(index) {
+            let current = index;
+            let left = this.getLeftIndex(index);
+            let right = this.getRightIndex(index);
+            let size = this.size();
+
+            if (left < size && this.compareFn(this.heap[current], this.heap[left]) === Compare.bigger) {
+                current = left
+            }
+
+            if (right < size && this.compareFn(this.heap[current], this.heap[right]) === Compare.bigger) {
+                current = right
+            }
+
+            if (index !== current) {
+                this.swap(this.heap, index, current)
+                this.shiftDown(current)
+            }
+        }
+    }
+
+    const heap = new MinHeap();
+    heap.insert(7)
+    heap.insert(6)
+    heap.insert(5)
+    heap.insert(4)
+    heap.insert(3)
+    heap.insert(2)
+    heap.insert(1)
+
+    // heap.extract();
+
+    console.log(heap)
+</script>
+</body>
+</html>

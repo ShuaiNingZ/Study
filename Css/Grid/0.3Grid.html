@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格对齐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid,
+        .grid1,
+        .grid2 {
+            grid-template-rows: repeat(3, 60px);
+            grid-template-columns: repeat(3, 60px);
+        }
+
+        .grid {
+            width: 300px;
+            border: 1px solid #ccc;
+            justify-content: space-evenly;
+            /*justify-content: space-between;*/
+            /*justify-content: space-around;*/
+            /*justify-content: stretch;*/
+            /*justify-content: center;*/
+            /*justify-content: end;*/
+            /*justify-content: start;*/
+        }
+
+        .grid1 {
+            height: 300px;
+            border: 1px solid #ccc;
+            align-content: space-evenly;
+            /*align-content: space-between;*/
+            /*align-content: space-around;*/
+            /*align-content: stretch;*/
+            /*align-content: center;*/
+            /*align-content: end;*/
+            /*align-content: start;*/
+        }
+
+        .grid2 {
+            width: 300px;
+            height: 300px;
+            border: 1px solid #ccc;
+            place-content: space-evenly;
+            /*place-content: space-between;*/
+            /*place-content: space-around;*/
+            /*place-content: stretch;*/
+            /*place-content: center;*/
+            /*place-content: end;*/
+            /*place-content: start;*/
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even),
+        .grid2 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd),
+        .grid2 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+    </style>
+</head>
+<body>
+<!--
+    网格对其 justify-content 和 align-content
+    有时候网格大小可能小于网格容器大小, 这时需要设置对齐
+    对齐有两种: justify-content (水平对齐)、align-content (垂直对齐)
+    属性设置在网格容器上
+    这两个属性在 flex 布局时也有用到
+
+    place-content: <align-center> <justify-content>
+    place-content: end center;
+
+    start: 网格与网格容器的左端对齐
+    end: 网格与网格容器的右端对齐
+    center: 网格处于网格容器中间
+    stretch: 没有指定网格项宽度时, 其宽度占据整个网格容器(默认)
+    space-around: 网格项两侧间隔相等距离, 最边缘间隔是 中间空格间隔的一半
+    space-between: 网格项之间间隔相等, 最边缘没有间隔
+    space-evenly: 网格项之间间隔相等, 最边缘间隔等于网格项之间的间隔
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+<div class="grid1">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+<div class="grid2">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+</body>
+</html>

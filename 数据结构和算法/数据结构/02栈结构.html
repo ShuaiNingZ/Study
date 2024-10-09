@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 栈 stack 又名堆栈, 它是一种运算受限制的线性表. 限定仅在表尾进行插入和删除操作的线性表.
+     * 这一端被称为栈项, 相对的, 把另一端称为栈底. 向一个栈插入新元素称作进栈、入栈或压栈, 它是
+     * 把新元素放到栈顶元素的上面, 使之称为新的栈顶元素; 从一个栈删除元素又称作出栈或退栈, 它是
+     * 把栈顶元素删除掉, 使其相邻的元素称为新的栈顶元素.
+     *
+     * 特点: 后进先出
+     *
+     * 函数调用栈, 递归
+     */
+
+    /**
+     * 封装 栈
+     * push 添加一个元素到栈顶
+     * pop 出栈
+     * peek 返回栈顶
+     * isEmpty()
+     * clear()
+     * size()
+     * toString()
+     */
+    class Stack {
+        constructor() {
+        }
+
+        #items = []
+
+        pop() {
+            return this.#items.pop();
+        }
+
+        push(data) {
+            this.#items.push(data);
+        }
+
+        peek() {
+            // return this.items[this.items.length - 1]
+            return this.#items.at(-1)
+        }
+
+        isEmpty() {
+            return this.#items.length === 0
+        }
+
+        size() {
+            return this.#items.length
+        }
+
+        clear() {
+            this.#items = [];
+        }
+
+        toString() {
+            return this.#items.join("")
+        }
+
+        getAll() {
+            return [...this.#items]
+        }
+    }
+
+    let stack = new Stack();
+    stack.push(4);
+    stack.push(5);
+    stack.push(6);
+    console.log(stack.peek())
+    console.log(stack.pop())
+    console.log(stack.peek())
+    console.log(stack.isEmpty());
+    console.log(stack.size());
+    stack.clear()
+    console.log(stack.isEmpty());
+
+    function convert(decNumber, base) {
+        let remStack = new Stack();
+        let number = decNumber;
+        let string = '';
+        let baseString = '0123456789ABCDEF'
+
+        while (number > 0) {
+            remStack.push(number % base);
+            number = Math.floor(number / base)
+        }
+
+        while (!(remStack.isEmpty())) {
+            string += baseString[remStack.pop()]
+        }
+
+        return string
+    }
+
+    console.log(convert(500000, 16));
+
+    /**
+     * 栈 Stack
+     * 栈是一种线性数据结构, 遵循先进后出的原则. 栈用于存储函数调用、局部变量、函数参数以及程序执行的上下文.
+     * 栈的特点:
+     * 先进后出 (FILO): 最后压入栈的元素最先弹出
+     * 有限大小: 栈的大小是有限的, 当栈空间耗尽时会发生栈溢出(stack overflow)
+     * 快速访问: 由于栈是一种简单的数据结构, 访问和操作栈的速度非常快
+     * 栈的优点:
+     * 快速分配和释放内存: 由于栈的数据结构特点, 分配和释放栈内存的操作非常高效, 不会出现内存碎片问题
+     * 栈的缺点:
+     * 有限大小: 栈的大小是有限的, 当栈空间不够用时会发生栈溢出
+     * 局部性: 栈上存储的数据只能在局部作用域中访问, 不适合存储大量的数据或长期保存的数据
+     */
+
+    function fn(str) {
+        if (str.length % 2) return false
+        const stack = new Stack();
+        const map = {
+            '(': ')',
+            '[': ']',
+            '{': '}',
+        }
+        let i = 0;
+        while (i < str.length) {
+            const item = str[i++];
+            if (Reflect.has(map, item)) {
+                stack.push(item);
+            } else {
+                if (item === map[stack.pop()]) {
+                    continue;
+                } else {
+                    return false
+                }
+            }
+        }
+        return !stack.size()
+    }
+
+    console.log(fn('(]'))
+
+    function fn1(str) {
+        const stack = new Stack();
+        let i = 0;
+        while (i < str.length) {
+            if (!stack.size()) {
+                stack.push(str[i++])
+                continue;
+            }
+            const prev = stack.peek();
+            const cur = str[i++];
+            if (prev === cur) {
+                stack.pop();
+            } else {
+                stack.push(cur);
+            }
+        }
+        return stack.toString()
+    }
+
+    console.log(fn1('abbaca'));
+
+    // 括号的最大嵌套深度
+    function fn2(str) {
+        const stack = new Stack();
+        const map = {
+            '(': ')',
+            '[': ']',
+            '{': '}',
+        }
+        let tempDep = 0;
+        let dep = 0;
+        for (const val of str) {
+            if (Reflect.has(map, val)) {
+                stack.push(val);
+            } else if (Object.values(map).includes(val)) {
+                tempDep = stack.size();
+                dep = Math.max(tempDep, dep);
+                stack.pop();
+            }
+        }
+        return dep
+    }
+
+    console.log(fn2("(1+(2*3)+((8)/4))+1"));
+
+    function fn3(s) {
+        const stack = new Stack();
+        const AAscii = 'A';
+        for (let i = 0, len = s.length; i < len; i++) {
+            if (!stack.size()) {
+                stack.push(s[i]);
+                continue;
+            }
+            const stackTop = stack.peek();
+            const item = s[i];
+            if (stackTop > AAscii) {
+                if (stackTop.toLocaleUpperCase() === item) {
+                    stack.pop();
+                } else {
+                    stack.push(item)
+                }
+            }
+            if (stackTop <= AAscii) {
+                if (stackTop.toLocaleLowerCase() === item) {
+                    stack.pop();
+                } else {
+                    stack.push(item)
+                }
+            }
+        }
+        return stack.toString()
+    }
+
+    console.log(fn3("leEeetcode"))
+
+    function fn4(arr) {
+        const stack = new Array();
+        const map = {
+            C() {
+                stack.pop();
+            },
+            D() {
+                stack.push(stack.at(-1) * 2);
+            },
+            '+'() {
+                stack.push(stack.at(-1) + stack.at(-2))
+            },
+            default(item) {
+                const numItem = Number(item);
+                if (numItem) {
+                    stack.push(numItem);
+                }
+            }
+        }
+        for (const item of arr) {
+            if (Reflect.has(map, item)) {
+                map[item]();
+            } else {
+                map['default'](item);
+            }
+        }
+
+        return stack.reduce((prev, cur) => {
+            return prev += cur
+        }, 0)
+    }
+
+    console.log(fn4(['5', '2', 'C', 'D', '+']))
+
+    function fn5(arr) {
+        const stack = new Array();
+        const sign = new Map([
+            ['+', (a, b) => a + b],
+            ['-', (a, b) => a - b],
+            ['*', (a, b) => a * b],
+            ['/', (a, b) => a / b]
+        ])
+
+        for (const item of arr) {
+            if (Reflect.has(sign, item)) {
+                const right = stack.pop();
+                const left = stack.pop();
+                stack.push(sign.get(item)(left, right))
+            } else {
+                stack.push(item);
+            }
+        }
+        return stack[0]
+    }
+
+    console.log(fn5(['2', '1', '+', '3', '*']));
+    console.log(fn5(['4', '13', '5', '/', '+']));
+</script>
+</body>
+</html>

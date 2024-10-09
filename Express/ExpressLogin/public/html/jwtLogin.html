@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<button id="btn">登录</button>
+<script src="https://lib.baomitu.com/axios/1.6.2/axios.min.js"></script>
+<script src="https://lib.baomitu.com/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+<script>
+    window.onload = () => {
+        const tokenKey = 'JWT';
+        const requestHost = 'http://127.0.0.1:3000';
+        const storage = {
+            set(key, value) {
+                localStorage.setItem(key, JSON.stringify(value))
+            },
+            get(key) {
+                return JSON.parse(localStorage.getItem(key));
+            },
+            remove(key) {
+                localStorage.removeItem(key)
+            }
+        }
+
+        async function getPubKey() {
+            let key = storage.get(tokenKey);
+            if (!key || key === 'undefined') {
+                try {
+                    let result = await axios.post(`${requestHost}/getPublicKey`);
+                    let key = result.data.data.pubKey;
+                    key = key.replace(/\. +/g, '');
+                    key = key.replace(/[\r\n]/g, '');
+                    storage.set(tokenKey, key)
+                    return key
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+            return key
+        }
+
+        // 参数 公钥 明文 返回密文
+        function encrypt(publicKey, value) {
+            // 实例化 JSEncrypt
+            let encrypt = new JSEncrypt();
+            // 设置公钥
+            encrypt.setPublicKey(publicKey);
+            return encrypt.encrypt(value)
+        }
+
+        async function getToken() {
+            let token = storage.get(tokenKey);
+            if (!token || token === 'undefined') {
+                getPubKey().then(async key => {
+                    try {
+                        let result = await axios.post(`${requestHost}/jwtLogin`, {
+                            username: '不秋草',
+                            pwd: encrypt(key, '123456')
+                        })
+                        console.log('jwtLogin', result);
+                        storage.set(tokenKey, result.data.data.token)
+                        token = storage.get(tokenKey);
+                    } catch (err) {
+                        console.log(err)
+                    }
+                })
+            }
+            return token;
+        }
+
+        getToken();
+
+        const btn = document.querySelector('#btn');
+        btn.onclick = async () => {
+            let result = await axios.post(
+                `${requestHost}/useJwt`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${storage.get(tokenKey)}`
+                    }
+                }
+            );
+            console.log(result)
+        }
+
+    }
+</script>
+</body>
+</html>

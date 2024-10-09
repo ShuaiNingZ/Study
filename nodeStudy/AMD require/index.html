@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .wrap {
+            width: 100px;
+            height: 100px;
+            background-color: #0099ff;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap"></div>
+<script crossorigin="anonymous" integrity="sha384-WKPjHIEhBzyEuCp8//j0gXBM/TP1OwKdWMPBRFZ6q8g66Pce1n6o0M/q4duEXrmA"
+        src="https://lib.baomitu.com/require.js/2.3.6/require.js"></script>
+<script>
+    /**
+     * 定义模块 (输出)
+     * 调用模块
+     * 根据逻辑代码模块的业务引用关系, 自动生成 script 并添加
+     * async 异步非阻塞之后 排列加载
+     *
+     * 模块之间的变量不冲突全局作用域不被污染
+     *
+     * requirejs 只有两个 API
+     *      require() => 引入模块
+     *      define() => 定义模块
+     */
+    /*require(['./js/index.js'], function (a) {
+        console.log(a.get())
+    })
+*/
+    require.config({
+        // 默认路径, 以它为路径根目录
+        baseUrl: '/Study/nodeStudy/AMD require/js',
+        // path 里面的路径值 都会加上 baseUrl 路径值
+        path: { // 模块文件路径
+            jquery: './js/jquery.min.js', // 模块别名: 模块路径
+            underscore: './js/underscore.js'
+        },
+        shim: {
+            // 类库如果不支持 AMD 怎么写
+            underscore: {
+                exports: "_"    // 不符合 requireAMD 规范的类库的暴露标识符
+            },
+            jquery: {
+                exports: 'jQuery'
+            }
+        }
+    })
+    require(['underscore'], function (under) {
+        console.log(under, _)
+    })
+</script>
+<!--<script>
+    function require(path, callback) {
+        let script = document.createElement('script');
+        script.src = path;
+        document.body.appendChild(script);
+        script.onload = function () {
+            callback && callback();
+        }
+    }
+
+    require('./js/jquery.min.js', function () {
+        $('.wrap').click(function() {
+            $(this).css({backgroundColor: "#fcf"})
+        })
+    })
+</script>-->
+<!--<script src="./js/jquery.min.js"></script>-->
+<!--<script src="./js/index.js"></script>-->
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #canvas {
+            display: block;
+            background-color: #444444;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h,
+        mouseX, mouseY,
+        maxMouseDis = 20000,
+        maxDotDis = 6000,
+        dotNum = 1,
+        dotLineW = 0.05,
+        color = '#11ffe4';
+
+    // 绘画区域自适应窗口大小
+    (function () {
+        window.onresize = arguments.callee;
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+    })()
+
+    // 鼠标位置监听
+    document.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+    document.addEventListener('mouseleave', () => {
+        mouseX = null;
+        mouseY = null;
+    });
+
+    // 随机数
+    function random(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    // 数据类 03工厂模式
+    function DotObj(x, y, r, vX, vY) {
+        const obj = {};
+        obj.x = x;
+        obj.y = y;
+        obj.r = r;
+        obj.vX = vX;
+        obj.vY = vY;
+        obj.c = color;
+        return obj;
+    }
+
+    // 点位置数据
+    function createDotsData(dotNum) {
+        const dotArr = [];
+        // 创建点数据
+        for (let i = 0; i < dotNum; i++) {
+            dotArr.push(
+                DotObj(random(0, w), random(0, h), Math.floor(random(2, 4)), random(-4, 4), random(-4, 4))
+            );
+        }
+        return dotArr
+    }
+
+    // 画点类 构造函数模式
+    function DrawDot(dotArrItem) {
+        const {x, y, r, vX, vY, c} = dotArrItem;
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.vX = vX;
+        this.vY = vY;
+        this.c = c;
+
+        this.draw = () => {
+            ctx.beginPath();
+            ctx.fillStyle = this.c;
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        this.move = () => {
+            // ctx.beginPath();
+            this.x += this.vX;
+            this.y += this.vY;
+            if (!(this.x >= this.r && this.x <= w - this.r)) {
+                this.vX *= -1;
+            }
+            if (!(this.y >= this.r && this.y <= h - this.r)) {
+                this.vY *= -1;
+            }
+            this.draw();
+        }
+    }
+
+    // 连线
+    function dotOnLine(startDot, endDot, maxDis = maxDotDis, lw = dotLineW) {
+        const {x: sX, y: sY} = startDot;
+        const {x: eX, y: eY} = endDot;
+        const disX = sX - eX;
+        const disY = sY - eY;
+        const dotDis = disX ** 2 + disY ** 2;
+        if (dotDis < maxDis) {
+            ctx.beginPath();
+            ctx.lineWidth = lw;
+            ctx.strokeStyle = color;
+            ctx.moveTo(sX, sY);
+            ctx.lineTo(eX, eY);
+            ctx.stroke();
+        }
+    }
+
+    // 代码执行
+    (() => {
+        const dotArr = createDotsData(dotNum);
+        // 创建鼠标数据
+        const allDot = dotArr.concat(DotObj(mouseX, mouseY, 1));
+        ctx.clearRect(0, 0, w, h);
+        dotArr.forEach((dotArrItem, i) => {
+            const dot = new DrawDot(dotArrItem);
+            dot.draw();
+            for (let i = 0; i < allDot.length; i++) {
+                const dotItem = allDot[i];
+                if (dotArrItem === dotItem || !dotItem.x || !dotItem.y) continue;
+                dotOnLine(dotArrItem, dotItem);
+            }
+            allDot.splice(dotArr.indexOf(dotArrItem), 1);
+        })
+    })()
+</script>
+</body>
+</html>

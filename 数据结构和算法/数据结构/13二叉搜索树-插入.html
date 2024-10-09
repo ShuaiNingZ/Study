@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 树:
+     * 分层数据的抽象模型
+     * 二叉树:
+     * 二叉树中的节点最多只能有两个子节点: 一个是左侧子节点, 另一个是右侧子节点
+     * 二叉搜索树:
+     * 二叉搜索树 (BST) 是二叉树的一种, 但是只允许你在左侧节点存储 (比父节点) 小的值, 在右侧节点存储 (比父节点) 大的值
+     */
+    const Compare = {
+        less: -1,
+        bigger: 1,
+        equ: 0
+    }
+
+    class Node {
+        constructor(key) {
+            this.key = key;
+            this.left = null;
+            this.right = null;
+        }
+    }
+
+    class BST {
+        constructor() {
+            this.root = null;
+        }
+
+        compareFn(a, b) {
+            return a == b ? Compare.equ : (a < b ? Compare.less : Compare.bigger);
+        }
+
+        insertNode(node, key) {
+            switch (this.compareFn(key, node.key)) {
+                case Compare.equ:
+                    return node
+                    break;
+                case Compare.less:
+                    if (node.left === null) {
+                        node.left = new Node(key);
+                        return node.left;
+                    }
+                    this.insertNode(node.left, key);
+                    break;
+                case Compare.bigger:
+                    if (node.right === null) {
+                        node.right = new Node(key);
+                        return node.right;
+                    }
+                    this.insertNode(node.right, key);
+                    break;
+            }
+        }
+
+        // 插入
+        insert(key) {
+            if (this.root == null) {
+                this.root = new Node(key);
+            } else {
+                this.insertNode(this.root, key);
+            }
+        }
+    }
+
+    const myTree = new BST();
+    myTree.insert(100);
+    myTree.insert(80);
+    myTree.insert(110);
+    myTree.insert(70);
+    myTree.insert(90);
+    myTree.insert(150);
+
+    console.log(myTree);
+</script>
+</body>
+</html>

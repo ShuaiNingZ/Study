@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    // 建造者
+    class Human {
+        constructor(param) {
+            this.skill = param && param.skill || '保密';
+            this.hobby = param && param.hobby || '保密';
+        }
+
+        getSkill() {
+            return this.skill;
+        }
+
+        getHobby() {
+            return this.hobby;
+        }
+    }
+
+    class Named {
+        constructor(name) {
+            this.wholeName = name;
+            if (name.indexOf('') > -1) {
+                this.FirstName = name.slice(0, name.indexOf(' '));
+                this.SecondName = name.slice(name.indexOf(' '));
+            }
+        }
+    }
+
+    class Work {
+        constructor(work) {
+            switch (work) {
+                case 'code':
+                    this.work = '工程师';
+                    this.workDescript = '每天沉醉于编程';
+                    break;
+                case 'UI':
+                case 'UE':
+                    this.work = '设计师';
+                    this.workDescript = '设计艺术';
+                    break;
+                case 'teach':
+                    this.work = '教师';
+                    this.workDescript = '分享也是一种快乐';
+                    break;
+                default:
+                    this.work = work;
+                    this.workDescript = '对不起, 我们还不清楚您所选择职位的相关描述';
+            }
+        }
+
+        changeWork(work) {
+            this.work = work;
+        }
+
+        changeDescript(sentence) {
+            this.workDescript = sentence;
+        }
+    }
+
+    // 指挥者
+    const Person = function (name, work) {
+        const _person = new Human();
+        _person.name = new Named(name);
+        _person.work = new Work(work);
+        return _person;
+    }
+
+    // 产品
+    const person = new Person('xiao ming', 'code');
+    console.log(person);
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网格单元间距</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        [class^=grid] {
+            margin-bottom: 10px;
+            display: grid;
+        }
+
+        .grid,
+        .grid1 {
+            grid-template-columns: 50px 50px 150px;
+            grid-template-rows: 60px 60px 60px;
+        }
+
+        .grid {
+            grid-row-gap: 5px;
+            grid-column-gap: 20px;
+        }
+
+        .grid1 {
+            gap: 5px 20px;
+        }
+
+        .grid > div:nth-child(even),
+        .grid1 > div:nth-child(even) {
+            background: #c7ecee;
+        }
+
+        .grid > div:nth-child(odd),
+        .grid1 > div:nth-child(odd) {
+            background: #7ed6df;
+        }
+    </style>
+</head>
+<body>
+<!--
+    grid-column-gap 属性设置列间距
+    grid-row-gap 属性设置行间距
+
+    gap: <grid-row-gap> <grid-column-gap>
+-->
+<div class="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+<div class="grid1">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+</div>
+</body>
+</html>

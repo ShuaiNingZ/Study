@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: #8fd1e1;
+        }
+        canvas {
+            display: block;
+            margin: 100px auto 0;
+            width: 500px;
+            height: 500px;
+            background-color: #fedc5e;
+        }
+    </style>
+</head>
+<body>
+<canvas width="500" height="500"></canvas>
+<script>
+
+
+    /*画圆
+   let canvas = document.querySelector('canvas');
+   let canCon = canvas.getContext('2d');   // 绘制区域上下文
+   canCon.fillStyle = '#f33a53';    // 提笔蘸墨
+   // arc 画圆方法, 参数: 圆心坐标x, y, 半径 r, 开始弧度 startAngle, 结束弧度 endAngle, 是否逆时针 anticlockwise: boolean
+   canCon.arc(250, 250, 66, 0, Math.PI * 2)
+   canCon.fill()   // 下笔作画*/
+
+    /*画矩形
+   let canvas = document.querySelector('canvas');
+   let canCon = canvas.getContext('2d');
+   canCon.fillStyle = '#f33a53';   // 实心颜色的笔
+   canCon.strokeStyle = '#f33a53'; // 空心颜色的笔
+   // fillRect 实心矩形, 参数: 左上角 x, y 坐标, 宽 w, 高 h
+   canCon.fillRect(75, 75, 100, 100);
+   canCon.fillRect(100, 100, 100, 100);
+   // 清除矩形, 无论该区域有多少层, 全部清除
+   canCon.clearRect(100, 100, 50, 50)
+   // strokeRect 空心矩形, 参数: 左上角 x, y 坐标, 宽 w, 高 h
+   canCon.strokeRect(200, 200, 100, 100)*/
+
+    /*
+      Canvas 图形绘制之路径
+      图形的基本元素是路径, 路径是通过不同颜色和宽度的线段或曲线相连形成的不同形状的点的集合
+      路径绘制图形:
+      1. 创建路径起点
+      2. 使用画图命令画出路径
+      3. 路径封闭
+      4. 路径生成后, 通过描边或填充路径区域来渲染图形
+      beginPath() 新建路径, 生成之后, 图形绘制命令指向生成路径
+      closePath() 闭合路径之后图形绘制命令有重新指向到上下文
+      stroke() 通过线条来绘制图形描边
+      fill() 通过线条来绘制图形填充
+      moveTo(x, y) 将笔触移动到指定的坐标 (x, y) 上
+      lineTo(x, y) 绘制从当前位置到指定 (x, y) 位置的直线
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.fillStyle = '#f33a53';
+    canCon.strokeStyle = '#f33a53';
+    canCon.beginPath();
+    canCon.moveTo(0, 100);
+    canCon.lineTo(50, 200);
+    canCon.lineTo(100, 100);
+    canCon.lineTo(150, 200);
+    canCon.lineTo(200, 100);
+    canCon.lineTo(250, 200);
+    canCon.lineTo(300, 100);
+    canCon.lineTo(350, 200);
+    canCon.closePath();
+    canCon.stroke();
+    canCon.fill();  // 填充时会将所有线的闭合区域填充*/
+
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.fillStyle = '#f33a53';
+    canCon.moveTo(20, 200);
+    canCon.lineTo(20, 20);
+    canCon.moveTo(20, 200);
+    canCon.lineTo(200, 200);
+    canCon.moveTo(75, 50);
+    canCon.lineTo(100, 50);
+    canCon.moveTo(100, 25);
+    canCon.lineTo(125, 25);
+    canCon.stroke();*/
+
+    /**
+     * Canvas 图形绘制之弧线
+     * 和两条线相切的圆的一部分是 arcTo 的弧线
+     * 起始点, 夹角点(x1, y1), 结束点(x2, y2) 形成两条线
+     * arcTo 画弧方法, 参数: 两根线的夹角点坐标 x1, y1, 结束点的坐标 x2, y2, 半径 r
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.strokeStyle = '#f33a53';
+    canCon.beginPath();
+    canCon.moveTo(100, 100);
+    canCon.arcTo(150, 100, 100, 200, 10);
+    canCon.stroke();*/
+
+    /**
+     * Canvas 图形绘制之贝塞尔曲线
+     * quadraticCurveTo(cp1x, cp1y, x, y) 画二阶贝塞尔曲线, cp1x, cp1y 为一个控制点, x, y 为结束点
+     * bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y) 画三阶贝塞尔曲线, cp1x, cp1y 为控制点一, cp2x, cp2y 为控制点二, x, y 为结束点
+     */
+
+
+    /**
+     * Canvas 图形绘制之色彩管理
+     * fillStyle 设置图形填充颜色, 默认颜色为: #000
+     * strokeStyle 设置图形轮廓颜色, 默认颜色为: #000
+     * globalAlpha 设置 canvas 所有图形的透明度, 值在 0(透明) 到 1(不透明) 之间
+     * 注意, 出现在 globalAlpha 之前的代码不会有效果
+     * 注意, 重新绘制描边图形或填充颜色时, 记得提笔 beginPath, 否则可能会连在一起或颜色使用上面定义的颜色
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.fillStyle = '#f33a53';
+    canCon.fillRect(150, 150, 200, 200);
+    canCon.globalAlpha = 0.4;
+    function createColorBoard(row, col) {
+        for (let i = 0; i < row; i++) {
+            for (let j = 0; j < col; j++) {
+                // canCon.fillStyle = `rgb(${Math.floor(255 - (255 / row) * i)}, ${Math.floor(255 - (255 / col) * j)}, 0)`;
+                // canCon.fillRect(j * 25, i * 25, 25, 25);
+                canCon.strokeStyle = `rgb(${Math.floor(255 - (255 / row) * i)}, ${Math.floor(255 - (255 / col) * j)}, 0)`;
+                canCon.beginPath();
+                canCon.arc(12.5 + j * 25, 12.5 + i * 25, 10, 0, Math.PI * 2, true);
+                canCon.stroke();
+            }
+        }
+    }
+    createColorBoard(10, 10);*/
+
+    /**
+     * Canvas 图形绘制之线型管理
+     * lineWidth 属性设置线的粗细, 属性值必须为正数, 默认值是 1, 单位 px
+     * lineGap 属性设置线的端点样式, 属性值: butt(默认), round, square
+     * 注意: round 的效果, 在 butt 效果端点处加上了半径为线宽的一半的半圆, square 的效果, 在 butt 效果端点处加上了等宽且高度为一半线宽的方块, round 和 square 会造成线不精确
+     * lineJoin 属性设置线的连接处样式, 属性值: miter(默认), round, bevel
+     * setLineDash 方法和 lineDashOffset 属性设置虚线样式,
+     * setLineDash 方法接收一个数组, 来指定线段与间隙的交替, 参数 1: 表示线段长度, 参数 2: 表示间隙长度
+     * lineDashOffset 属性设置起始偏移量
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.strokeStyle = '#000000';
+    function createLine(num) {
+        for (let i = 0; i < num; i++) {
+            canCon.lineWidth = 1 + i;
+            canCon.beginPath();
+            canCon.moveTo((i + 1) * 20, 20);
+            canCon.lineTo((i + 1) * 20, 150);
+            canCon.stroke();
+        }
+    }
+    createLine(10);
+    function createLineGap(x, gap) {
+        canCon.beginPath();
+        canCon.lineWidth = 10;
+        canCon.lineCap = gap;
+        canCon.moveTo(x, 200);
+        canCon.lineTo(x, 260);
+        canCon.stroke();
+    }
+    createLineGap(50, 'butt');
+    createLineGap(80, 'round');
+    createLineGap(110, 'square');
+    canCon.beginPath();
+    canCon.lineWidth = 20;
+    canCon.lineCap = 'round';
+    canCon.lineJoin = 'round';
+    canCon.moveTo(100, 300);
+    canCon.lineTo(100, 300);
+    canCon.lineTo(200, 300);
+    canCon.lineTo(100, 400);
+    canCon.lineTo(200, 400);
+    canCon.stroke();
+    // 虚线
+    let offset = 0;
+    function drawDashed() {
+        canCon.clearRect(299, 19, 102, 102);
+        canCon.lineWidth = 2;
+        canCon.setLineDash([6, 4]);
+        canCon.lineDashOffset = -offset;
+        canCon.strokeRect(300, 20, 100, 100)
+    }
+    function move() {
+        offset++;
+        if (offset > 18) {
+            offset = 0;
+        }
+        drawDashed();
+        setTimeout(move, 60);
+    }
+    move();*/
+
+    /**
+     * Canvas 图形绘制之线型管理渐变
+     * canvasGradient 对象, 赋给图形的 fillStyle 或 strokeStyle 属性, 从而用于线性或径向的渐变来填充或描边
+     * createLinearGradient(x1, y1, x2, y2), (x1, y1) 表示线性渐变起点, (x2, y2) 表示终点
+     * createRadialGradient(x1, y1, r1, x2, y2, r2), (x1, y1) 表示径向渐变原点, r1 表示半径, (x2, y2) 表示径向渐变原点, r2 表示半径
+     * gradient.addColorStop(position, color), 参数 position 值在 0 到 1 之间, 表示渐变中颜色所在的相对位置, 参数 color 表示颜色值
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let lineGrad1 = canCon.createLinearGradient(0, 0, 0, 150); // 决定渐变的方向, 尺寸
+    lineGrad1.addColorStop(0, '#00abeb');   // 最开始颜色 0
+    lineGrad1.addColorStop(0.5, '#fff');    // 中间颜色 0.5
+    lineGrad1.addColorStop(0.5, '#26c000'); // 立即切换颜色 0.5
+    lineGrad1.addColorStop(1, '#ffffff');   // 最后白色 1
+    let lineGrad2 = canCon.createLinearGradient(0, 50, 0, 95);
+    lineGrad2.addColorStop(0.5, 'red');    // 中间是黑色, 省去了开始的地方, 说明从 0 到中间位置都是黑色
+    lineGrad2.addColorStop(1, 'rgba(0, 0, 0, 0)');  // 末尾是透明的黑色
+    canCon.fillStyle = lineGrad1;
+    canCon.strokeStyle = lineGrad2;
+    canCon.fillRect(10, 10, 130, 130);
+    canCon.strokeRect(50, 50, 50, 50);*/
+
+    /**
+     * Canvas 图形绘制之图案样式
+     * createPattern(image, type) 用来设置背景
+     * 参数 image: 可以是 image 对象的引用或者另一个 canvas 对象
+     * 参数 type: repeat, repeat-x, repeat-y 和 no-repeat
+     * 创建出一个 pattern 之后, 赋给 fillStyle 或 strokeStyle 属性即可
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let oldimg = new Image();
+    oldimg.src = './case/carousel/images/pic2.png';
+    oldimg.onload = function () {
+        // 创建图案
+        let pattern = canCon.createPattern(oldimg, 'repeat');
+        canCon.fillStyle = pattern;
+        canCon.fillRect(0, 0, 500, 300);
+    }*/
+
+    /**
+     * Canvas 图形绘制之线型管理阴影
+     * shadowOffsetX = value、shadowOffsetY = value
+     * 用来设置阴影的 x 和 y 轴的延伸距离, 默认 0
+     * shadowBlur = value
+     * 用于设置阴影的模糊程度, 默认 0
+     * shadowColor = color
+     * 用于设置颜色效果, 默认透明黑色
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let lineGrad = canCon.createLinearGradient(200, 200, 300, 350);
+    canCon.shadowOffsetX = 2;
+    canCon.shadowOffsetY = 2;
+    canCon.shadowBlur = 20;
+    canCon.shadowColor = '#666666';
+    lineGrad.addColorStop(0, '#00abeb');
+    lineGrad.addColorStop(0.5, '#fff');
+    canCon.fillStyle = lineGrad;
+    canCon.fillRect(200, 200, 100, 100)*/
+
+    /**
+     * Canvas 图形绘制之线型管理填充规则
+     * fill 方法设置填充规则: 值为 nonzero 表示全部填充, 默认值; 值为 evenodd 奇偶数区域填充;
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.fillStyle = '#666666';
+    canCon.arc(200, 200, 20, 0, Math.PI * 2, true);
+    canCon.arc(200, 200, 60, 0, Math.PI * 2, true);
+    canCon.arc(200, 200, 100, 0, Math.PI * 2, true);
+    canCon.rect(340, 240, 20, 20);
+    canCon.rect(320, 220, 60, 60);
+    canCon.rect(300, 200, 100, 100);
+    canCon.fill('evenodd');
+    canCon.beginPath();
+    canCon.arc(200, 400, 20, 0, Math.PI * 2, true);
+    canCon.arc(200, 400, 60, 0, Math.PI * 2, true);
+    canCon.arc(200, 400, 100, 0, Math.PI * 2, true);
+    canCon.rect(200, 400, 20, 20);
+    canCon.rect(200, 400, 60, 60);
+    canCon.rect(200, 400, 100, 100);
+    canCon.fill('evenodd');*/
+
+    /**
+     * Canvas 图形绘制之 Path2D 对象
+     * Path2D 对象: 用来缓存或记录绘画命令, 可以快速回顾之前画过的路径
+     * Path2D 会返回一个新初始化的 Path2D 对象
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let path = new Path2D();
+    path.rect(200, 200, 100, 100);
+    let path2 = new Path2D(path);
+    path2.moveTo(200, 200);
+    path2.arc(250, 250, 200, 0, Math.PI * 2);
+    canCon.stroke(path2);
+*/
+    /* Canvas 图形绘制之 五角星
+    let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.beginPath();
+    canCon.moveTo(0, 100);
+    canCon.lineTo(0, 100);
+    canCon.lineTo(300, 100);
+    canCon.lineTo(50, 270);
+    canCon.lineTo(150, 0);
+    canCon.lineTo(250, 270);
+    canCon.closePath();
+    canCon.stroke();
+    canCon.beginPath();
+    canCon.fillStyle = 'red';
+    canCon.moveTo(0, 300);
+    canCon.lineTo(0, 300);
+    canCon.lineTo(300, 300);
+    canCon.lineTo(50, 470);
+    canCon.lineTo(150, 200);
+    canCon.lineTo(250, 470);
+    canCon.closePath();
+    canCon.fill();
+    canCon.beginPath();
+    canCon.fillStyle = 'yellow';
+    canCon.moveTo(200, 200);
+    canCon.lineTo(200, 200);
+    canCon.lineTo(500, 200);
+    canCon.lineTo(250, 370);
+    canCon.lineTo(350, 100);
+    canCon.lineTo(450, 370);
+    canCon.closePath();
+    canCon.fill('evenodd');*/
+
+
+
+
+    /**
+     * Canvas 图形绘制之文字绘制
+     * fillText(text, x, y, maxWidth?)
+     * 在指定的 (x, y) 位置填充指定的文本, y 相对于基线对齐, 绘制的最大宽度是可选的 (如果最大宽度小于文字的实际大小的话, 文字会被压缩)
+     * strokeText(text, x, y, maxWidth?)
+     * 在指定的 (x, y) 位置绘制文字描边, y 相对于基线对齐, 绘制的最大宽度是可选的
+     * font = value
+     * 绘制文本的样式, 与 css font 属性语法相同, 默认: '10px sans-serif'
+     * textAlign = value
+     * 文本对齐方式, 可选值: start、end、left、right、center, 默认: start
+     * textBaseline = value
+     * 基线对齐方式, 可选值: top、hanging(字母上基线)、middle、alphabetic(标准的字母基线)、ideographic、bottom, 默认: alphabetic
+     * direction = value
+     * 文本方向: 可选值: ltr、rtl、inherit, 默认: inherit
+     * measureText()
+     * 预测文本宽度, 将返回一个 TextMetrics 对象的宽度等信息, 大致测量在 canvas 中的位置
+     */
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    canCon.font = '100px sans-serif'
+    canCon.fillText('竹木、', 100, 100);
+    canCon.strokeText('竹木、', 300, 200);
+    let text = canCon.measureText('哈哈哈');
+    console.log(text);*/
+
+    /**
+     * Canvas 图形绘制之 图片绘制
+     * Canvas 特性图片操作能力, 用于动态的图片合成或者作为图形的背景, 浏览器支持的任意格式的外部图片都可以使用,也可以将同一页面中的其他 canvas 元素生成的图片作为图片源
+     * 引入图像到 canvas 里:
+     * 1. 获得一个指向 HTMLImageElement (即 new Image()) 的对象或者另一个 canvas 元素的引用作为源, 也可以通过提供一个 URL 的方式来使用图片
+     * 2. 使用 drawImage() 函数将图片绘制到画布上
+     * drawImage(image, x, y, width?, height?)
+     * 其中 image 是 image 或者 canvas 对象, x 和 y 是其在目标 canvas 里的起始坐标, width 和 height 是设置画入图片的宽高
+     *
+     */
+
+    /*let canvas = document.querySelector('canvas');
+    let canCon = canvas.getContext('2d');
+    let oldimg = new Image();
+    oldimg.src= 'https://img2.baidu.com/it/u=1630723870,3990502976&fm=253';
+    oldimg.onload = function () {
+        canCon.drawImage(oldimg, 100, 100, 300, 300)
+    }*/
+</script>
+</body>
+</html>

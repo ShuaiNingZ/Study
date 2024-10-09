@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<!--前端通过表单提交文本-->
+<!--<form action="http://127.0.0.1:8080/user" method="GET">
+    账号: <input id="user" type="text" name="user" value=""/>
+    密码: <input id="pwd" type="password" name="pwd" value="">
+    <input type="submit">
+</form>-->
+<!--前端部分通过表单上传文件 node 服务端如何接受文件并保存-->
+<!--表单默认 enctype='application/x-www-form-urlencoded'
+如果表单中有 文件时 使用 enctype="multipart/form-data"-->
+<form action="http://127.0.0.1:8000/data" method="POST" enctype="multipart/form-data">
+    <input id="user" type="text" name="user" value=""/>
+    <input type="file" name="avatar">
+    <input type="submit">
+</form>
+</body>
+</html>

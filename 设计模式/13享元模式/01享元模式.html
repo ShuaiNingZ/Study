@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /**
+     * 亨元模式:
+     * 一种优化程序性能的模式, 本质为减少对象创建的个数
+     *
+     * 例: 有大量相似对象, 占用量大量内存
+     *     对象中大部分状态可以抽离为外部状态
+     */
+
+    /**
+     * 某商场有 50 种男款内衣和 50 种女款内衣, 要展示它们
+     *
+     * 方案一: 造 50 个塑料男模和 50 个塑料女模, 让他们穿上展示
+     */
+    const Model = function (gender, underwear) {
+        this.gender = gender;
+        this.underwear = underwear;
+    }
+    Model.prototype.takephoto = function () {
+        console.log(`${ this.gender }穿着${ this.underwear }`);
+    }
+    for (let i = 1; i < 51; i++) {
+        const maleModel = new Model('male 男性', `第${ i }款衣服`);
+        maleModel.takephoto();
+    }
+    for (let i = 1; i < 51; i++) {
+        const maleModel = new Model('female 女性', `第${ i }款衣服`);
+        maleModel.takephoto();
+    }
+
+    const Model = function (gender) {
+        this.gender = gender;
+    }
+    Model.prototype.takephoto = function () {
+        console.log(`${ this.gender }穿着${ this.underwear }`);
+    }
+    const maleModel = new Model('male 男性');
+    const femaleModel = new Model('female 女性');
+    for (let i = 1; i < 51; i++) {
+        maleModel.underwear = `第${ i }款衣服`
+        maleModel.takephoto()
+    }
+    for (let i = 1; i < 51; i++) {
+        femaleModel.underwear = `第${ i }款衣服`
+        femaleModel.takephoto()
+    }
+</script>
+</body>
+</html>
