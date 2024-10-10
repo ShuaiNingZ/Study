@@ -1,0 +1,24 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - main # 如果你想针对其他分支进行自动化部署，请修改这个值
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16' # 或者你项目所需的 Node.js 版本
+    - run: npm install
+    - run: npm run build # 假设你的项目有一个构建步骤
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.PERSONAL_TOKEN }}
+        publish_dir: ./public # 根据你的项目配置，这里应该是构建输出的目录
