@@ -11,6 +11,15 @@
  * 缺点:
  * 额外开销(双端维护, 存储和处理开销)
  * 复杂度(实现和使用相对复杂, 注意并发安全)
+ *
+ * insertFront 前端插入
+ * insertBack  后端插入
+ * removeFront 前端移除
+ * removeBack  后端移除
+ * peekFront   前端查看
+ * peekFront   后端查看
+ * size        大小
+ * isEmpty     是否为空
  */
 
 /*class Deque {
