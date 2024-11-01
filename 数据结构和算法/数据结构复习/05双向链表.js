@@ -29,7 +29,7 @@ class Node {
 class DoubleLinkedList {
     #head = null;
     #tail = null;
-    #count = null;
+    #count = 0;
 
     prepend(val) {
         const node = new Node(val);
@@ -88,9 +88,102 @@ class DoubleLinkedList {
     }
 
     insertAfter(val, index) {
+        if (!(index >= 0 && index <= this.#count)) return false;
+        const node = new Node(val);
+        switch (index) {
+            case 0:
+                if (this.#count === 0) {
+                    this.#head = node;
+                    this.#tail = node;
+                } else {
+                    node.next = this.#head;
+                    this.#head.prev = node;
+                    this.#head = node;
+                }
+                this.#count++;
+                return true;
+            case this.#count:
+                if (this.#count === 0) {
+                    this.#head = node;
+                    this.#tail = node;
+                } else {
+                    node.prev = this.#tail;
+                    this.#tail.next = node;
+                    this.#tail = node;
+                }
+                this.#count++;
+                return true;
+            default:
+                let cur = this.#head;
+                for (let i = 0; cur; i++) {
+                    if (i === index - 1) {
+                        node.next = cur.next;
+                        node.prev = cur;
+                        cur.next = node;
+                        cur.next.prev = node;
+                        break;
+                    }
+                    cur = cur.next
+                }
+                this.#count++;
+                return true
+        }
+    }
+
+    findIndex(val) {
+        let cur = this.#head;
+        for (let i = 0; cur; i++) {
+            if (cur.value === val) return i;
+            cur = cur.next;
+        }
+    }
+
+    findNode(index) {
+        if (!(index >= 0 && index <= this.#count)) return;
+        let cur = this.#head;
+        for (let i = 0; cur; i++) {
+            if (i === index) return cur;
+            cur = cur.next;
+        }
     }
 
     removeAt(index) {
+        if (!(index >= 0 && index < this.#count)) return;
+        switch (index) {
+            case 0: {
+                if (this.#count === 1) {
+                    const result = this.#head;
+                    this.#head = null;
+                    this.#tail = null;
+                    this.#count--;
+                    return result;
+                } else {
+                    const result = this.#head;
+                    this.#head.next.prev = null;
+                    this.#head = this.#head.next;
+                    this.#count--;
+                    return result;
+                }
+            }
+            default: {
+                let cur = this.#head;
+                for (let i = 0; cur; i++) {
+                    if (index === i) {
+                        cur.prev.next = cur.next;
+                        cur.next.prev = cur.prev;
+                        this.#count--;
+                        return result;
+                    }
+                    cur = cur.next;
+                }
+            }
+        }
+    }
+
+    removeNode(node) {
+        const index = this.findIndex(node);
+        if (!index) return;
+        this.removeAt(index);
     }
 
     // 获取指定位置节点
@@ -124,16 +217,16 @@ class DoubleLinkedList {
         this.#tail = null;
         this.#count = null;
     }
-
-    find() {
-
-    }
 }
 
 const doubleLinkedList = new DoubleLinkedList()
 doubleLinkedList.append(2);
 doubleLinkedList.prepend(1);
 doubleLinkedList.insertAfter(3, 0);
-doubleLinkedList.insertAfter(4, 1);
+doubleLinkedList.insertAfter(4, 0);
+doubleLinkedList.insertAfter(5, 4);
+doubleLinkedList.insertAfter(6, 2);
 console.log(doubleLinkedList.getFirst());
 console.log(doubleLinkedList.getLast());
+console.log(doubleLinkedList.findNode(2));
+console.log(doubleLinkedList.findIndex(2));
