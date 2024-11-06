@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    class MySet {
+        #items = new Map();
+
+        constructor(arr = []) {
+            for (const item of arr) {
+                this.add(item)
+            }
+        }
+
+        add(val) {
+            if (this.has(val)) return false;
+            this.#items.set(val, true);
+            return true
+        }
+
+        delete(val) {
+            return this.#items.delete(val)
+        }
+
+        has(val) {
+            return this.#items.has(val);
+        }
+
+        clear() {
+            return this.#items.clear();
+        }
+
+        entries() {
+            return this.#items.entries();
+        }
+
+        forEach(callback) {
+            return this.#items.forEach(callback)
+        }
+
+        values() {
+            return this.#items.keys();
+        }
+
+        size() {
+            return this.#items.size
+        }
+
+        // 将集合转为数组
+        toArray() {
+            return Array.from(this.#items.keys());
+        }
+
+        // 并集
+        union(otherSet) {
+            const newSet = new MySet(otherSet);
+            for (const value of this.toArray()) {
+                newSet.add(value)
+            }
+            return newSet;
+        }
+
+        // 差集
+        difference(otherSet) {
+            const newSet = new MySet(otherSet);
+            const resultSet = new MySet();
+            for (const value of newSet.toArray()) {
+                if (!this.has(value)) {
+                    resultSet.add(value)
+                }
+            }
+            return resultSet;
+        }
+
+        // 交集
+        intersection(otherSet) {
+            const newSet = new MySet(otherSet);
+            const resultSet = new MySet();
+            for (const value of newSet.toArray()) {
+                if (this.has(value)) {
+                    resultSet.add(value)
+                }
+            }
+            return resultSet;
+        }
+
+        // 是否不相交
+        isDisjointFrom(otherSet) {
+            const newSet = new MySet(otherSet);
+            for (const value of newSet.toArray()) {
+                if (this.has(value)) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        // 是否为子集
+        isSubsetOf(otherSet) {
+            const newSet = new MySet(otherSet);
+            for (const value of this.toArray()) {
+                if (!newSet.has(value)) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        // 是否为超集
+        isSupersetOf(otherSet) {
+            const newSet = new MySet(otherSet);
+            for (const value of newSet.toArray()) {
+                if (!this.has(value)) {
+                    return false
+                }
+            }
+            return true
+        }
+
+        // 对称差集
+        symmetricDifference(otherSet) {
+            const newSet = new MySet(otherSet);
+            const resultSet = new MySet();
+            for (const value of this.toArray()) {
+                if (!newSet.has(value)) {
+                    resultSet.add(value);
+                }
+            }
+            for (const value of newSet.toArray()) {
+                if (!this.has(value)) {
+                    resultSet.add(value);
+                }
+            }
+            return resultSet
+        }
+    }
+
+    const set = new MySet([9, 6, 7, 7]);
+    console.log(set)
+    console.log(set.add(8));
+    set.forEach((...arg) => {
+        console.log(arg)
+    })
+    console.log(set.values())
+    console.log(set.size())
+    console.log(set.toArray())
+
+    const set1 = [2, 9, 6];
+    console.log(set.union(set1))
+    console.log(set.difference(set1))
+    console.log(set.intersection(set1))
+    console.log('是否不相交', set.isDisjointFrom(set1))
+    console.log('是否为子集', set.isSubsetOf(set1))
+    console.log('是否为超集', set.isSupersetOf(set1))
+    console.log('对称差集', set.symmetricDifference(set1))
+    const set2 = [1];
+    console.log('是否不相交', set.isDisjointFrom(set2))
+    const set3 = [9];
+    console.log('是否为子集', set.isSubsetOf(set3))
+    console.log('是否为超集', set.isSupersetOf(set3))
+    const set4 = [6, 7, 8, 9];
+    console.log('是否为子集', set.isSubsetOf(set4))
+</script>
+</body>
+</html>
