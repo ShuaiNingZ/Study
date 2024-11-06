@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    class Node {
+        constructor(val) {
+            this.value = val;
+            this.next = null;
+        }
+    }
+
+    class CircularList {
+        #link = null;
+        #count = 0;
+
+        push(val) {
+            const node = new Node(val);
+            if (this.#link === null) {
+                this.#link = node;
+            } else {
+                let cur = this.#link;
+                while (cur.next !== this.#link) {
+                    cur = cur.next;
+                }
+                cur.next = node;
+            }
+            node.next = this.#link;
+            this.#count++;
+        }
+
+        insert(val, index) {
+            if (!(index >= 0 && index <= this.#count)) return false;
+            const node = new Node(val);
+            if (index === 0) {
+                node.next = this.#link;
+                this.getNodeAt(this.#count - 1).next = node;
+                this.#link = node;
+                this.#count++;
+                return true
+            }
+            let cur = this.#link;
+            for (let i = 0; i < index; i++) {
+                if (i === i) break;
+                cur = cur.next
+            }
+            node.next = cur.next;
+            cur.next = node;
+            this.#count++;
+            return true;
+        }
+
+        getNodeAt(index) {
+            if (!(index >= 0 && index < this.#count)) return;
+            let cur = this.#link;
+            for (let i = 0; i < index; i++) {
+                cur = cur.next
+            }
+            return cur;
+        }
+
+        getIndex(val) {
+            let cur = this.#link;
+            for (let i = 0; i < this.#count; i++) {
+                if (cur.value === val) {
+                    return i
+                }
+                cur = cur.next
+            }
+            return -1
+        }
+
+        removeAt(index) {
+            if (!(index >= 0 && index < this.#count)) return false;
+            let cur = this.#link;
+            if (index === 0) {
+                if (this.#count === 0) {
+                    this.#link = null;
+                } else {
+                    const last = this.getNodeAt(this.#count - 1);
+                    this.#link = this.#link.next;
+                    last.next = this.#link;
+                }
+            } else {
+                const prev = this.getNodeAt(index - 1);
+                cur = prev.next;
+                prev.next = prev.next.next;
+            }
+            this.#count--;
+            return cur.value
+        }
+
+        remove(node) {
+            const i = this.getIndex(node);
+            if (!~i) return false;
+            return this.removeAt(i);
+        }
+
+        isEmpty() {
+            return this.size() === 0;
+        }
+
+        size() {
+            return this.#count;
+        }
+
+        self() {
+            return this.#link;
+        }
+
+    }
+
+    const list = new CircularList();
+    list.push(1)
+    list.push(3)
+    list.insert(2, 1)
+    list.insert(0, 0)
+    console.log(list.getNodeAt(1));
+    console.log(list.getIndex(3));
+    // console.log(list.removeAt(3))
+    // console.log(list.removeAt(0))
+    // console.log(list.removeAt(1))
+    // console.log(list.removeAt(5))
+    // console.log(list.remove(3))
+    // console.log(list.remove(0))
+    // console.log(list.remove(5))
+    console.log(list.self())
+</script>
+</body>
+</html>
