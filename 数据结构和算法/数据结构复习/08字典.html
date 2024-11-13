@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * 字典和集合很相似, 集合以 [值, 值] 的形式存储,
+         * 字典以 [键, 值] 的形式存储元素.
+         * 字典也被称为映射、符号表或关联数组
+         */
+
+        class Dictionary {
+            table = {}
+
+            // 对象的 key 会隐式类型转换为字符串
+            toStrFn(item) {
+                if (item === null) {
+                    return 'NULL';
+                } else if (item === undefined) {
+                    return 'UNDEFINED';
+                } else if (typeof item === 'string') {
+                    return item;
+                }
+                return JSON.stringify(item)
+            }
+
+            hasKey(key) {
+                return this.keys().includes(this.toStrFn(key));
+            }
+
+            set(key, value) {
+                const toStrKey = this.toStrFn(key);
+                this.table[toStrKey] = {
+                    key: toStrKey,
+                    value: value
+                }
+            }
+
+            get(key) {
+                let val = this.table[this.toStrFn(key)];
+                return val == null ? undefined : val.value
+            }
+
+            remove(key) {
+                if (this.hasKey(key)) {
+                    delete this.table[this.toStrFn(key)];
+                    return true;
+                }
+                return false;
+            }
+
+            keys() {
+                return this.entries().map(item => item.key)
+            }
+
+            values() {
+                return this.entries().map(item => item.value)
+            }
+
+            entries() {
+                return Object.values(this.table)
+            }
+
+            size() {
+                return this.entries.length
+            }
+
+            isEmpty() {
+                return this.size() === 0
+            }
+
+            clear() {
+                this.table = {}
+            }
+
+            forEach(cb) {
+                const val = this.entries();
+                for (let i = 0; i < val.length; i++) {
+                    cb(val[i].key, val[i].value)
+                }
+            }
+        }
+
+        const mymap = new Dictionary();
+        mymap.set('a', 123);
+        mymap.set('b', 456);
+        console.log(mymap.get('a'));
+        console.log(mymap.hasKey('a'));
+        console.log(mymap.remove('a'));
+        console.log(mymap.keys());
+        console.log(mymap.values());
+        console.log(mymap.entries());
+        console.log(mymap.size());
+        console.log(mymap.isEmpty());
+        console.log(mymap);
+        mymap.forEach((key, value) => {
+            console.log(key, value);
+        })
+        mymap.clear()
+        console.log(mymap);
+    </script>
+</body>
+
+</html>

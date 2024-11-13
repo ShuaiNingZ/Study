@@ -1,100 +1,106 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
-<script>
-    /**
-     * 字典和集合很相似, 集合以 [值, 值] 的形式存储元素, 字典是以 [键, 值]
-     * 的形式存储元素. 字典也称作映射、符号表或关联数组.
-     */
-    class Dictionary {
-        table = {} // 设置私有 #table
+    <script>
+        /**
+         * 字典和集合很相似, 集合以 [值, 值] 的形式存储元素, 字典是以 [键, 值]
+         * 的形式存储元素. 字典也称作映射、符号表或关联数组.
+         */
+        class Dictionary {
+            table = {} // 设置私有 #table
 
-        // 对象的 key 会隐式类型转换为 字符串
-        toStrFn(item) {
-            if (item === null) {
-                return 'NULL';
-            } else if (item === undefined) {
-                return 'UNDEFINED';
-            } else if (typeof item === 'string' || item instanceof String) {
-                return item;
+            // 对象的 key 会隐式类型转换为 字符串
+            toStrFn(item) {
+                if (item === null) {
+                    return 'NULL';
+                } else if (item === undefined) {
+                    return 'UNDEFINED';
+                } else if (typeof item === 'string' || item instanceof String) {
+                    return item;
+                }
+                return JSON.stringify(item)
             }
-            return JSON.stringify(item)
-        }
 
-        hasKey(key) {
-            return this.table[this.toStrFn(key)] !== null
-        }
-
-        set(key, value) {
-            if (key !== null && value !== null) {
-                const tableKey = this.toStrFn(key);
-                this.table[tableKey] = new ValuePair(key, value
-                );
-                return true;
+            hasKey(key) {
+                return this.table[this.toStrFn(key)] !== null
             }
-            return false;
-        }
 
-        get() {
-            const valuePair = this.table[this.toStrFn(key)];
-            return valuePair == null ? undefined : valuePair.value;
-        }
-
-        remove(key) {
-            if (this.hasKey(key)) {
-                delete this.table[this.toStrFn(key)]
-                return true;
+            set(key, value) {
+                if (key !== null && value !== null) {
+                    const tableKey = this.toStrFn(key);
+                    this.table[tableKey] = new ValuePair(key, value);
+                    return true;
+                }
+                return false;
             }
-            return false
-        }
 
-        keys() {
-            return this.entries().map(item => item.key)
-        }
+            get(key) {
+                const valuePair = this.table[this.toStrFn(key)];
+                return valuePair == null ? undefined : valuePair.value;
+            }
 
-        values() {
-            return this.entries().map(item => item.value)
-        }
+            remove(key) {
+                if (this.hasKey(key)) {
+                    delete this.table[this.toStrFn(key)]
+                    return true;
+                }
+                return false
+            }
 
-        entries() {
-            return Object.values(this.table)
-        }
+            keys() {
+                return this.entries().map(item => item.key)
+            }
 
-        size() {
-            return Object.keys(this.table).length
-        }
+            values() {
+                return this.entries().map(item => item.value)
+            }
 
-        isEmpty() {
-            return this.size() === 0
-        }
+            entries() {
+                return Object.values(this.table)
+            }
 
-        clear() {
-            this.table = {}
-        }
+            size() {
+                return Object.keys(this.table).length
+            }
 
-        forEach(cb) {
-            const valuePair = this.entries();
-            for (let i = 0; i < valuePair.length; i++) {
-                cb(valuePair[i].key, valuePair[i].value);
+            isEmpty() {
+                return this.size() === 0
+            }
+
+            clear() {
+                this.table = {}
+            }
+
+            forEach(cb) {
+                const valuePair = this.entries();
+                for (let i = 0; i < valuePair.length; i++) {
+                    cb(valuePair[i].key, valuePair[i].value);
+                }
             }
         }
-    }
 
-    class ValuePair {
-        constructor(key, value) {
-            this.key = key;
-            this.value = value;
+        class ValuePair {
+            constructor(key, value) {
+                this.key = key;
+                this.value = value;
+            }
         }
-    }
 
-    const mymap = new Dictionary();
-</script>
+        const mymap = new Dictionary();
+        console.log(mymap);
+
+        mymap.set('a', 123);
+        mymap.set('b', 456);
+    </script>
 </body>
+
 </html>
