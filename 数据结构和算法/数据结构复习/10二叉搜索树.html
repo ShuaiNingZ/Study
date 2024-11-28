@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<script>
+    /**
+     * 树:
+     * 分层数据的抽象模型:
+     * 二叉树:
+     * 二叉树中的节点最多只能有两个子节点: 左, 右子节点
+     * 二叉搜索树:
+     * 二叉搜索树 (BST) 是二叉树的一种, 但是只允许你在左侧节点存储 (比父节点) 小的值,
+     * 在右侧节点 (比父节点) 大的值
+     */
+
+    const Compare = {
+        LESS_THAN: -1,
+        GREATER_THAN: 1,
+        EQUAL_TO: 0
+    }
+
+    class Node {
+        constructor(key) {
+            this.key = key;
+            this.left = null;
+            this.right = null;
+        }
+    }
+
+    class BST {
+        constructor() {
+            this.root = null;
+        }
+
+        compareFn(a, b) {
+            return a === b ? Compare.EQUAL_TO : (a > b ? Compare.GREATER_THAN : Compare.LESS_THAN)
+        }
+
+        insert(key) {
+            if (this.root === null) {
+                this.root = new Node(key);
+            } else {
+                this.insertNode(this.root, key)
+            }
+        }
+
+        insertNode(node, key) {
+            switch (this.compareFn(node.key, key)) {
+                case Compare.GREATER_THAN:
+                    if (node.left === null) {
+                        node.left = new Node(key);
+                        return;
+                    }
+                    this.insertNode(node.left, key);
+                    break;
+                case Compare.LESS_THAN:
+                    if (node.right === null) {
+                        node.right = new Node(key);
+                        return;
+                    }
+                    this.insertNode(node.right, key);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        /**
+         * 中序遍历:  以从最小到最大的顺序访问所有节点.
+         * 1. 访问左子树
+         * 2. 访问根节点
+         * 3. 访问右子树
+         * 中序遍历的一种应用就是对树进行排序操作.
+         */
+
+        // 中序遍历
+        inOrderMap(callback) {
+            this.inOrderMapNode(this.root, callback)
+        }
+
+        inOrderMapNode(node, callback) {
+            if (node === null) return;
+            this.inOrderMapNode(node.left, callback);
+            callback(node.key);
+            this.inOrderMapNode(node.right, callback);
+        }
+
+        /**
+         * 先序遍历:
+         * 1. 访问根节点
+         * 2. 访问左子树
+         * 3. 访问右子树
+         * 先序遍历的一种应用是打印一个结构化的文档.
+         */
+
+        // 先序遍历
+        preOrderMap(callback) {
+            this.preOrderMapNode(this.root, callback);
+        }
+
+        preOrderMapNode(node, callback) {
+            if (node === null) return;
+            callback(node.key);
+            this.preOrderMapNode(node.left, callback);
+            this.preOrderMapNode(node.right, callback);
+        }
+
+        /**
+         * 后序遍历:
+         * 1. 访问左子树
+         * 2. 访问右子树
+         * 3. 访问根节点
+         * 后序遍历的一种应用是计算一个目录及其子目录中所有文件所占空间的大小.
+         */
+
+        // 后序遍历
+        postOrderMap(callback) {
+            this.preOrderMapNode(this.root, callback);
+        }
+
+        postOrderMapNode(node, callback) {
+            if (node === null) return;
+            this.postOrderMapNode(node.left, callback);
+            this.postOrderMapNode(node.right, callback);
+            callback(node.key);
+        }
+
+        min() {
+            return this.minNode(this.root).key;
+        }
+
+        minNode(node) {
+            if (node === null) return undefined;
+            // 尾递归 通常 js 引擎不对尾递归进行优化, 也可以使用 while
+            // if (node.left === null) return node.key;
+            // return this.minNode(node.left)
+            let cur = node;
+            while (cur.left) {
+                cur = cur.left;
+            }
+            return cur;
+        }
+
+        max() {
+            return this.maxNode(this.root).key;
+        }
+
+        maxNode(node) {
+            if (node === null) return undefined;
+            // if (node.right === null) return node.key;
+            // return this.maxNode(node.right);
+            let cur = node;
+            while (cur.right) {
+                cur = cur.right;
+            }
+            return cur;
+        }
+
+        has(key) {
+            return !!this.search(key);
+        }
+
+        search(key) {
+            return this.searchNode(this.root, key);
+        }
+
+        searchNode(node, key) {
+            if (node === null) return undefined;
+            switch (this.compareFn(key, node.key)) {
+                case Compare.LESS_THAN:
+                    return this.searchNode(node.left, key);
+                case Compare.GREATER_THAN:
+                    return this.searchNode(node.right, key);
+                case Compare.EQUAL_TO:
+                    return node;
+            }
+        }
+
+        remove(key) {
+            return this.removeNode(this.root, key, null);
+        }
+
+        removeNode(node, key, parentNode) {
+            let cur = node;
+            while (cur) {
+                switch (this.compareFn(key, cur.key)) {
+                    case Compare.EQUAL_TO:
+                        console.log('EQUAL_TO', key, cur);
+                        // 没有子节点, 将父节点的 左或右 赋值为 null
+                        if (cur.left === null && cur.right === null) {
+                            if (parentNode === null) {
+                                this.root = null;
+                            } else if (parentNode.left === cur) {
+                                parentNode.left = null;
+                            } else {
+                                parentNode.right = null;
+                            }
+
+                        } else if (cur.left === null) {
+                            // 只有一个右子节点
+                            if (parentNode === null) {
+                                this.root = cur.right;
+                            } else if (parentNode.left === cur) {
+                                parentNode.left = cur.right;
+                            } else {
+                                parentNode.right = cur.right;
+                            }
+                        } else if (cur.right === null) {
+                            // 只有一个左子节点
+                            if (parentNode === null) {
+                                this.root = cur.left;
+                            } else if (parentNode.left === cur) {
+                                parentNode.left = cur.left;
+                            } else {
+                                parentNode.right = cur.left;
+                            }
+                        } else {
+                            // 两个儿子节点
+                            const minNode = this.minNode(cur.right);
+                            cur.key = minNode.key;
+                            if (minNode !== cur.right) {
+                                this.removeNode(cur.right, minNode.key, cur)
+                            } else {
+                                cur.right = minNode.right;
+                            }
+                        }
+                        return cur;
+                    case Compare.LESS_THAN:
+                        console.log('LESS_THAN', key, cur);
+                        parentNode = cur;
+                        cur = cur.left;
+                        break;
+                    case Compare.GREATER_THAN:
+                        console.log('GREATER_THAN', key, cur);
+                        parentNode = cur;
+                        cur = cur.right;
+                        break;
+                }
+            }
+            return null
+        }
+    }
+
+    const bst = new BST();
+    bst.insert(10);
+    bst.insert(9);
+    bst.insert(11);
+    bst.insert(7);
+    bst.insert(12);
+    bst.insert(8);
+    bst.insert(14);
+    bst.insert(6);
+    bst.insert(13);
+    bst.insert(5);
+    bst.insert(15);
+    console.log(bst);
+    bst.inOrderMap((key) => {
+        // console.log('二叉搜索树-中序遍历', key)
+    });
+    bst.preOrderMap((key) => {
+        // console.log('二叉搜索树-先序遍历', key)
+    });
+    bst.postOrderMap((key) => {
+        // console.log('二叉搜索树-后序遍历', key)
+    });
+    console.log('二叉搜索树-MIN', bst.min());
+    console.log('二叉搜索树-MAX', bst.max());
+    console.log('二叉搜索树-SEARCH', bst.search(2));
+    console.log('二叉搜索树-SEARCH', bst.search(8));
+    console.log('二叉搜索树-REMOVE', bst.remove(2));
+    console.log('二叉搜索树-REMOVE', bst.remove(9));
+    console.log(bst);
+    console.log('二叉搜索树-HAS', bst.has(9));
+    console.log('二叉搜索树-REMOVE', bst.remove(7));
+    console.log('二叉搜索树-REMOVE', bst.remove(14));
+    console.log(bst)
+    console.log(JSON.stringify(bst));
+</script>
+</body>
+
+</html>
